@@ -1,6 +1,6 @@
 #pragma once
 
-#include "quantum/build.h"
+#include "build.h"
 
 #ifdef __cplusplus
 

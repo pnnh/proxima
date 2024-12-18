@@ -1,6 +1,6 @@
 #include "SyncThread.h"
 
-#include "huable/linux/services/SyncService.h"
+#include "services/SyncService.h"
 
 #include <QDebug>
 

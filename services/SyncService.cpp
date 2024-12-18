@@ -6,7 +6,6 @@
 #include <qdiriterator.h>
 
 #include "quantum/utils/basex.h"
-#include "quantum/utils/mime.h"
 
 void SyncService::SyncLibraries()
 {

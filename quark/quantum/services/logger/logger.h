@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "quantum/build.h"
+#include "build.h"
 
 namespace quantum
 {

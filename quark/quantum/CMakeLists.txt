@@ -1,8 +1,10 @@
+
 if (MSVC)
     set(MTAPI_EXPORT "__declspec (dllexport)")
 endif ()
 
-configure_file("build.h.in" "${PROJECT_BINARY_DIR}/quantum/build.h")
+configure_file("build.h.in" "${PROJECT_BINARY_DIR}/build.h")
+
 
 file(GLOB_RECURSE QUANTUM_SOURCES
         business/*.cpp
@@ -25,7 +27,7 @@ endif ()
 set(GLOBAL_QUANTUM_SOURCES ${QUANTUM_SOURCES} CACHE INTERNAL "GLOBAL_QUANTUM_SOURCES")
 
 
-set(LIB_NAME ${GLOBAL_LIB_PREFIX}Quantum)
+set(LIB_NAME ${GLOBAL_LIB_PREFIX}Quark)
 
 add_library(${LIB_NAME} SHARED ${LIB_SOURCES} ${GLOBAL_QUANTUM_SOURCES})
 
