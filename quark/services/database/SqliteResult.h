@@ -5,7 +5,7 @@
 #include <vector>
 #include "services/database/SqliteRow.h"
 
-namespace quantum
+namespace quark
 {
     class SqliteResult
     {

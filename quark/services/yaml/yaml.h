@@ -4,7 +4,7 @@
 #include <string>
 #include <yaml-cpp/node/node.h>
 
-namespace quantum
+namespace quark
 {
     class YamlHandler
     {

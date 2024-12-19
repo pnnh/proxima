@@ -6,7 +6,7 @@
 
 #ifdef __cplusplus
 
-namespace quantum
+namespace quark
 {
     class PSString
     {

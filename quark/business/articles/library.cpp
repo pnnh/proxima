@@ -10,15 +10,15 @@
 #include "services/yaml/yaml.h"
 #include "utils/md5.h"
 
-quantum::LibraryServerBusiness::LibraryServerBusiness(const std::string& baseUrl)
+quark::LibraryServerBusiness::LibraryServerBusiness(const std::string& baseUrl)
 {
     this->baseUrl = baseUrl;
 }
 
-std::shared_ptr<std::vector<quantum::PSLibraryModel>>
-quantum::LibraryServerBusiness::selectLibraries() const
+std::shared_ptr<std::vector<quark::PSLibraryModel>>
+quark::LibraryServerBusiness::selectLibraries() const
 {
-    auto libraries = std::make_shared<std::vector<quantum::PSLibraryModel>>();
+    auto libraries = std::make_shared<std::vector<quark::PSLibraryModel>>();
 
     for (const auto& entry : std::filesystem::directory_iterator(this->baseUrl))
     {
@@ -33,11 +33,11 @@ quantum::LibraryServerBusiness::selectLibraries() const
         {
             continue;
         }
-        auto libraryModel = quantum::PSLibraryModel(filePath);
-        auto metadataFilePath = quantum::JoinFilePath({this->baseUrl, filePath, "metadata.yaml"});
-        if (quantum::IsFileExist(metadataFilePath))
+        auto libraryModel = quark::PSLibraryModel(filePath);
+        auto metadataFilePath = quark::JoinFilePath({this->baseUrl, filePath, "metadata.yaml"});
+        if (quark::IsFileExist(metadataFilePath))
         {
-            auto yamlHandler = quantum::YamlHandler(metadataFilePath);
+            auto yamlHandler = quark::YamlHandler(metadataFilePath);
             libraryModel.URN = yamlHandler.getString("metadata.urn").value_or("");
             libraryModel.Title = yamlHandler.getString("metadata.title").value_or(filePath);
             libraryModel.Description = yamlHandler.getString("metadata.description").value_or("");
@@ -45,7 +45,7 @@ quantum::LibraryServerBusiness::selectLibraries() const
         }
         if (libraryModel.URN.empty())
         {
-            libraryModel.URN = quantum::calcMd5(entry.path().string());
+            libraryModel.URN = quark::calcMd5(entry.path().string());
         }
         libraries->emplace_back(libraryModel);
     }
@@ -53,7 +53,7 @@ quantum::LibraryServerBusiness::selectLibraries() const
     return libraries;
 }
 
-bool quantum::isLibraryDirectory(const std::string& directoryName)
+bool quark::isLibraryDirectory(const std::string& directoryName)
 {
-    return quantum::PSString::EndsWith(directoryName, ".notelibrary");
+    return quark::PSString::EndsWith(directoryName, ".notelibrary");
 }

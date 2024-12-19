@@ -1,6 +1,6 @@
 #include <iostream>
 
-namespace quantum::examples
+namespace quark::examples
 {
     int runCase(const std::string& caseName);
 

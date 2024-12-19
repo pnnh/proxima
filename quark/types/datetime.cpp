@@ -44,7 +44,7 @@ std::chrono::system_clock::time_point ParseDate(const std::wstring& dateText, co
     return result;
 }
 
-std::chrono::system_clock::time_point quantum::makeTimePoint(const std::string& time_string)
+std::chrono::system_clock::time_point quark::makeTimePoint(const std::string& time_string)
 {
     // using namespace boost::posix_time;
     // using namespace std::chrono;
@@ -62,7 +62,7 @@ std::chrono::system_clock::time_point quantum::makeTimePoint(const std::string& 
     return timePoint;
 }
 
-std::string quantum::formatTime(const std::chrono::system_clock::time_point& time_point)
+std::string quark::formatTime(const std::chrono::system_clock::time_point& time_point)
 {
     std::time_t now = std::chrono::system_clock::to_time_t(time_point);
 
@@ -72,41 +72,41 @@ std::string quantum::formatTime(const std::chrono::system_clock::time_point& tim
 }
 
 
-quantum::PSDatetime::PSDatetime(): timeValue()
+quark::PSDatetime::PSDatetime(): timeValue()
 {
 }
 
-quantum::PSDatetime::PSDatetime(const std::string& datetime)
+quark::PSDatetime::PSDatetime(const std::string& datetime)
 {
     this->timeValue = makeTimePoint(datetime);
 }
 
-quantum::PSDatetime::PSDatetime(const std::chrono::system_clock::time_point& datetime)
+quark::PSDatetime::PSDatetime(const std::chrono::system_clock::time_point& datetime)
 {
     this->timeValue = datetime;
 }
 
-quantum::PSDatetime::PSDatetime(const std::time_t& datetime)
+quark::PSDatetime::PSDatetime(const std::time_t& datetime)
 {
     this->timeValue = std::chrono::system_clock::from_time_t(datetime);
 }
 
-quantum::PSDatetime& quantum::PSDatetime::operator=(const PSDatetime& other)
+quark::PSDatetime& quark::PSDatetime::operator=(const PSDatetime& other)
 = default;
 
-quantum::PSDatetime& quantum::PSDatetime::operator=(const std::chrono::system_clock::time_point& tp)
+quark::PSDatetime& quark::PSDatetime::operator=(const std::chrono::system_clock::time_point& tp)
 {
     this->timeValue = tp;
     return *this;
 }
 
-quantum::PSDatetime& quantum::PSDatetime::operator=(const std::time_t& time)
+quark::PSDatetime& quark::PSDatetime::operator=(const std::time_t& time)
 {
     this->timeValue = std::chrono::system_clock::from_time_t(time);
     return *this;
 }
 
-std::string quantum::PSDatetime::toString() const
+std::string quark::PSDatetime::toString() const
 {
     return formatTime(this->timeValue);
 }

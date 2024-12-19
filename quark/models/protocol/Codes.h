@@ -1,6 +1,6 @@
 #pragma once
 
-namespace quantum
+namespace quark
 {
     enum Codes { Ok = 200, Error = 500 };
 

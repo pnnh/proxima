@@ -4,7 +4,7 @@
 
 #include "cmark.h"
 
-std::string quantum::markdownToHtml(const std::string& markdownText)
+std::string quark::markdownToHtml(const std::string& markdownText)
 {
   const auto data = markdownText.c_str();
   const char* md = data;

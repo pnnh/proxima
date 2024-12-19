@@ -5,9 +5,9 @@
 #include "models/files/File.h"
 #include "build.h"
 
-namespace quantum
+namespace quark
 {
-    class MTAPI_EXPORT FileServerBusiness
+    class MTAPI FileServerBusiness
     {
     public:
         explicit FileServerBusiness(const std::string& baseUrl);

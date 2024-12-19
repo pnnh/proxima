@@ -7,23 +7,23 @@
 #include "utils/md5.h"
 #include "types//String.h"
 
-quantum::FileServerBusiness::FileServerBusiness(const std::string& baseUrl)
+quark::FileServerBusiness::FileServerBusiness(const std::string& baseUrl)
 {
     this->baseUrl = baseUrl;
 }
 
-std::shared_ptr<std::vector<quantum::PSFileModel>>
-quantum::FileServerBusiness::selectFiles() const
+std::shared_ptr<std::vector<quark::PSFileModel>>
+quark::FileServerBusiness::selectFiles() const
 {
     return selectFiles("");
 }
 
-std::shared_ptr<std::vector<quantum::PSFileModel>>
-quantum::FileServerBusiness::selectFiles(std::string parentPath) const
+std::shared_ptr<std::vector<quark::PSFileModel>>
+quark::FileServerBusiness::selectFiles(std::string parentPath) const
 {
     auto files = std::make_shared<std::vector<PSFileModel>>();
 
-    const std::string fullPath = quantum::JoinFilePath({this->baseUrl, std::move(parentPath)});
+    const std::string fullPath = quark::JoinFilePath({this->baseUrl, std::move(parentPath)});
 
     for (const auto& entry : std::filesystem::directory_iterator(fullPath))
     {
@@ -34,30 +34,30 @@ quantum::FileServerBusiness::selectFiles(std::string parentPath) const
         }
 
         auto filePath = dirName.string();
-        auto fileModel = quantum::PSFileModel(filePath);
+        auto fileModel = quark::PSFileModel(filePath);
         if (fileModel.URN.empty())
         {
-            fileModel.URN = quantum::calcMd5(entry.path().string());
+            fileModel.URN = quark::calcMd5(entry.path().string());
         }
         fileModel.IsDir = entry.is_directory();
-        fileModel.IsHidden = quantum::isHidden(filePath);
-        fileModel.IsIgnore = quantum::isIgnore(filePath);
+        fileModel.IsHidden = quark::isHidden(filePath);
+        fileModel.IsIgnore = quark::isIgnore(filePath);
         fileModel.Title = filePath;
         fileModel.Name = filePath;
 
-        fileModel.UpdateTime = quantum::convertFilesystemTime(std::filesystem::last_write_time(entry));
+        fileModel.UpdateTime = quark::convertFilesystemTime(std::filesystem::last_write_time(entry));
         fileModel.CreateTime = fileModel.UpdateTime;
         files->emplace_back(fileModel);
     }
 
     return files;
 }
-std::vector<quantum::PSFileModel> quantum::FileServerBusiness::selectFilesVector() const
+std::vector<quark::PSFileModel> quark::FileServerBusiness::selectFilesVector() const
 {
     return *this->selectFiles();
 }
 
-std::vector<quantum::PSFileModel> quantum::FileServerBusiness::selectFilesVector(std::string parentPath) const
+std::vector<quark::PSFileModel> quark::FileServerBusiness::selectFilesVector(std::string parentPath) const
 {
     return *this->selectFiles(std::move(parentPath));
 }

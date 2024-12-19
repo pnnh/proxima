@@ -3,7 +3,7 @@
 #include <vector>
 #include "models/articles/Notebook.h"
 
-namespace quantum
+namespace quark
 {
     bool isNotebookDirectory(const std::string& directoryName);
 
@@ -12,7 +12,7 @@ namespace quantum
     public:
         explicit NotebookServerBusiness(const std::string& baseUrl);
 
-        [[nodiscard]] std::shared_ptr<std::vector<quantum::PSNotebookModel>> selectNotebooks() const;
+        [[nodiscard]] std::shared_ptr<std::vector<quark::PSNotebookModel>> selectNotebooks() const;
 
     private:
         std::string baseUrl;

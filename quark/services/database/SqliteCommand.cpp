@@ -4,19 +4,19 @@
 
 #include <utility>
 
-quantum::SqliteCommand::SqliteCommand(sqlite3* sqlite3Database, sqlite3_stmt* stmt,
+quark::SqliteCommand::SqliteCommand(sqlite3* sqlite3Database, sqlite3_stmt* stmt,
                                       std::string sqlText) : sqlite3Database(sqlite3Database), stmt(stmt),
                                                              sqlText(std::move(sqlText))
 {
 }
 
-quantum::SqliteCommand::~SqliteCommand()
+quark::SqliteCommand::~SqliteCommand()
 {
     if (this->stmt != nullptr)
         sqlite3_finalize(this->stmt);
 }
 
-void quantum::SqliteCommand::ChangeSqlText(const std::string& text)
+void quark::SqliteCommand::ChangeSqlText(const std::string& text)
 {
     if (this->stmt != nullptr)
         sqlite3_finalize(this->stmt);
@@ -27,27 +27,27 @@ void quantum::SqliteCommand::ChangeSqlText(const std::string& text)
     if (rc) throw PSException("Can't prepare statement", sqlite3_errmsg(this->sqlite3Database));
 }
 
-void quantum::SqliteCommand::BindInt(const std::string& name, int value)
+void quark::SqliteCommand::BindInt(const std::string& name, int value)
 {
     auto index = sqlite3_bind_parameter_index(this->stmt, name.c_str());
     auto rc = sqlite3_bind_int(this->stmt, index, value);
     if (rc) throw PSException("Can't bind int value", sqlite3_errmsg(this->sqlite3Database));
 }
 
-void quantum::SqliteCommand::BindString(const std::string& name, const std::string& value)
+void quark::SqliteCommand::BindString(const std::string& name, const std::string& value)
 {
     auto index = sqlite3_bind_parameter_index(this->stmt, name.c_str());
     auto rc = sqlite3_bind_text(this->stmt, index, value.c_str(), -1, nullptr);
     if (rc) throw PSException("Can't bind string value", sqlite3_errmsg(this->sqlite3Database));
 }
 
-void quantum::SqliteCommand::Reset()
+void quark::SqliteCommand::Reset()
 {
     auto rc = sqlite3_reset(this->stmt);
     if (rc) throw PSException("Can't reset statement", sqlite3_errmsg(this->sqlite3Database));
 }
 
-std::shared_ptr<quantum::SqliteResult> quantum::SqliteCommand::Run()
+std::shared_ptr<quark::SqliteResult> quark::SqliteCommand::Run()
 {
     auto row = 0;
     auto sqlResult = std::make_shared<SqliteResult>();

@@ -7,15 +7,15 @@
 #include "utils/md5.h"
 #include "types/String.h"
 
-quantum::NotebookServerBusiness::NotebookServerBusiness(const std::string& baseUrl)
+quark::NotebookServerBusiness::NotebookServerBusiness(const std::string& baseUrl)
 {
     this->baseUrl = baseUrl;
 }
 
-std::shared_ptr<std::vector<quantum::PSNotebookModel>>
-quantum::NotebookServerBusiness::selectNotebooks() const
+std::shared_ptr<std::vector<quark::PSNotebookModel>>
+quark::NotebookServerBusiness::selectNotebooks() const
 {
-    auto libraries = std::make_shared<std::vector<quantum::PSNotebookModel>>();
+    auto libraries = std::make_shared<std::vector<quark::PSNotebookModel>>();
 
     for (const auto& entry : std::filesystem::directory_iterator(this->baseUrl))
     {
@@ -30,11 +30,11 @@ quantum::NotebookServerBusiness::selectNotebooks() const
         {
             continue;
         }
-        auto notebookModel = quantum::PSNotebookModel(filePath);
-        auto metadataFilePath = quantum::JoinFilePath({this->baseUrl, filePath, "metadata.yaml"});
-        if (quantum::IsFileExist(metadataFilePath))
+        auto notebookModel = quark::PSNotebookModel(filePath);
+        auto metadataFilePath = quark::JoinFilePath({this->baseUrl, filePath, "metadata.yaml"});
+        if (quark::IsFileExist(metadataFilePath))
         {
-            auto yamlHandler = quantum::YamlHandler(metadataFilePath);
+            auto yamlHandler = quark::YamlHandler(metadataFilePath);
             notebookModel.URN = yamlHandler.getString("metadata.urn").value_or("");
             notebookModel.Title = yamlHandler.getString("metadata.title").value_or(filePath);
             notebookModel.Description = yamlHandler.getString("metadata.description").value_or("");
@@ -42,7 +42,7 @@ quantum::NotebookServerBusiness::selectNotebooks() const
         }
         if (notebookModel.URN.empty())
         {
-            notebookModel.URN = quantum::calcMd5(entry.path().string());
+            notebookModel.URN = quark::calcMd5(entry.path().string());
         }
         libraries->emplace_back(notebookModel);
     }
@@ -50,7 +50,7 @@ quantum::NotebookServerBusiness::selectNotebooks() const
     return libraries;
 }
 
-bool quantum::isNotebookDirectory(const std::string& directoryName)
+bool quark::isNotebookDirectory(const std::string& directoryName)
 {
-    return quantum::PSString::EndsWith(directoryName, ".notebook");
+    return quark::PSString::EndsWith(directoryName, ".notebook");
 }

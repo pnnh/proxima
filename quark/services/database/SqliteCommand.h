@@ -4,7 +4,7 @@
 
 #include "SqliteResult.h"
 
-namespace quantum
+namespace quark
 {
     class SqliteCommand
     {

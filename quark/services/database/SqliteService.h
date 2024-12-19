@@ -6,7 +6,7 @@
 #include "types/Exception.h"
 #include "services/database/SqliteResult.h"
 
-namespace quantum
+namespace quark
 {
     class SqliteService
     {

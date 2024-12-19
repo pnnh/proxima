@@ -4,7 +4,7 @@
 #include <boost/uuid/detail/md5.hpp>
 #include <boost/algorithm/hex.hpp>
 
-std::string quantum::calcMd5(const std::string& content)
+std::string quark::calcMd5(const std::string& content)
 {
     md5 hash;
     md5::digest_type digest;
@@ -16,7 +16,7 @@ std::string quantum::calcMd5(const std::string& content)
     return result;
 }
 
-std::string quantum::toString(const md5::digest_type& digest)
+std::string quark::toString(const md5::digest_type& digest)
 {
     const auto charDigest = reinterpret_cast<const char*>(&digest);
     std::string result;

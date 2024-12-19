@@ -5,7 +5,7 @@
 #include <yaml-cpp/yaml.h>
 
 
-std::optional<std::string> quantum::YamlHandler::getString(const std::string& keyName)
+std::optional<std::string> quark::YamlHandler::getString(const std::string& keyName)
 {
     // 多级key
     if (keyName.rfind('.', 0) > 0 && std::regex_match(keyName, std::regex(R"(^(\w+\.)+\w+$)")))
@@ -34,7 +34,7 @@ std::optional<std::string> quantum::YamlHandler::getString(const std::string& ke
     return std::nullopt;
 }
 
-quantum::YamlHandler::YamlHandler(const std::string& filePath)
+quark::YamlHandler::YamlHandler(const std::string& filePath)
 {
     this->_yamlConfig = YAML::LoadFile(filePath);
 }

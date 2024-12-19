@@ -6,9 +6,9 @@
 
 #ifdef __cplusplus
 
-namespace quantum {
+namespace quark {
 
-    class MTAPI_EXPORT MTUuid
+    class MTAPI MTUuid
     {
     public:
         static bool isUUID(const std::string &uuid_string);

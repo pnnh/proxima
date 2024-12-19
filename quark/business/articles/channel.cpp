@@ -10,13 +10,13 @@
 #include "utils/md5.h"
 #include "types//String.h"
 
-quantum::ChannelServerBusiness::ChannelServerBusiness(const std::string& baseUrl)
+quark::ChannelServerBusiness::ChannelServerBusiness(const std::string& baseUrl)
 {
     this->baseUrl = baseUrl;
 }
 
-std::shared_ptr<std::vector<quantum::PSChannelModel>>
-quantum::ChannelServerBusiness::selectChannels() const
+std::shared_ptr<std::vector<quark::PSChannelModel>>
+quark::ChannelServerBusiness::selectChannels() const
 {
     auto channels = std::make_shared<std::vector<PSChannelModel>>();
 
@@ -33,12 +33,12 @@ quantum::ChannelServerBusiness::selectChannels() const
         {
             continue;
         }
-        auto channelModel = quantum::PSChannelModel(filePath);
-        auto metadataFilePath = quantum::JoinFilePath({this->baseUrl, filePath, "metadata.yaml"});
-        if (quantum::IsFileExist(metadataFilePath))
+        auto channelModel = quark::PSChannelModel(filePath);
+        auto metadataFilePath = quark::JoinFilePath({this->baseUrl, filePath, "metadata.yaml"});
+        if (quark::IsFileExist(metadataFilePath))
         {
-            auto yamlHandler = quantum::YamlHandler(metadataFilePath);
-            channelModel.URN = quantum::PSString::toLower(yamlHandler.getString("metadata.urn").value_or(""));
+            auto yamlHandler = quark::YamlHandler(metadataFilePath);
+            channelModel.URN = quark::PSString::toLower(yamlHandler.getString("metadata.urn").value_or(""));
             channelModel.Title = yamlHandler.getString("metadata.title").value_or(filePath);
             channelModel.Description = yamlHandler.getString("metadata.description").value_or("");
             channelModel.Image = yamlHandler.getString("metadata.image").value_or("");
@@ -46,7 +46,7 @@ quantum::ChannelServerBusiness::selectChannels() const
         channelModel.Path = entry.path().string();
         if (channelModel.URN.empty())
         {
-            channelModel.URN = quantum::PSString::toLower(quantum::calcMd5(entry.path().string()));
+            channelModel.URN = quark::PSString::toLower(quark::calcMd5(entry.path().string()));
         }
         channels->emplace_back(channelModel);
     }
@@ -54,9 +54,9 @@ quantum::ChannelServerBusiness::selectChannels() const
     return channels;
 }
 
-bool quantum::isChannelDirectory(const std::string& directoryName)
+bool quark::isChannelDirectory(const std::string& directoryName)
 {
-    return quantum::PSString::EndsWith(directoryName, ".chan") ||
-        quantum::PSString::EndsWith(directoryName, ".channel") || quantum::PSString::EndsWith(
+    return quark::PSString::EndsWith(directoryName, ".chan") ||
+        quark::PSString::EndsWith(directoryName, ".channel") || quark::PSString::EndsWith(
             directoryName, ".notechannel");
 }

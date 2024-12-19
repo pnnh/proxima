@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <types/datetime.h>
 
-namespace quantum
+namespace quark
 {
     bool IsFileExist(const std::string& filePath);
 

@@ -4,9 +4,9 @@
 
 #ifdef __cplusplus
 
-namespace quantum {
+namespace quark {
 
-    class MTAPI_EXPORT MTUrl {
+    class MTAPI MTUrl {
 
     };
 

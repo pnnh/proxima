@@ -6,7 +6,7 @@
 
 using boost::uuids::detail::md5;
 
-namespace quantum
+namespace quark
 {
     std::string toString(const md5::digest_type& digest);
 

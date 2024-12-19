@@ -5,22 +5,22 @@
 #include "types/Exception.h"
 
 
-quantum::SqliteColumn::SqliteColumn() : colType(), colIndex()
+quark::SqliteColumn::SqliteColumn() : colType(), colIndex()
 {
 }
 
-quantum::SqliteColumn::SqliteColumn(const int colType, const int colIndex, const std::string&& colName) :
+quark::SqliteColumn::SqliteColumn(const int colType, const int colIndex, const std::string&& colName) :
     colType(colType), colIndex(colIndex),
     colName(colName)
 {
-    if (colIndex < 0) throw quantum::PSException("列索引必须大于等于0");
+    if (colIndex < 0) throw quark::PSException("列索引必须大于等于0");
 }
 
-quantum::SqliteColumn::~SqliteColumn()
+quark::SqliteColumn::~SqliteColumn()
 {
 }
 
-quantum::SqliteColumn::SqliteColumn(const SqliteColumn& other) :
+quark::SqliteColumn::SqliteColumn(const SqliteColumn& other) :
     colType(other.colType), colIndex(other.colIndex),
     colName(other.colName), colIsNull(other.colIsNull)
 {
@@ -39,7 +39,7 @@ quantum::SqliteColumn::SqliteColumn(const SqliteColumn& other) :
     variantValue = other.variantValue;
 }
 
-quantum::SqliteColumn& quantum::SqliteColumn::operator=(const SqliteColumn& other)
+quark::SqliteColumn& quark::SqliteColumn::operator=(const SqliteColumn& other)
 {
     colType = other.colType;
     colIndex = other.colIndex;
@@ -61,7 +61,7 @@ quantum::SqliteColumn& quantum::SqliteColumn::operator=(const SqliteColumn& othe
     return *this;
 }
 
-quantum::SqliteColumn::SqliteColumn(SqliteColumn&& other) noexcept :
+quark::SqliteColumn::SqliteColumn(SqliteColumn&& other) noexcept :
     colType(other.colType), colIndex(other.colIndex),
     colName(std::move(other.colName)), colIsNull(other.colIsNull)
 {
@@ -80,7 +80,7 @@ quantum::SqliteColumn::SqliteColumn(SqliteColumn&& other) noexcept :
     variantValue = std::move(other.variantValue);
 }
 
-quantum::SqliteColumn& quantum::SqliteColumn::operator=(SqliteColumn&& other) noexcept
+quark::SqliteColumn& quark::SqliteColumn::operator=(SqliteColumn&& other) noexcept
 {
     colType = other.colType;
     colIndex = other.colIndex;
@@ -110,75 +110,75 @@ quantum::SqliteColumn& quantum::SqliteColumn::operator=(SqliteColumn&& other) no
     return *this;
 }
 
-int quantum::SqliteColumn::getColIndex() const
+int quark::SqliteColumn::getColIndex() const
 {
     return colIndex;
 }
 
-std::string quantum::SqliteColumn::getColName() const
+std::string quark::SqliteColumn::getColName() const
 {
     if (colName.empty()) return "column" + std::to_string(colIndex);
     return colName;
 }
 
-std::string quantum::SqliteColumn::getStringValue() const
+std::string quark::SqliteColumn::getStringValue() const
 {
     return variantValue.index() == 0 ? std::get<std::string>(variantValue) : "";
 }
 
-void quantum::SqliteColumn::setStringValue(const char* value)
+void quark::SqliteColumn::setStringValue(const char* value)
 {
     // stringValue = value;
     variantValue = std::string(value);
 }
 
-void quantum::SqliteColumn::setStringValue(const std::string& value)
+void quark::SqliteColumn::setStringValue(const std::string& value)
 {
     // stringValue = value;
     variantValue = value;
 }
 
-void quantum::SqliteColumn::setStringValue(const std::string&& value)
+void quark::SqliteColumn::setStringValue(const std::string&& value)
 {
     // stringValue = value;
     variantValue = value;
 }
 
-int quantum::SqliteColumn::getIntValue() const
+int quark::SqliteColumn::getIntValue() const
 {
     // return intValue;
     return variantValue.index() == 1 ? static_cast<int>(std::get<long>(variantValue)) : 0;
 }
 
-void quantum::SqliteColumn::setIntValue(int value)
+void quark::SqliteColumn::setIntValue(int value)
 {
     // intValue = value;
     variantValue = static_cast<long>(value);
 }
 
-double quantum::SqliteColumn::getFloatValue() const
+double quark::SqliteColumn::getFloatValue() const
 {
     // return floatValue;
     return variantValue.index() == 2 ? std::get<double>(variantValue) : 0;
 }
 
-void quantum::SqliteColumn::setFloatValue(double value)
+void quark::SqliteColumn::setFloatValue(double value)
 {
     // floatValue = value;
     variantValue = value;
 }
 
-int quantum::SqliteColumn::getColType() const
+int quark::SqliteColumn::getColType() const
 {
     return colType;
 }
 
-bool quantum::SqliteColumn::isNull() const
+bool quark::SqliteColumn::isNull() const
 {
     return colIsNull;
 }
 
-void quantum::SqliteColumn::setNull()
+void quark::SqliteColumn::setNull()
 {
     colIsNull = true;
 }

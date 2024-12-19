@@ -2,7 +2,7 @@
 #include <vector>
 #include "models/articles/Library.h"
 
-namespace quantum
+namespace quark
 {
     bool isLibraryDirectory(const std::string& directoryName);
 
@@ -11,7 +11,7 @@ namespace quantum
     public:
         explicit LibraryServerBusiness(const std::string& baseUrl);
 
-        [[nodiscard]] std::shared_ptr<std::vector<quantum::PSLibraryModel>> selectLibraries() const;
+        [[nodiscard]] std::shared_ptr<std::vector<quark::PSLibraryModel>> selectLibraries() const;
 
     private:
         std::string baseUrl;

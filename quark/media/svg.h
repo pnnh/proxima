@@ -8,9 +8,9 @@
 
 
 
-namespace quantum {
+namespace quark {
 
-    class MTAPI_EXPORT MTSvg {
+    class MTAPI MTSvg {
 
     };
 

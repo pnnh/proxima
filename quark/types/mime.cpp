@@ -3,7 +3,7 @@
 
 #include "types/String.h"
 
-bool quantum::MTMime::isImage(const std::string& path)
+bool quark::MTMime::isImage(const std::string& path)
 {
     const auto stdPath = std::filesystem::path(path);
     auto ext = stdPath.extension().string();
@@ -14,7 +14,7 @@ bool quantum::MTMime::isImage(const std::string& path)
 }
 
 
-std::string quantum::MTMime::getMimeType(const std::string& path)
+std::string quark::MTMime::getMimeType(const std::string& path)
 {
     const auto stdPath = std::filesystem::path(path);
     auto ext = stdPath.extension().string();

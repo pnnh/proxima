@@ -1,6 +1,6 @@
 #include <iostream>
 
-namespace quantum::examples::sqlite
+namespace quark::examples::sqlite
 {
     int TestSqliteVersion();
 

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace quantum
+namespace quark
 {
     class article {
 

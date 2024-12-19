@@ -25,13 +25,14 @@ int main(int argc, char* argv[])
         QStringLiteral("This example is powered by qmltc!"));
 
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral(u"qrc:/qt/qml/quick/content/Main.qml"));
+    const QUrl url(QStringLiteral(u":/qt/qml/quick/content/Main.qml"));
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
         []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
 
-    engine.load(url);
+    //engine.load(url);
+    engine.loadFromModule("quick", "content.Main");
 
     const auto& rootObjects = engine.rootObjects();
     if (rootObjects.isEmpty())

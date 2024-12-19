@@ -8,7 +8,7 @@
 #include <vector>
 #include "services/database/SqliteColumn.h"
 
-namespace quantum
+namespace quark
 {
     class SqliteRow
     {

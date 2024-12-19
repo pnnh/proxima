@@ -2,7 +2,7 @@
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 if (MSVC)
-    set(MTAPI_EXPORT "__declspec (dllexport)")
+    set(MTAPI "__declspec (dllexport)")
 endif ()
 
 configure_file("build.h.in" "${PROJECT_BINARY_DIR}/build.h")
@@ -27,11 +27,10 @@ if (APPLE)
     file(GLOB_RECURSE MODULEMAP_SOURCES quark.modulemap)
     list(APPEND QUARK_SOURCES ${MODULEMAP_SOURCES})
 endif ()
-set(GLOBAL_QUARK_SOURCES ${QUARK_SOURCES} CACHE INTERNAL "GLOBAL_QUARK_SOURCES")
 
 set(LIB_NAME MTQuark)
 
-add_library(${LIB_NAME} SHARED ${LIB_SOURCES} ${GLOBAL_QUARK_SOURCES})
+add_library(${LIB_NAME} SHARED ${QUARK_SOURCES})
 
 # 查找并引用日志库
 find_package(spdlog CONFIG REQUIRED)

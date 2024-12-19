@@ -8,13 +8,13 @@
 
 
 
-namespace quantum {
+namespace quark {
 
-    class MTAPI_EXPORT MTByte {
+    class MTAPI MTByte {
 
     };
 
-    class MTAPI_EXPORT MTBytesArray {
+    class MTAPI MTBytesArray {
 
     };
 

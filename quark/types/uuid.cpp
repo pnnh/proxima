@@ -2,10 +2,10 @@
 
 #include <regex>
 
-std::regex quantum::MTUuid::uuid_regex = std::regex(
+std::regex quark::MTUuid::uuid_regex = std::regex(
     "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
 
-bool quantum::MTUuid::isUUID(const std::string& uuid_string)
+bool quark::MTUuid::isUUID(const std::string& uuid_string)
 {
     std::smatch match;
 

@@ -9,12 +9,12 @@
 #endif
 
 
-void quantum::Logger::LogInfo(const std::string& message)
+void quark::Logger::LogInfo(const std::string& message)
 {
     std::cout << "[INFO] " << message << std::endl;
 }
 
-void quantum::Logger::LogInfo(std::initializer_list<std::string> messageList)
+void quark::Logger::LogInfo(std::initializer_list<std::string> messageList)
 {
 #ifdef WIN32
     OutputDebugString(_T("My output string."));

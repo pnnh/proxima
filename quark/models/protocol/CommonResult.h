@@ -3,7 +3,7 @@
 #include <string>
 #include <stdint.h>
 
-namespace quantum
+namespace quark
 {
     class CommonResult {
     public:

@@ -3,7 +3,7 @@
 #include <chrono>
 #include <types/datetime.h>
 
-namespace quantum
+namespace quark
 {
     class PSChannelModel
     {
@@ -18,7 +18,7 @@ namespace quantum
         std::string Description;
         std::string Image;
         std::string Path;
-        quantum::PSDatetime CreateTime;
-        quantum::PSDatetime UpdateTime;
+        quark::PSDatetime CreateTime;
+        quark::PSDatetime UpdateTime;
     };
 }

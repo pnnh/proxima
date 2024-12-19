@@ -6,9 +6,9 @@
 
 #ifdef __cplusplus
 
-namespace quantum
+namespace quark
 {
-    class PSFileModel
+    class MTAPI PSFileModel
     {
     public:
         explicit PSFileModel(std::string title);
@@ -43,7 +43,7 @@ extern "C" {
 
     PSFileStruct* NewPSFileStruct();
     void DeletePSFileStruct(PSFileStruct* file);
-    MTAPI_EXPORT int list_file(int input);
+    MTAPI int list_file(int input);
 
 #ifdef __cplusplus
 }

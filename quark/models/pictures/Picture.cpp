@@ -1,3 +1,3 @@
 #include "Picture.h"
 
-quantum::PSPictureModel::PSPictureModel() = default;
+quark::PSPictureModel::PSPictureModel() = default;

@@ -7,9 +7,9 @@
 
 #ifdef __cplusplus
 
-namespace quantum
+namespace quark
 {
-  class MTAPI_EXPORT MTQueryString
+  class MTAPI MTQueryString
   {
   public:
     explicit MTQueryString(const std::string& url_string);

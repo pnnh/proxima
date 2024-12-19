@@ -19,5 +19,5 @@
 //    std::cout << "selected case: " << caseName << " " << caseName << std::endl;
 //    std::cout << "current path: " << std::filesystem::current_path() << std::endl;
 //
-//    quantum::examples::runCase(caseName);
+//    quark::examples::runCase(caseName);
 // }

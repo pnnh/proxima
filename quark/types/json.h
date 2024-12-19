@@ -5,9 +5,9 @@
 #ifdef __cplusplus
 
 
-namespace quantum {
+namespace quark {
 
-    class MTAPI_EXPORT MTJsonObject {
+    class MTAPI MTJsonObject {
 
     };
 

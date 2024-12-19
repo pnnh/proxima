@@ -10,51 +10,51 @@
 #include "utils/md5.h"
 #include "types/String.h"
 
-quantum::ArticleFileService::ArticleFileService(const std::string& baseUrl)
+quark::ArticleFileService::ArticleFileService(const std::string& baseUrl)
 {
     this->baseUrl = baseUrl;
 }
 
-quantum::PSArticleModel quantum::ArticleFileService::ParseArticle(
+quark::PSArticleModel quark::ArticleFileService::ParseArticle(
     const std::string& chanURN, const std::string& fullPath) const
 {
-    auto articleModel = quantum::PSArticleModel("");
-    auto metadataFilePath = quantum::JoinFilePath({fullPath, "metadata.yaml"});
-    if (quantum::IsFileExist(metadataFilePath))
+    auto articleModel = quark::PSArticleModel("");
+    auto metadataFilePath = quark::JoinFilePath({fullPath, "metadata.yaml"});
+    if (quark::IsFileExist(metadataFilePath))
     {
-        auto yamlHandler = quantum::YamlHandler(metadataFilePath);
-        articleModel.URN = quantum::PSString::toLower(yamlHandler.getString("metadata.urn").value_or(""));
+        auto yamlHandler = quark::YamlHandler(metadataFilePath);
+        articleModel.URN = quark::PSString::toLower(yamlHandler.getString("metadata.urn").value_or(""));
         articleModel.Title = yamlHandler.getString("metadata.title").value_or("");
         articleModel.Description = yamlHandler.getString("metadata.description").value_or("");
         articleModel.Cover = yamlHandler.getString("metadata.cover").value_or("");
     }
     if (articleModel.URN.empty())
     {
-        articleModel.URN = quantum::PSString::toLower(quantum::calcMd5(fullPath));
+        articleModel.URN = quark::PSString::toLower(quark::calcMd5(fullPath));
     }
     if (articleModel.Title.empty())
     {
-        articleModel.Title = quantum::PathFileName(fullPath);
+        articleModel.Title = quark::PathFileName(fullPath);
     }
     articleModel.Channel = chanURN;
     articleModel.Path = fullPath;
-    articleModel.UpdateTime = quantum::fileLastModifyTime(fullPath);
+    articleModel.UpdateTime = quark::fileLastModifyTime(fullPath);
 
 
-    auto contentFilePath = quantum::JoinFilePath({fullPath, "index.md"});
+    auto contentFilePath = quark::JoinFilePath({fullPath, "index.md"});
     if (IsFileExist(contentFilePath))
     {
-        articleModel.Body = quantum::filesystem::ReadAllText(contentFilePath);
+        articleModel.Body = quark::filesystem::ReadAllText(contentFilePath);
     }
     return articleModel;
 }
 
-std::shared_ptr<std::vector<quantum::PSArticleModel>>
-quantum::ArticleFileService::scanArticles(const std::string& chanURN, const std::string& chanPath) const
+std::shared_ptr<std::vector<quark::PSArticleModel>>
+quark::ArticleFileService::scanArticles(const std::string& chanURN, const std::string& chanPath) const
 {
     auto libraries = std::make_shared<std::vector<PSArticleModel>>();
 
-    auto chanFullPath = quantum::JoinFilePath({this->baseUrl, chanPath});
+    auto chanFullPath = quark::JoinFilePath({this->baseUrl, chanPath});
     for (const auto& entry : std::filesystem::directory_iterator(chanFullPath))
     {
         auto dirName = entry.path().filename();
@@ -68,7 +68,7 @@ quantum::ArticleFileService::scanArticles(const std::string& chanURN, const std:
         {
             continue;
         }
-        auto noteFullPath = quantum::JoinFilePath({this->baseUrl, chanPath, filePath});
+        auto noteFullPath = quark::JoinFilePath({this->baseUrl, chanPath, filePath});
         auto articleModel = ParseArticle(chanURN, noteFullPath);
 
         libraries->emplace_back(articleModel);
@@ -77,19 +77,19 @@ quantum::ArticleFileService::scanArticles(const std::string& chanURN, const std:
     return libraries;
 }
 
-bool quantum::isArticleDirectory(const std::string& directoryName)
+bool quark::isArticleDirectory(const std::string& directoryName)
 {
-    return quantum::PSString::EndsWith(directoryName, ".note");
+    return quark::PSString::EndsWith(directoryName, ".note");
 }
 
-quantum::ArticleSqliteService::ArticleSqliteService(std::string dbPath): dbPath(std::move(dbPath))
+quark::ArticleSqliteService::ArticleSqliteService(std::string dbPath): dbPath(std::move(dbPath))
 {
 }
 
-std::shared_ptr<std::vector<quantum::PSArticleModel>> quantum::ArticleSqliteService::selectArticles(
+std::shared_ptr<std::vector<quark::PSArticleModel>> quark::ArticleSqliteService::selectArticles(
     const std::string& chanURN) const
 {
-    auto sqliteService = quantum::SqliteService(this->dbPath);
+    auto sqliteService = quark::SqliteService(this->dbPath);
 
     std::string sqlText = "SELECT * FROM articles ";
     auto sqlCommand = sqliteService.createCommand(sqlText);
@@ -131,10 +131,10 @@ std::shared_ptr<std::vector<quantum::PSArticleModel>> quantum::ArticleSqliteServ
     return libraries;
 }
 
-std::shared_ptr<quantum::PSArticleModel> quantum::ArticleSqliteService::getArticle(
+std::shared_ptr<quark::PSArticleModel> quark::ArticleSqliteService::getArticle(
     const std::string& noteURN) const
 {
-    auto sqliteService = quantum::SqliteService(this->dbPath);
+    auto sqliteService = quark::SqliteService(this->dbPath);
 
     std::string sqlText = "SELECT * FROM articles where urn=$urn ";
     auto sqlCommand = sqliteService.createCommand(sqlText);

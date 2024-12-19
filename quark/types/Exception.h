@@ -7,7 +7,7 @@
 #ifdef __cplusplus
 
 
-namespace quantum
+namespace quark
 {
     enum class QuantumEnum
     {

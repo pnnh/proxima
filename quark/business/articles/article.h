@@ -4,7 +4,7 @@
 #include <memory>
 #include "models/articles/Article.h"
 
-namespace quantum
+namespace quark
 {
     bool isArticleDirectory(const std::string& directoryName);
 

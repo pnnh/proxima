@@ -3,7 +3,7 @@
 
 #include "models/articles/Channel.h"
 
-namespace quantum
+namespace quark
 {
     bool isChannelDirectory(const std::string& directoryName);
 

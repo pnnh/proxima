@@ -1,7 +1,7 @@
 #include "Channel.h"
 
-quantum::PSChannelModel::PSChannelModel() = default;
+quark::PSChannelModel::PSChannelModel() = default;
 
-quantum::PSChannelModel::PSChannelModel(const std::string& name): Name(name)
+quark::PSChannelModel::PSChannelModel(const std::string& name): Name(name)
 {
 }

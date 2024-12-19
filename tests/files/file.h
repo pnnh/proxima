@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace quantum::examples
+namespace quark::examples
 {
     int TestSelectFiles();
 }

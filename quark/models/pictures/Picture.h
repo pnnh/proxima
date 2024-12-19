@@ -2,7 +2,7 @@
 #include <string>
 #include <chrono>
 
-namespace quantum
+namespace quark
 {
     class PSPictureModel
     {

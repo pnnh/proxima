@@ -4,10 +4,10 @@
 #include "String.h"
 #include <boost/range/algorithm.hpp>
 
-quantum::MTQueryString::MTQueryString(const std::string& url_string)
+quark::MTQueryString::MTQueryString(const std::string& url_string)
 {
   auto fullUrl = std::string(url_string);
-  if (!quantum::PSString::StartsWith(fullUrl, "http://") && !quantum::PSString::StartsWith(
+  if (!quark::PSString::StartsWith(fullUrl, "http://") && !quark::PSString::StartsWith(
     fullUrl, "https://"))
   {
     fullUrl = std::string("http://localhost") + fullUrl;
@@ -21,13 +21,13 @@ boost::urls::url_view parseUrl(const std::string& fullUrl)
   auto parseResult = boost::urls::parse_uri(fullUrl);
   if (parseResult.has_error())
   {
-    throw quantum::PSException(quantum::QuantumEnum::ERROR,
+    throw quark::PSException(quark::QuantumEnum::ERROR,
                                      std::string("url parse error") + parseResult.error().to_string());
   }
   return parseResult.value();
 }
 
-std::optional<std::string> quantum::MTQueryString::getString(const std::string& name) const
+std::optional<std::string> quark::MTQueryString::getString(const std::string& name) const
 {
   auto parsedUrl = parseUrl(this->_fullUrl);
   const auto it =
@@ -43,7 +43,7 @@ std::optional<std::string> quantum::MTQueryString::getString(const std::string& 
   return std::nullopt;
 }
 
-std::optional<long> quantum::MTQueryString::getLong(const std::string& key)
+std::optional<long> quark::MTQueryString::getLong(const std::string& key)
 {
   auto parsedUrl = parseUrl(this->_fullUrl);
   auto it =

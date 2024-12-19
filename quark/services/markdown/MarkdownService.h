@@ -1,8 +1,9 @@
 #pragma once
 
+#include <build.h>
 #include <string>
 
-namespace quantum
+namespace quark
 {
-    std::string markdownToHtml(const std::string& markdownText);
+     MTAPI std::string markdownToHtml(const std::string& markdownText);
 }

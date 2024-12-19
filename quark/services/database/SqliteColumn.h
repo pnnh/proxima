@@ -4,7 +4,7 @@
 #include <string>
 #include <variant>
 
-namespace quantum
+namespace quark
 {
     class SqliteColumn
     {

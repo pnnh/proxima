@@ -3,10 +3,11 @@
 #include <string>
 #include <chrono>
 #include <types/datetime.h>
+#include <build.h>
 
-namespace quantum
+namespace quark
 {
-    class PSArticleModel
+    class MTAPI PSArticleModel
     {
     public:
         PSArticleModel();
@@ -23,7 +24,7 @@ namespace quantum
         std::string Path;
         std::string Channel;
         std::string Cover;
-        quantum::PSDatetime CreateTime;
-        quantum::PSDatetime UpdateTime;
+        quark::PSDatetime CreateTime;
+        quark::PSDatetime UpdateTime;
     };
 }

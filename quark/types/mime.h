@@ -5,9 +5,9 @@
 
 #ifdef __cplusplus
 
-namespace quantum
+namespace quark
 {
-    class MTAPI_EXPORT MTMime
+    class MTAPI MTMime
     {
     public:
         static bool isImage(const std::string& path);

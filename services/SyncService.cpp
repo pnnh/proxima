@@ -20,7 +20,7 @@ void SyncService::SyncLibraries()
   dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
   dir.setSorting(QDir::Name | QDir::IgnoreCase); // 按照名称排序
   QDirIterator iterator(dir);
-  QVector<quantum::PSLibraryModel> libraryList;
+  QVector<quark::PSLibraryModel> libraryList;
   while (iterator.hasNext())
   {
     QFileInfo info(iterator.next());
@@ -34,8 +34,8 @@ void SyncService::SyncLibraries()
         continue;
       }
       auto stdPathString = filePath.toStdString();
-      auto uid = quantum::encode64(stdPathString);
-      auto model = quantum::PSLibraryModel();
+      auto uid = quark::encode64(stdPathString);
+      auto model = quark::PSLibraryModel();
       model.URN = uid;
       model.Name = fileName.toStdString();
       model.Path = filePath.toStdString();

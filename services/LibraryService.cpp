@@ -31,7 +31,7 @@ LibraryService::LibraryService()
   }
 }
 
-std::optional<quantum::PSLibraryModel>
+std::optional<quark::PSLibraryModel>
 LibraryService::FindLibrary(const QString& uid) const
 {
   auto findSql = QString("select * from libraries where uid = :uid");
@@ -47,7 +47,7 @@ LibraryService::FindLibrary(const QString& uid) const
 
   while (sqlIterator->next())
   {
-    auto model = std::make_optional<quantum::PSLibraryModel>();
+    auto model = std::make_optional<quark::PSLibraryModel>();
     model->URN = sqlIterator->value("uid").toString().toStdString();
     model->Name = sqlIterator->value("name").toString().toStdString();
     model->Path = sqlIterator->value("path").toString().toStdString();
@@ -56,16 +56,16 @@ LibraryService::FindLibrary(const QString& uid) const
   return std::nullopt;
 }
 
-QVector<quantum::PSLibraryModel> LibraryService::SelectLibraries() const
+QVector<quark::PSLibraryModel> LibraryService::SelectLibraries() const
 {
-  QVector<quantum::PSLibraryModel> libraryList;
+  QVector<quark::PSLibraryModel> libraryList;
   auto selectSql = QString("select * from libraries");
 
   auto sqlIterator = services::SqliteService::execute_query(dbPath, selectSql);
 
   while (sqlIterator->next())
   {
-    auto model = quantum::PSLibraryModel();
+    auto model = quark::PSLibraryModel();
     model.URN = sqlIterator->value("uid").toString().toStdString();
     model.Name = sqlIterator->value("name").toString().toStdString();
     model.Path = sqlIterator->value("path").toString().toStdString();
@@ -76,10 +76,10 @@ QVector<quantum::PSLibraryModel> LibraryService::SelectLibraries() const
   return libraryList;
 }
 
-QVector<quantum::PSNotebookModel>
-LibraryService::SelectPartitions(const quantum::PSLibraryModel& libraryModel)
+QVector<quark::PSNotebookModel>
+LibraryService::SelectPartitions(const quark::PSLibraryModel& libraryModel)
 {
-  QVector<quantum::PSNotebookModel> partitionList;
+  QVector<quark::PSNotebookModel> partitionList;
   QDir dir(QString::fromStdString(libraryModel.Path));
   if (!dir.exists())
   {
@@ -98,10 +98,10 @@ LibraryService::SelectPartitions(const quantum::PSLibraryModel& libraryModel)
     if (!filePath.isEmpty())
     {
       auto stdPathString = filePath.toStdString();
-      auto uid = quantum::encode64(stdPathString);
+      auto uid = quark::encode64(stdPathString);
 
       auto model =
-        quantum::PSNotebookModel();
+        quark::PSNotebookModel();
       model.URN = uid;
       model.Name = fileName.toStdString();
       model.Path = filePath.toStdString();
@@ -112,7 +112,7 @@ LibraryService::SelectPartitions(const quantum::PSLibraryModel& libraryModel)
 }
 
 void LibraryService::InsertOrUpdateLibrary(
-  const QVector<quantum::PSLibraryModel>& libraryList)
+  const QVector<quark::PSLibraryModel>& libraryList)
 {
   // std::cout << "InsertOrUpdateLibrary: " << libraryList.size() << std::endl;
 

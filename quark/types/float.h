@@ -5,17 +5,17 @@
 #ifdef __cplusplus
 
 
-namespace quantum {
+namespace quark {
 
-    class MTAPI_EXPORT MTFloat {
-
-    };
-
-    class MTAPI_EXPORT MTDouble {
+    class MTAPI MTFloat {
 
     };
 
-    class MTAPI_EXPORT MTDecimal {
+    class MTAPI MTDouble {
+
+    };
+
+    class MTAPI MTDecimal {
 
     };
 

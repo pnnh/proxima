@@ -6,7 +6,7 @@
 
 #ifdef __cplusplus
 
-namespace quantum
+namespace quark
 {
     std::chrono::system_clock::time_point makeTimePoint(const std::string& s);
 

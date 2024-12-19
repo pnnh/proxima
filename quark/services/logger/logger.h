@@ -3,9 +3,9 @@
 #include <string>
 #include "build.h"
 
-namespace quantum
+namespace quark
 {
-    class MTAPI_EXPORT Logger
+    class MTAPI Logger
     {
     public:
         static void LogInfo(const std::string& message);

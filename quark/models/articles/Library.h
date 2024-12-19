@@ -2,10 +2,11 @@
 
 #include <string>
 #include <chrono>
+#include <build.h>
 
-namespace quantum
+namespace quark
 {
-    class PSLibraryModel
+    class MTAPI PSLibraryModel
     {
     public:
         PSLibraryModel();

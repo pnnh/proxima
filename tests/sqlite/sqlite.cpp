@@ -2,10 +2,10 @@
 #include "services/database/SqliteService.h"
 #include "sqlite.h"
 
-int quantum::examples::sqlite::TestSqliteVersion()
+int quark::examples::sqlite::TestSqliteVersion()
 {
     // auto database_path = "polaris.sqlite";
-    // auto sqliteService = quantum::SqliteService();
+    // auto sqliteService = quark::SqliteService();
     // auto dbHandle = sqliteService.openDatabase(database_path);
     // auto version = sqliteService.sqliteVersion(dbHandle);
 
@@ -14,10 +14,10 @@ int quantum::examples::sqlite::TestSqliteVersion()
     return 0;
 }
 
-int quantum::examples::sqlite::TestSqliteSelect()
+int quark::examples::sqlite::TestSqliteSelect()
 {
     // auto database_path = "polaris.sqlite";
-    // auto sqliteService = quantum::SqliteService();
+    // auto sqliteService = quark::SqliteService();
     // auto dbHandle = sqliteService.openDatabase(database_path);
     // std::string sqlText = "SELECT * FROM sqlite_master;";
     // auto sqlResult = sqliteService.runSql(dbHandle, sqlText);
