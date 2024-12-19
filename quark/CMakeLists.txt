@@ -1,57 +1,63 @@
-cmake_minimum_required(VERSION 3.28...3.31)
-
-project(Quark VERSION 0.1.0 LANGUAGES C CXX)
-
-if (APPLE)
-    enable_language(Swift)
-endif ()
-
-# 设置语言标准
-set(CMAKE_C_STANDARD 17)
-set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if (WIN32)
-    # if (NOT CMAKE_SIZEOF_VOID_P)
-        set(CMAKE_SIZEOF_VOID_P 8) # 不添加的话cmake会配置失败
-    # endif ()
-endif ()
-
-# 设置开启显示详细的构建过程
-set(CMAKE_VERBOSE_MAKEFILE ON)
-
-# 启用测试
-enable_testing()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${PROJECT_BINARY_DIR})
 
-# 避免警告
-if (POLICY CMP0012)
-    cmake_policy(SET CMP0012 NEW)
+if (MSVC)
+    set(MTAPI_EXPORT "__declspec (dllexport)")
 endif ()
-# 针对CMake 3.30版本Boost查找相关警告
-if (POLICY CMP0167)
-    cmake_policy(SET CMP0167 NEW)
+
+configure_file("build.h.in" "${PROJECT_BINARY_DIR}/build.h")
+
+file(GLOB_RECURSE QUARK_SOURCES
+        business/*.cpp
+        models/*.cpp
+        services/*.cpp
+        types/*.cpp
+        utils/*.cpp
+        media/*.cpp)
+
+file(GLOB_RECURSE QUARK_HEADERS
+        business/*.h
+        models/*.h
+        services/*.h
+        types/*.h
+        utils/*.h
+        media/*.h)
+
+if (APPLE)
+    file(GLOB_RECURSE MODULEMAP_SOURCES quark.modulemap)
+    list(APPEND QUARK_SOURCES ${MODULEMAP_SOURCES})
 endif ()
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
+set(GLOBAL_QUARK_SOURCES ${QUARK_SOURCES} CACHE INTERNAL "GLOBAL_QUARK_SOURCES")
 
-set(GLOBAL_LIB_PREFIX MT CACHE INTERNAL "GLOBAL_LIB_PREFIX")
+set(LIB_NAME MTQuark)
 
-add_subdirectory(quantum)
+add_library(${LIB_NAME} SHARED ${LIB_SOURCES} ${GLOBAL_QUARK_SOURCES})
 
-if (VCPKG_TARGET_TRIPLET STREQUAL "x64-windows")
-#    add_subdirectory(Gliese)
-#    add_subdirectory(proxima)
-#    add_subdirectory(pulsar)
-elseif (VCPKG_TARGET_TRIPLET STREQUAL "arm64-osx")
-    #    add_subdirectory(kepler)
-#    add_subdirectory(proxima)
-#    add_subdirectory(pulsar)
-elseif (EMSCRIPTEN)
-#    add_subdirectory(polaris)
-elseif (LINUX)
-#    add_subdirectory(proxima)
-#    add_subdirectory(pulsar)
-endif ()
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用Boost库
+find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
+target_include_directories(${LIB_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(${LIB_NAME} PRIVATE ${Boost_LIBRARIES})
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用Markdown解析库
+find_package(cmark CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE cmark::cmark)
+
+# 查找并引用Sqlite解析库
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE unofficial::sqlite3::sqlite3)
+
+# 查找并引用yaml-cpp解析库
+find_package(yaml-cpp CONFIG REQUIRED)
+target_link_libraries(${LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)

@@ -24,7 +24,6 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 enable_testing()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/quark)
 include_directories(${PROJECT_BINARY_DIR})
 
 # 避免警告
@@ -38,9 +37,7 @@ endif ()
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
-set(GLOBAL_LIB_PREFIX MT CACHE INTERNAL "GLOBAL_LIB_PREFIX")
-
-add_subdirectory(quark/quantum)
+add_subdirectory(quark)
 
 if (VCPKG_TARGET_TRIPLET STREQUAL "x64-windows")
     #    add_subdirectory(Gliese)
@@ -57,7 +54,7 @@ elseif (LINUX)
 #    add_subdirectory(pulsar)
 endif ()
 
-set(APP_NAME ${GLOBAL_LIB_PREFIX}Proxima)
+set(APP_NAME MTProxima)
 
 # 查找并引用Qt库
 find_package(
@@ -88,10 +85,10 @@ file(GLOB_RECURSE APP_SOURCES
         services/*.cpp)
 
 qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
-target_sources(${APP_NAME} PUBLIC main.cpp ${APP_SOURCES} ${GLOBAL_QUANTUM_SOURCES})
+target_sources(${APP_NAME} PUBLIC main.cpp ${APP_SOURCES})
 
-add_dependencies(${APP_NAME} ${GLOBAL_LIB_PREFIX}Quark)
-target_link_libraries(${APP_NAME} PRIVATE ${GLOBAL_LIB_PREFIX}Quark)
+add_dependencies(${APP_NAME} MTQuark)
+target_link_libraries(${APP_NAME} PRIVATE MTQuark)
 
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
@@ -165,9 +162,3 @@ qt6_add_shaders(
         FILES
         "content/shaders/rounded.frag"
         "content/shaders/rounded.vert")
-
-#install(
-#        TARGETS ${APP_NAME}
-#        BUNDLE DESTINATION .
-#        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-#        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

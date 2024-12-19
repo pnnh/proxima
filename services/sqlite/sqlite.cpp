@@ -1,7 +1,3 @@
-//
-// Created by linyangz on 2021/12/19.
-//
-
 #include "sqlite.h"
 #include <QApplication>
 #include <QSqlDatabase>

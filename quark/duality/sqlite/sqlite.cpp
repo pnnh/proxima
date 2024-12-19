@@ -1,5 +1,5 @@
 #include <iostream>
-#include "quantum/services/database/SqliteService.h"
+#include "services/database/SqliteService.h"
 #include "sqlite.h"
 
 int quantum::examples::sqlite::TestSqliteVersion()

@@ -2,8 +2,8 @@
 
 #include <QVector>
 
-#include "quantum/models/articles/Library.h"
-#include "quantum/models/articles/Notebook.h"
+#include "quark/models/articles/Library.h"
+#include "quark/models/articles/Notebook.h"
 
 class LibraryService
 {

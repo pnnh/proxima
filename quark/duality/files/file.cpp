@@ -1,9 +1,9 @@
 
 #include "file.h"
-#include "quantum/business/filesystem/file.h"
+#include "business/filesystem/file.h"
 
 #include "build.h"
-#include "quantum/services/filesystem/filesystem.h"
+#include "services/filesystem/filesystem.h"
 
 int quantum::examples::TestSelectFiles()
 {
