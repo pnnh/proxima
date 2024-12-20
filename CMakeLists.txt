@@ -138,7 +138,7 @@ file(GLOB_RECURSE QUICK_SOURCES
         RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
         content/*.qml)
 
-qt6_add_qml_module(
+qt_add_qml_module(
         ${APP_NAME}
         URI
         quick
@@ -151,7 +151,7 @@ qt6_add_qml_module(
         QML_FILES
         ${QUICK_SOURCES})
 
-qt6_add_shaders(
+qt_add_shaders(
         ${APP_NAME}
         "shaders"
         BATCHABLE

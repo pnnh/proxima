@@ -2,8 +2,8 @@ import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import "polaris" as Polaris
-import "venus" as Venus
-import "pulsar" as Pulsar
+// import "venus" as Venus
+// import "pulsar" as Pulsar
 
 Rectangle {
     anchors.fill: parent
@@ -16,15 +16,15 @@ Rectangle {
     property string navbarName: "polaris"
     property string pageName: "/polaris/library"
 
-    function pageNameToPath(name) {
-        switch (name) {
-        case "/venus/library":
-            return "qrc:/qt/qml/quick/content/venus/LibraryPage.qml"
-        case "/venus/browser":
-            return "qrc:/qt/qml/quick/content/venus/BrowserPage.qml"
-        }
-        return "qrc:/qt/qml/quick/content/polaris/Page.qml"
-    }
+    // function pageNameToPath(name) {
+    //     switch (name) {
+    //     case "/venus/library":
+    //         return "qrc:/qt/qml/quick/content/venus/LibraryPage.qml"
+    //     case "/venus/browser":
+    //         return "qrc:/qt/qml/quick/content/venus/BrowserPage.qml"
+    //     }
+    //     return "qrc:/qt/qml/quick/content/polaris/Page.qml"
+    // }
 
     RowLayout {
         height: parent.height
@@ -52,10 +52,10 @@ Rectangle {
                     onPageChanged: name => pageName = name
                 }
 
-                Venus.Navbar {
-                    visible: navbarName === "venus"
-                    onPageChanged: name => pageName = name
-                }
+                // Venus.Navbar {
+                //     visible: navbarName === "venus"
+                //     onPageChanged: name => pageName = name
+                // }
             }
 
             Rectangle {
@@ -95,6 +95,6 @@ Rectangle {
         //     Layout.preferredWidth: parent.width - 48
         //     source: pageNameToPath(pageName)
         // }
-        Venus.BrowserPage {}
+        // Venus.BrowserPage {}
     }
 }
