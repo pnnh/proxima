@@ -1,10 +1,14 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
+import "../components"
 
 Rectangle {
-    anchors.fill: parent
+    Layout.preferredHeight: parent.height
+    Layout.preferredWidth: parent.width - 48
     color:"green"
+
+    AppNav {}
 
     RowLayout {
         height: parent.height
@@ -12,19 +16,16 @@ Rectangle {
         spacing: 0
 
         Rectangle {
-            width: 240
-            visible: showSidebar
+            Layout.preferredWidth: 240
+            visible: true
             Layout.preferredHeight: parent.height
             color: "transparent"
-
-            Sidebar {}
         }
         Rectangle {
             Layout.alignment: Qt.AlignLeft
             Layout.preferredHeight: parent.height
-            width: 1
+            Layout.preferredWidth: 1
             color: "#e2e2e2"
-            visible: showSidebar
         }
         Rectangle {
             Layout.fillWidth: true
@@ -41,7 +42,7 @@ Rectangle {
                     Layout.preferredWidth: parent.width / 2 - 0.5
                     color: "#FFFFFF"
                     Text {
-                        text: qsTr("Hello Designw222")
+                        text: qsTr("图片库主页")
                         color: "green"
                         anchors.centerIn: parent
                     }
@@ -52,7 +53,6 @@ Rectangle {
                     color: "#e2e2e2"
                 }
 
-                Editor {}
             }
         }
     }

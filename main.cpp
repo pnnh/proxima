@@ -2,6 +2,7 @@
 #include <spdlog/spdlog.h>
 #include <QtQuick>
 #include <iostream>
+#include <QQmlDebuggingEnabler>
 
 int main(int argc, char* argv[])
 {
