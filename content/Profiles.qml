@@ -14,7 +14,6 @@ Rectangle {
 
     signal profileNameChanged(string name)
 
-
     ColumnLayout {
         width: parent.width
         anchors.horizontalCenter: parent.horizontalCenter
@@ -30,7 +29,7 @@ Rectangle {
             color: currentItem === "polaris" ? "#eee" : "transparent"
             border.width: 1
             border.color: "#eee"
-            radius: width/2
+            radius: width / 2
 
             MouseArea {
                 anchors.fill: parent
@@ -60,7 +59,7 @@ Rectangle {
             color: currentItem === "venus" ? "#eee" : "transparent"
             border.width: 1
             border.color: "#eee"
-            radius: width/2
+            radius: width / 2
 
             MouseArea {
                 anchors.fill: parent

@@ -1,9 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
-import "polaris" as Polaris
-// import "venus" as Venus
-// import "pulsar" as Pulsar
 
 Rectangle {
     anchors.fill: parent
@@ -16,85 +13,114 @@ Rectangle {
     property string navbarName: "polaris"
     property string pageName: "/polaris/library"
 
-    // function pageNameToPath(name) {
-    //     switch (name) {
-    //     case "/venus/library":
-    //         return "qrc:/qt/qml/quick/content/venus/LibraryPage.qml"
-    //     case "/venus/browser":
-    //         return "qrc:/qt/qml/quick/content/venus/BrowserPage.qml"
-    //     }
-    //     return "qrc:/qt/qml/quick/content/polaris/Page.qml"
-    // }
-
-    RowLayout {
-        height: parent.height
+    Rectangle {
+        color: "#f8f8f8"
+        height: 40
         width: parent.width
-        spacing: 0
-        Rectangle {
-            Layout.preferredHeight: parent.height
-            color: "transparent"
-            width: 48
-            Layout.alignment: Qt.AlignLeft
 
-            ColumnLayout {
-                width: parent.width
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
 
-                Users {}
+        Image {
+            anchors.left: parent.left
+            anchors.leftMargin: 8
+            anchors.verticalCenter: parent.verticalCenter
+            width: 20
+            height: 20
+            source: "qrc:/qt/qml/quick/content/assets/icons/global.png"
 
-                Profiles {
-                    onProfileNameChanged: name => navbarName = name
+        }
+    }
+
+    Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        height: parent.height - 40
+
+        GridView {
+            id: grid
+
+            anchors.fill: parent
+            anchors.margins: 16
+            boundsBehavior: Flickable.StopAtBounds // 滑动不超出父框的大小
+            cellHeight: 240
+            cellWidth: 240
+            clip: true // 超出边界的进行裁剪，即不显示，默认为false
+            cacheBuffer: 240 * 32 // 缓存的大小，超出这个大小就会被释放
+
+            ScrollBar.vertical: ScrollBar {
+                visible: true
+                background: Rectangle {
+                    color: "#fafafa"
+                    radius: 4
                 }
-
-                Polaris.Navbar {
-                    visible: navbarName === "polaris"
-                    onPageChanged: name => pageName = name
-                }
-
-                // Venus.Navbar {
-                //     visible: navbarName === "venus"
-                //     onPageChanged: name => pageName = name
-                // }
+                snapMode: ScrollBar.SnapAlways
             }
 
-            Rectangle {
-                height: 16
-                width: 36
-                color: "transparent"
-                anchors.bottom: parent.bottom
-                anchors.horizontalCenter: parent.horizontalCenter
+            delegate: Rectangle {
+                width: 240
+                height: 240
+
                 Rectangle {
-                    width: 20
-                    height: 20
-                    color: "transparent"
-                    anchors.bottom: parent.top
+                    width: parent.width - 16
+                    height: parent.height - 16
+                    radius: 4
+                    color:"#fff"
                     anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.verticalCenter: parent.verticalCenter
+
                     Image {
+                        anchors.top: parent.top
+                        anchors.topMargin: 2
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        source: image
+                        fillMode: Image.PreserveAspectCrop
+                        sourceSize.width: 128 // 预览图片的尺寸，避免图片过大影响性能
+                        sourceSize.height: 128
+                        width: parent.width - 48
+                        height: parent.height - 48
+                    }
+                    Text {
+                        text: name
+                        anchors.bottom: parent.bottom
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.bottomMargin: 16
+
+                        font.pixelSize: 18
+                    }
+
+                    MouseArea {
                         anchors.fill: parent
-                        source: "qrc:/qt/qml/quick/content/assets/material/symbols/web/mail/mail_48px.svg"
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: () => pageChanged('/venus/library')
+                        onClicked: {
+                            console.log(parent.width, parent.height)
                         }
                     }
                 }
             }
-        }
+            model: ListModel {
+                id: theModel
 
-        Rectangle {
-            Layout.alignment: Qt.AlignLeft
-            Layout.preferredHeight: parent.height
-            width: 1
-            color: "#e2e2e2"
-        }
+                ListElement {
+                    image: "qrc:/qt/qml/quick/content/assets/icons/product/files.png"
+                    name:"资源管理器"
+                }
+                ListElement {
+                    image:"qrc:/qt/qml/quick/content/assets/icons/product/notes.png"
+                    name:"笔记管理"
+                }
+                ListElement {
+                    image: "qrc:/qt/qml/quick/content/assets/icons/product/images.png"
+                    name: "图片管理"
+                }
+                ListElement {
+                    image:"qrc:/qt/qml/quick/content/assets/icons/product/password.png"
+                    name:"随机密码生成"
+                }
+                ListElement {
+                    image:"qrc:/qt/qml/quick/content/assets/icons/product/uuid.png"
+                    name:"UUID生成"
+                }
 
-        // Loader {
-        //     id: pageLoader
-        //     Layout.preferredHeight: parent.height
-        //     Layout.preferredWidth: parent.width - 48
-        //     source: pageNameToPath(pageName)
-        // }
-        // Venus.BrowserPage {}
+            }
+        }
     }
 }
