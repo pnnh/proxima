@@ -1,29 +1,24 @@
 #include "SyncThread.h"
 
-#include "services/SyncService.h"
+#include "proxima/services/SyncService.h"
 
 #include <QDebug>
 
-SyncThread::SyncThread()
-{
+SyncThread::SyncThread() {
   connect(this, &QThread::finished, this, &QObject::deleteLater);
 }
 
-SyncThread::~SyncThread()
-{
+SyncThread::~SyncThread() {
   closed = true;
   quit();
   wait();
 }
 
-void SyncThread::run()
-{
+void SyncThread::run() {
   qDebug() << "当前子线程ID:" << QThread::currentThreadId();
   SyncService syncService;
-  while (true)
-  {
-    if (closed)
-    {
+  while (true) {
+    if (closed) {
       return;
     }
     QThread::sleep(3);

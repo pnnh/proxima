@@ -1,9 +1,8 @@
 #include <iostream>
-#include "services/database/SqliteService.h"
+#include "quark/services/database/SqliteService.h"
 #include "sqlite.h"
 
-int quark::examples::sqlite::TestSqliteVersion()
-{
+int quark::examples::sqlite::TestSqliteVersion() {
     // auto database_path = "polaris.sqlite";
     // auto sqliteService = quark::SqliteService();
     // auto dbHandle = sqliteService.openDatabase(database_path);
@@ -14,8 +13,7 @@ int quark::examples::sqlite::TestSqliteVersion()
     return 0;
 }
 
-int quark::examples::sqlite::TestSqliteSelect()
-{
+int quark::examples::sqlite::TestSqliteSelect() {
     // auto database_path = "polaris.sqlite";
     // auto sqliteService = quark::SqliteService();
     // auto dbHandle = sqliteService.openDatabase(database_path);
