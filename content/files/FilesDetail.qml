@@ -1,40 +1,28 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
-import "../components"
 import quick 1.0
 
 Rectangle {
-    id: filesPage
-    color: "#FFFFFF"
-    anchors.left: parent.left
+    id: filesDetail
+    width: parent.width
     anchors.right: parent.right
+    anchors.top: parent.top
     anchors.bottom: parent.bottom
     height: parent.height
+    color: 'green'
 
-    AppNav{}
 
-    signal pathChanged(string name)
+    function changePath(path: string) {
+        console.log('changePath2', path)
+        filesList.model.parentPath = path
+    }
 
-    Rectangle {
-        id: leftNavView
-        color: "#FFFFFF"
-        anchors.left: parent.left
-        anchors.bottom: parent.bottom
-        height: parent.height - 40
-        width: 200
-        Rectangle {
-            color: "#E0E0E0"
-            anchors.top: parent.top
-            anchors.right: parent.right
-            width: 1
-            height: parent.height
-        }
 
-        ListView {
+    ListView {
+        id: filesList
             anchors.fill: parent
             model: FileViewModel{
-                files: false
             }
             anchors.rightMargin: 1
             clip: true
@@ -64,40 +52,15 @@ Rectangle {
                         onExited: {
                             parent.color = "#FFFFFF"
                         }
-                        onClicked: {
-                            console.log('click')
-                            filesPage.pathChanged(model.path)
-                        }
                     }
                 }
 
             }
         }
-    }
 
-    Loader{
-        id:myLoader
-        width: parent.width - leftNavView.width
-        height: parent.height
-        anchors.right: parent.right
-        anchors.bottom: parent.bottom
-    }
-    Component{
-        id:detailComponent
-        FilesDetail {
-        }
-    }
-    Component{
-        id:emptyComponent
 
-        Text {
-            anchors.centerIn: parent
-            text: "暂无内容"
-        }
-    }
     Component.onCompleted: () => {
-
-                               myLoader.sourceComponent = detailComponent
+console.log("xxx")
+                               filesPage.pathChanged.connect(filesDetail.changePath)
 }
 }
-

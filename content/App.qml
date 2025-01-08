@@ -40,7 +40,8 @@ Rectangle {
            width: parent.width
            height: parent.height
     }
-    Component.onCompleted: myLoader.sourceComponent = homePage
+    // todo: 为方便开发和调试，暂时修改启动页，后续需要修改为homePage
+    Component.onCompleted: myLoader.sourceComponent = filesPage
 
    Component{
        id:homePage
