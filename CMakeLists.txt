@@ -9,7 +9,7 @@ endif ()
 # 设置语言标准
 set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if (WIN32)
     set(CMAKE_SIZEOF_VOID_P 8) # 不添加的话cmake会配置失败
@@ -23,6 +23,11 @@ enable_testing()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
+link_directories(${PROJECT_BINARY_DIR})
+
+if (APPLE)
+    set(CMAKE_MACOSX_RPATH 1)
+endif ()
 
 # 避免警告
 if (POLICY CMP0012)
@@ -67,6 +72,14 @@ file(GLOB_RECURSE PROXIMA_SOURCES proxima/*.cpp quark/*.cpp)
 
 qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC main.cpp ${PROXIMA_SOURCES})
+
+file(GLOB_RECURSE PROXIMA_MODULES proxima/*.cppm quark/*.cppm)
+
+target_sources(${APP_NAME}
+        PUBLIC
+        FILE_SET CXX_MODULES FILES
+        ${PROXIMA_MODULES}
+)
 
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)

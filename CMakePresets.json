@@ -27,7 +27,7 @@
     {
       "name": "macos",
       "displayName": "macOS Config",
-      "generator": "Xcode",
+      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/macos",
       "installDir": "${sourceDir}/install/macos",
       "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
@@ -35,14 +35,14 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
         "CMAKE_OSX_ARCHITECTURES": "arm64",
-        "CMAKE_OSX_DEPLOYMENT_TARGET": "14.0",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "15.0",
         "VCPKG_HOST_TRIPLET": "arm64-osx",
         "VCPKG_TARGET_TRIPLET": "arm64-osx",
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_C_COMPILER": "clang",
-        "CMAKE_CXX_COMPILER": "clang++",
-        "CMAKE_PREFIX_PATH": "$env{QTDIR}/6.8.1/macos/lib/cmake"
+        "CMAKE_CXX_COMPILER_LAUNCHER": "/opt/homebrew/bin/ccache",
+        "CMAKE_C_COMPILER_LAUNCHER": "/opt/homebrew/bin/ccache",
+        "CMAKE_C_COMPILER": "/opt/homebrew/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
+        "CMAKE_PREFIX_PATH": "/Users/Larry/Qt/6.8.1/macos/lib/cmake"
       },
       "environment": {}
     },

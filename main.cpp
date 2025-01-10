@@ -3,9 +3,12 @@
 #include <QtQuick>
 #include <iostream>
 #include <QQmlDebuggingEnabler>
+import quark.logger;
 
 int main(int argc, char* argv[])
 {
+    MTLogger logger;
+    logger.MTLogInfo("Hello, World22!");
 #ifndef NDEBUG
     spdlog::set_level(spdlog::level::info);
 #endif
