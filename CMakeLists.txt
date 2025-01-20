@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28...3.31)
+cmake_minimum_required(VERSION 3.30...3.31)
 
 project(Proxima VERSION 0.1.0 LANGUAGES C CXX)
 
