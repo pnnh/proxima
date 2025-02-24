@@ -37,7 +37,7 @@ class FileViewModel : public QAbstractListModel
 private:
     bool m_directories{true};
     bool m_files{true};
-    QString m_parentPath{"/Users/Larry/Downloads"};
+    QString m_parentPath{""};
     void loadData();
     QHash<int, QByteArray> dataNames;
     QVector<FileViewData> dataList;

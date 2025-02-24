@@ -5,10 +5,9 @@
 #include <QQmlDebuggingEnabler>
 import quark.logger;
 
-int main(int argc, char* argv[])
-{
-    MTLogger logger;
-    logger.MTLogInfo("Hello, World22!");
+int main(int argc, char *argv[]) {
+    QKLogger logger;
+    logger.LogInfo("Hello, World22!");
 #ifndef NDEBUG
     spdlog::set_level(spdlog::level::info);
 #endif
@@ -31,19 +30,18 @@ int main(int argc, char* argv[])
     QQmlApplicationEngine engine;
     //const QUrl url(QStringLiteral(u"quick/content/Main.qml"));
 
-    QObject::connect(
-        &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
-        []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
+    // QObject::connect(
+    //     &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
+    //     []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
 
     //engine.load(url);
     engine.loadFromModule("quick", "Main");
 
-    const auto& rootObjects = engine.rootObjects();
-    if (rootObjects.isEmpty())
-    {
+    const auto &rootObjects = engine.rootObjects();
+    if (rootObjects.isEmpty()) {
         return -1;
     }
-    const auto& rootObject = rootObjects.first();
+    const auto &rootObject = rootObjects.first();
     // if (rootObject != nullptr) {
     QMetaObject::invokeMethod(rootObject, "sayHello");
     //}

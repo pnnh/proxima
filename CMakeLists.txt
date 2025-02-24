@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30...3.31)
+cmake_minimum_required(VERSION 3.29...3.31)
 
 project(Proxima VERSION 0.1.0 LANGUAGES C CXX)
 
@@ -11,9 +11,12 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-if (WIN32)
-    set(CMAKE_SIZEOF_VOID_P 8) # 不添加的话cmake会配置失败
-endif ()
+#if (WIN32)
+#message(STATUS "Windowsxxxx")
+#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+#    set(CMAKE_SIZEOF_VOID_P 8) # 不添加的话cmake会配置失败
+#    math(EXPR _bits "0 * 8")
+#endif ()
 
 # 设置开启显示详细的构建过程
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -59,8 +62,6 @@ find_package(
         Sql
         REQUIRED)
 
-qt_standard_project_setup()
-
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -68,12 +69,14 @@ set(CMAKE_AUTORCC ON)
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 
+qt_standard_project_setup()
+
 file(GLOB_RECURSE PROXIMA_SOURCES proxima/*.cpp quark/*.cpp)
 
 qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC main.cpp ${PROXIMA_SOURCES})
 
-file(GLOB_RECURSE PROXIMA_MODULES proxima/*.cxx quark/*.cxx)
+file(GLOB_RECURSE PROXIMA_MODULES proxima/*.cxx proxima/*.ixx quark/*.cxx quark/*.ixx)
 
 target_sources(${APP_NAME}
         PUBLIC

@@ -2,7 +2,7 @@
 
 #include <QDir>
 
-FolderService::FolderService() {}
+FolderService::FolderService() = default;
 
 QList<QString> FolderService::SelectDirectories(const QString &prefixPath) {
   QList<QString> directories;
@@ -18,7 +18,7 @@ QList<QString> FolderService::SelectDirectories(const QString &prefixPath) {
   return directories;
 }
 
-bool FolderService::HasChildDirectory(const QString &prefixPath) {
+auto FolderService::HasChildDirectory(const QString &prefixPath) -> bool {
   QDir dir(prefixPath);
   if (!dir.exists()) {
     return false;

@@ -1,4 +1,7 @@
 #include "File.h"
+
+#include <quark/services/filesystem/filesystem.hpp>
+
 #include "quark/business/filesystem/file.hpp"
 
 FileViewModel::FileViewModel(QObject *parent)
@@ -7,6 +10,7 @@ FileViewModel::FileViewModel(QObject *parent)
     dataNames.insert(role++, "uid");
     dataNames.insert(role++, "name");
     dataNames.insert(role++, "path");
+    m_parentPath = QString::fromStdString(quark::UserHomeDirectory());
 
     loadData();
 }
@@ -14,26 +18,31 @@ FileViewModel::FileViewModel(QObject *parent)
 FileViewModel::~FileViewModel() = default;
 
 bool FileViewModel::directories() const { return this->m_directories; }
-void FileViewModel::setDirectories(const bool &directories)
-{
+
+void FileViewModel::setDirectories(const bool &directories) {
     this->m_directories = directories;
     loadData();
 }
+
 bool FileViewModel::files() const { return this->m_files; }
-void FileViewModel::setFiles(const bool &files)
-{
+
+void FileViewModel::setFiles(const bool &files) {
     this->m_files = files;
     loadData();
 }
+
 QString FileViewModel::parentPath() const { return this->m_parentPath; }
-void FileViewModel::setParentPath(const QString &parentPath)
-{
+
+void FileViewModel::setParentPath(const QString &parentPath) {
     this->m_parentPath = parentPath;
     loadData();
 }
 
 void FileViewModel::loadData() {
     qDebug() << "loadData";
+    if (m_parentPath.isEmpty()) {
+        return;
+    }
     auto options = quark::FileServerBusiness::SelectFilesOptions();
     options.directories = this->m_directories;
     options.files = this->m_files;
@@ -43,7 +52,7 @@ void FileViewModel::loadData() {
     beginResetModel();
     dataList.clear();
 
-    for (auto & model : fileList) {
+    for (auto &model: fileList) {
         auto dataPtr = FileViewData();
 
         QString uid = QString::fromStdString(model.URN);
@@ -65,7 +74,7 @@ int FileViewModel::rowCount(const QModelIndex &parent) const {
 
 QVariant FileViewModel::data(const QModelIndex &index, int role) const {
     FileViewData dataPtr = dataList[index.row()];
-    const auto& value = dataPtr.at(role - Qt::UserRole);
+    const auto &value = dataPtr.at(role - Qt::UserRole);
     return value;
 }
 
