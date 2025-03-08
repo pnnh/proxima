@@ -1,8 +1,8 @@
 #include "File.h"
 
-#include <quark/services/filesystem/filesystem.hpp>
+#include <quark/services/filesystem/filesystem.h>
 
-#include "quark/business/filesystem/file.hpp"
+#include "quark/business/filesystem/file.h"
 
 FileViewModel::FileViewModel(QObject *parent)
     : QAbstractListModel(parent) {
