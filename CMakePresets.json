@@ -51,11 +51,11 @@
       "generator": "Visual Studio 17 2022",
       "binaryDir": "${sourceDir}/build/windows",
       "installDir": "${sourceDir}/install/windows",
-      "toolchainFile": "C:\\opt\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+      "toolchainFile": "$env{VCPKG_ROOT}\\scripts\\buildsystems\\vcpkg.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-        "CMAKE_PREFIX_PATH": "C:\\Qt\\6.8.2\\msvc2022_64\\lib\\cmake"
+        "CMAKE_PREFIX_PATH": "$env{QTDIR}\\6.8.2\\msvc2022_64\\lib\\cmake"
       },
       "environment": {}
     }

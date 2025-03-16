@@ -10,7 +10,6 @@ Rectangle {
     anchors.top: parent.top
     anchors.bottom: parent.bottom
     height: parent.height
-    color: 'green'
 
 
     function changePath(path: string) {

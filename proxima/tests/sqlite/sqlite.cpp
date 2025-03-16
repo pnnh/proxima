@@ -1,5 +1,5 @@
 #include <iostream>
-#include "quark/services/database/SqliteService.h"
+#include "quark/services/database/sqlite_service.h"
 #include "sqlite.h"
 
 int quark::examples::sqlite::TestSqliteVersion() {

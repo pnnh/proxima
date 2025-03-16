@@ -1,8 +1,7 @@
 import QtQuick 2.15
 import "../../components"
 
-Rectangle {
-    color: "green"
+Rectangle { 
     anchors.left: parent.left
     anchors.right: parent.right
     anchors.bottom: parent.bottom

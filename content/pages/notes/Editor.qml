@@ -20,8 +20,7 @@ Rectangle {
             Layout.preferredHeight: parent.height / 2
             color: "#FFFFFF"
 
-            TextArea {
-                color: "green"
+            TextArea { 
                 width: parent.width - 32
                 height: parent.height - 32
                 anchors.centerIn: parent
@@ -56,8 +55,7 @@ Rectangle {
 
             Text {
                 textFormat: Text.RichText
-                text: markdown ? markdown : "暂无内容"
-                color: "green"
+                text: markdown ? markdown : "暂无内容" 
                 width: parent.width - 32
                 height: parent.height - 32
                 anchors.centerIn: parent

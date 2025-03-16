@@ -1,10 +1,11 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
-import "files"
-import "notes"
-import "images"
-import "password"
+import "pages"
+import "pages/files"
+import "pages/notes"
+import "pages/images"
+import "pages/password"
 import "pages/uuid"
 
 Rectangle {
@@ -40,7 +41,6 @@ Rectangle {
            width: parent.width
            height: parent.height
     }
-    // todo: 为方便开发和调试，暂时修改启动页，后续需要修改为homePage
     Component.onCompleted: myLoader.sourceComponent = filesPage
 
    Component{

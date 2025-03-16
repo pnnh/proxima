@@ -1,7 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
-import "../components"
 import quick 1.0
 
 Rectangle {
@@ -78,7 +77,7 @@ Rectangle {
     Loader{
         id:myLoader
         width: parent.width - leftNavView.width
-        height: parent.height
+        height: parent.height - 40
         anchors.right: parent.right
         anchors.bottom: parent.bottom
     }

@@ -1,13 +1,10 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
-import "../components"
 
 Rectangle {
-    anchors.fill: parent
-    color:"green"
-
-    AppNav {}
+    Layout.preferredHeight: parent.height
+    Layout.preferredWidth: parent.width - 48 
 
     RowLayout {
         height: parent.height
@@ -15,18 +12,22 @@ Rectangle {
         spacing: 0
 
         Rectangle {
-            Layout.preferredWidth: 240
+            width: 240
             Layout.preferredHeight: parent.height
-            color: "transparent"
+            Layout.alignment: Qt.AlignTop | Qt.AlignLeading
+            color: "blue"
 
+            Location {
+                onPicturePathChanged: path => console.log(
+                                          'onPicturePathChanged', path)
+            }
         }
+
         Rectangle {
             Layout.alignment: Qt.AlignLeft
             Layout.preferredHeight: parent.height
-
-            Layout.preferredWidth: 1
+            width: 1
             color: "#e2e2e2"
-            visible: true
         }
         Rectangle {
             Layout.fillWidth: true
@@ -40,21 +41,10 @@ Rectangle {
 
                 Rectangle {
                     Layout.fillHeight: true
-                    Layout.preferredWidth: parent.width / 2 - 0.5
+                    Layout.preferredWidth: parent.width
                     color: "#FFFFFF"
-                    Text {
-                        text: qsTr("Hello Designw222")
-                        color: "green"
-                        anchors.centerIn: parent
-                    }
+                    PictureGrid {}
                 }
-                Rectangle {
-                    Layout.preferredHeight: parent.height
-                    Layout.preferredWidth: 1
-                    color: "#e2e2e2"
-                }
-
-                Editor {}
             }
         }
     }
