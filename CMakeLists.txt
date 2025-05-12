@@ -71,12 +71,31 @@ qt_policy(SET QTP0004 NEW)
 
 qt_standard_project_setup()
 
-file(GLOB_RECURSE PROXIMA_SOURCES proxima/*.cpp quark/*.cpp)
+file(GLOB_RECURSE PROXIMA_SOURCES
+        proxima/*.cpp
+        quark/tests/*.c
+        quark/tests/*.cpp
+        quark/business/*.cpp
+        quark/core/*.cpp
+        quark/infra/*.cpp
+        quark/services/*.cpp)
 
 qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
 
-file(GLOB_RECURSE PROXIMA_MODULES proxima/*.cxx proxima/*.ixx quark/*.cxx quark/*.ixx)
+file(GLOB_RECURSE PROXIMA_MODULES
+        proxima/*.cxx
+        proxima/*.ixx
+        quark/tests/*.cxx
+        quark/tests/*.ixx
+        quark/business/*.cxx
+        quark/business/*.ixx
+        quark/core/*.cxx
+        quark/core/*.ixx
+        quark/infra/*.cxx
+        quark/infra/*.ixx
+        quark/services/*.cxx
+        quark/services/*.ixx)
 
 target_sources(${APP_NAME}
         PUBLIC

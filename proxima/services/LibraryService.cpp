@@ -6,9 +6,9 @@
 #include <qdir.h>
 #include <qdiriterator.h>
 
-#include "quark/models/articles/Library.h"
-#include "quark/models/articles/Notebook.h"
-#include "quark/utils/basex.h"
+#include "quark/business/models/articles/Library.h"
+#include "quark/business/models/articles/Notebook.h"
+#include "quark/infra/utils/basex.h"
 
 LibraryService::LibraryService()
 {

@@ -7,12 +7,10 @@
 import quark.logger;
 
 int main(int argc, char *argv[]) {
-    CXLogger logger;
-    logger.LogInfo("Hello, World22!");
+    MXLogger::LogInfo("Hello, World22!");
 #ifndef NDEBUG
     spdlog::set_level(spdlog::level::info);
 #endif
-    spdlog::info("Server {}", "Started");
     QQmlDebuggingEnabler::enableDebugging(true);
     QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, true);
 

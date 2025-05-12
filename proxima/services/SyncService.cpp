@@ -5,7 +5,7 @@
 #include <qdir.h>
 #include <qdiriterator.h>
 
-#include "quark/utils/basex.h"
+#include "quark/infra/utils/basex.h"
 
 void SyncService::SyncLibraries()
 {
