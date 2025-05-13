@@ -55,7 +55,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
-        "CMAKE_PREFIX_PATH": "$env{QTDIR}\\6.8.2\\msvc2022_64\\lib\\cmake"
+        "CMAKE_PREFIX_PATH": "$env{QTRELEASE}\\msvc2022_64\\lib\\cmake"
       },
       "environment": {}
     }

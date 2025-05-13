@@ -11,12 +11,6 @@ set(CMAKE_C_STANDARD 17)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#if (WIN32)
-#message(STATUS "Windowsxxxx")
-#    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-#    set(CMAKE_SIZEOF_VOID_P 8) # 不添加的话cmake会配置失败
-#    math(EXPR _bits "0 * 8")
-#endif ()
 
 # 设置开启显示详细的构建过程
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -72,7 +66,9 @@ qt_policy(SET QTP0004 NEW)
 qt_standard_project_setup()
 
 file(GLOB_RECURSE PROXIMA_SOURCES
-        proxima/*.cpp
+        proxima/main.cpp
+        proxima/services/*.cpp
+        proxima/tests/*.cpp
         quark/tests/*.c
         quark/tests/*.cpp
         quark/business/*.cpp
@@ -85,10 +81,19 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             proxima/macos/*.cpp
             proxima/macos/*.mm)
     list(APPEND PROXIMA_SOURCES ${DARWIN_SOURCES})
-endif()
+elseif (WIN32)
+    file(GLOB_RECURSE WINDOWS_SOURCES
+            proxima/windows/*.cpp)
+    list(APPEND PROXIMA_SOURCES ${WINDOWS_SOURCES})
+endif ()
 
 qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
+
+if (WIN32)
+    target_compile_definitions(${APP_NAME} PUBLIC UNICODE _UNICODE)
+    target_link_libraries(${APP_NAME} PUBLIC dwmapi UxTheme)
+endif ()
 
 file(GLOB_RECURSE PROXIMA_MODULES
         proxima/*.cxx

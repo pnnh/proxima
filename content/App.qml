@@ -11,7 +11,6 @@ import "pages/uuid"
 Rectangle {
     id: appItem
     anchors.fill: parent
-    // anchors.top: parent.top
     color: "#f8f8f8"
     radius: 8
     opacity: 1

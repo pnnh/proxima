@@ -1,9 +1,17 @@
 
-#include <spdlog/spdlog.h>
+#include <QQmlDebuggingEnabler>
 #include <QtQuick>
 #include <iostream>
-#include <QQmlDebuggingEnabler>
+#include <spdlog/spdlog.h>
+
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#ifdef TARGET_OS_MAC
 #include "macos/checkeredwindow.h"
+#endif
+#elif WIN32
+#include "windows/CMakeProjectDWM.h"
+#endif
 
 #include <QApplication>
 
@@ -36,33 +44,35 @@ int showQtWindow() {
 }
 
 int main(int argc, char *argv[]) {
-    MXLogger::LogInfo("Hello, World22!");
+  MXLogger::LogInfo("Hello, World22!");
 #ifndef NDEBUG
-    spdlog::set_level(spdlog::level::info);
+  spdlog::set_level(spdlog::level::info);
 #endif
-    QQmlDebuggingEnabler::enableDebugging(true);
-    QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, true);
+  QQmlDebuggingEnabler::enableDebugging(true);
+  QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, true);
 
-    spdlog::debug("i love c++1");
-    spdlog::info("i love c++2");
-    spdlog::error("i love c++3");
-    qInfo() << "test info";
-    qWarning() << "test warning";
-    std::cerr << "Hello, World333333!" << std::endl;
-    qDebug() << "Hello, World444444!";
+  spdlog::debug("i love c++1");
+  spdlog::info("i love c++2");
+  spdlog::error("i love c++3");
+  qInfo() << "test info";
+  qWarning() << "test warning";
+  std::cerr << "Hello, World333333!" << std::endl;
+  qDebug() << "Hello, World444444!";
 
-    QApplication app(argc, argv);
-    QApplication::setApplicationDisplayName(
-        QStringLiteral("This example is powered by qmltc!"));
+  QApplication app(argc, argv);
+  QApplication::setApplicationDisplayName(
+      QStringLiteral("This example is powered by qmltc!"));
 
-  //showQtWindow();
+  // showQtWindow();
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#ifdef TARGET_OS_MAC
   showMacOSCheckeredWindow();
+#endif
+#elif WIN32
+  showWindowsDWMWindow();
+#endif
 
-    return QApplication::exec();
+  return QApplication::exec();
 }
-
-
-
-
-
