@@ -58,8 +58,21 @@ void CheckeredWindow::paintEvent(QPaintEvent * event)
 void showMacOSCheckeredWindow() {
 
   // Create the application content windows
-  auto contetWindow = new CheckeredWindow();
-  contetWindow->setColor(QColor(10, 60, 130));
+  // auto contetWindow = new CheckeredWindow();
+  // contetWindow->setColor(QColor(10, 60, 130));
+
+
+
+  auto contentWindow = new QQuickView();
+  //contentWindow -> setSurfaceType(QSurface::OpenGLSurface);
+  // const QUrl url(QStringLiteral(u"qrc:/qt/qml/quick/views/main.qml"));
+  // contentWindow -> setSource(url);
+  contentWindow->loadFromModule("quick", "App");
+  contentWindow -> setResizeMode(QQuickView::SizeRootObjectToView);
+  //contentWindow -> setColor(QColor(10, 60, 130));
+  // contentWindow -> resize(1024, 768);
+
+
   auto leftAccessoryWindow = new CheckeredWindow();
   leftAccessoryWindow->resize(80, 1);
   leftAccessoryWindow->setColor(QColor(60, 100, 80, 150));
@@ -68,15 +81,15 @@ void showMacOSCheckeredWindow() {
   rigthAccessoryWindow->setColor(QColor(70, 40, 50, 150));
 
   //  Wrap the appplication content window in a MacWindow
-  MacWindow *macWindow = new MacWindow(contetWindow, leftAccessoryWindow);
-  macWindow->setContentWindow(contetWindow);
+  MacWindow *macWindow = new MacWindow(contentWindow, leftAccessoryWindow);
+  macWindow->setContentWindow(contentWindow);
   macWindow->setLeftAcccessoryWindow(leftAccessoryWindow);
   macWindow->setRightAcccessoryWindow(rigthAccessoryWindow);
 
   macWindow->show();
 
   // 此处需要调用以下3个Window的show方法，否则不会显示
-  contetWindow -> show();
+  contentWindow -> show();
   leftAccessoryWindow -> show();
   rigthAccessoryWindow -> show();
 }

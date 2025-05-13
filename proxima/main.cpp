@@ -9,6 +9,32 @@
 
 import quark.logger;
 
+int showQtWindow() {
+
+  QQmlApplicationEngine engine;
+
+  engine.loadFromModule("quick", "Main");
+
+  const auto &rootObjects = engine.rootObjects();
+  if (rootObjects.isEmpty()) {
+    return -1;
+  }
+  const auto &rootObject = rootObjects.first();
+  // if (rootObject != nullptr) {
+  QMetaObject::invokeMethod(rootObject, "sayHello");
+  //}
+
+  //    QQuickWindow *mainWindow = qobject_cast<QQuickWindow *>(rootObject);
+
+  //    QQuickItem *rect = mainWindow->findChild<QQuickItem *>("myItem");
+  //    qDebug() << "rect: " << rect;
+
+  //    if (mainWindow != nullptr) {
+  //        QMetaObject::invokeMethod(mainWindow, "sayHello");
+  //    }
+  return 0;
+}
+
 int main(int argc, char *argv[]) {
     MXLogger::LogInfo("Hello, World22!");
 #ifndef NDEBUG
@@ -29,34 +55,7 @@ int main(int argc, char *argv[]) {
     QApplication::setApplicationDisplayName(
         QStringLiteral("This example is powered by qmltc!"));
 
-    QQmlApplicationEngine engine;
-    //const QUrl url(QStringLiteral(u"quick/content/Main.qml"));
-
-    // QObject::connect(
-    //     &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
-    //     []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
-
-    //engine.load(url);
-    engine.loadFromModule("quick", "Main");
-
-    const auto &rootObjects = engine.rootObjects();
-    if (rootObjects.isEmpty()) {
-        return -1;
-    }
-    const auto &rootObject = rootObjects.first();
-    // if (rootObject != nullptr) {
-    QMetaObject::invokeMethod(rootObject, "sayHello");
-    //}
-
-    //    QQuickWindow *mainWindow = qobject_cast<QQuickWindow *>(rootObject);
-
-    //    QQuickItem *rect = mainWindow->findChild<QQuickItem *>("myItem");
-    //    qDebug() << "rect: " << rect;
-
-    //    if (mainWindow != nullptr) {
-    //        QMetaObject::invokeMethod(mainWindow, "sayHello");
-    //    }
-
+  //showQtWindow();
 
   showMacOSCheckeredWindow();
 

@@ -5,9 +5,6 @@ Window {
     id: mainWindow
     objectName: "mainWindow"
 
-    function sayHello() {//console.log("hello from mainWindow")
-    }
-
     title: "Emotion Design"
     visible: true
     width: 1280

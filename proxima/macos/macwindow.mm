@@ -49,10 +49,16 @@ void MacWindow::createNSWindow()
     auto styleMask = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable |
                      NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable;
 
-                
-    NSRect frame = NSMakeRect(200, 200, 320, 200);
+     NSRect windowRect= NSMakeRect(200, 200, 1024, 768);
+
+//    CGFloat screenWidth = [NSScreen mainScreen].frame.size.width;
+//    CGRect screenRect = [[NSScreen mainScreen] frame];
+//    CGPoint newOrigin;
+//    newOrigin.x = (screenRect.size.width / 2) - (windowRect.size.width / 2);
+//    newOrigin.y = (screenRect.size.height / 2) + (windowRect.size.height / 2);
+
     m_nsWindow =
-        [[NSWindow alloc] initWithContentRect:frame
+        [[NSWindow alloc] initWithContentRect:windowRect
                                     styleMask:styleMask
                                       backing:NSBackingStoreBuffered
                                         defer:NO];
@@ -60,7 +66,7 @@ void MacWindow::createNSWindow()
     m_nsWindow.titleVisibility = NSWindowTitleHidden;
     QString winTitle{"hello"};
     m_nsWindow.title = winTitle.toNSString();
-    m_nsWindow.titlebarAppearsTransparent = true;
+    m_nsWindow.titlebarAppearsTransparent = false;
 
         NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"main"];
         toolbar.showsBaselineSeparator = false;
@@ -69,18 +75,20 @@ void MacWindow::createNSWindow()
     m_nsWindow.contentView = (__bridge NSView *)reinterpret_cast<void *>(m_window->winId());
 
         {
-        NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(m_accessoryWindow->winId());
-        ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
-        leftViewController.layoutAttribute = NSLayoutAttributeLeft;
-        [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
+            NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(m_accessoryWindow->winId());
+            ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
+            leftViewController.layoutAttribute = NSLayoutAttributeLeft;
+            [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
         }
         {
-        NSView *rightView = (__bridge NSView *)reinterpret_cast<void *>(m_rightAccessoryWindow->winId());
-        ProgramaticViewController *rightViewController = [[ProgramaticViewController alloc] initWithView:rightView];
-        rightViewController.layoutAttribute = NSLayoutAttributeRight;
-        [m_nsWindow addTitlebarAccessoryViewController:rightViewController];
+            NSView *rightView = (__bridge NSView *)reinterpret_cast<void *>(m_rightAccessoryWindow->winId());
+            ProgramaticViewController *rightViewController = [[ProgramaticViewController alloc] initWithView:rightView];
+            rightViewController.layoutAttribute = NSLayoutAttributeRight;
+            [m_nsWindow addTitlebarAccessoryViewController:rightViewController];
 
         }
+
+    [m_nsWindow center];
 }
 
 void MacWindow::destroyNSWindow()

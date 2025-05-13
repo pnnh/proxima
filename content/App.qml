@@ -11,7 +11,7 @@ import "pages/uuid"
 Rectangle {
     id: appItem
     anchors.fill: parent
-    anchors.top: parent.top
+    // anchors.top: parent.top
     color: "#f8f8f8"
     radius: 8
     opacity: 1
@@ -20,8 +20,7 @@ Rectangle {
 
     function routeUrlToItem(url: string): Item {
         console.log('routeUrlToItem', url)
-        if (url === "/")
-        {
+        if (url === "/") {
             myLoader.sourceComponent = homePage
         } else if (url === "/files") {
             myLoader.sourceComponent = filesPage
@@ -36,35 +35,41 @@ Rectangle {
         }
     }
 
-    Loader{
-           id:myLoader
-           width: parent.width
-           height: parent.height
+    Loader {
+        id: myLoader
+        width: parent.width
+        height: parent.height
     }
     Component.onCompleted: myLoader.sourceComponent = filesPage
 
-   Component{
-       id:homePage
-       Home { }
-   }
-   Component{
-       id:filesPage
-      FilesPage { }
-   }
-   Component{
-       id:notesPage
-       NotesPage { }
-   }
-   Component{
-       id:imagesPage
-       ImagesPage { }
-   }
-   Component{
-       id:passwordPage
-       PasswordPage { }
-   }
-   Component{
-       id:uuidPage
-       UUIDPage { }
-   }
+    Component {
+        id: homePage
+        Home {
+        }
+    }
+    Component {
+        id: filesPage
+        FilesPage {
+        }
+    }
+    Component {
+        id: notesPage
+        NotesPage {
+        }
+    }
+    Component {
+        id: imagesPage
+        ImagesPage {
+        }
+    }
+    Component {
+        id: passwordPage
+        PasswordPage {
+        }
+    }
+    Component {
+        id: uuidPage
+        UUIDPage {
+        }
+    }
 }
