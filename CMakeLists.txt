@@ -80,6 +80,13 @@ file(GLOB_RECURSE PROXIMA_SOURCES
         quark/infra/*.cpp
         quark/services/*.cpp)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    file(GLOB_RECURSE DARWIN_SOURCES
+            proxima/macos/*.cpp
+            proxima/macos/*.mm)
+    list(APPEND PROXIMA_SOURCES ${DARWIN_SOURCES})
+endif()
+
 qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
 

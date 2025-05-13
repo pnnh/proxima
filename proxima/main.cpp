@@ -3,6 +3,9 @@
 #include <QtQuick>
 #include <iostream>
 #include <QQmlDebuggingEnabler>
+#include "macos/checkeredwindow.h"
+
+#include <QApplication>
 
 import quark.logger;
 
@@ -22,8 +25,8 @@ int main(int argc, char *argv[]) {
     std::cerr << "Hello, World333333!" << std::endl;
     qDebug() << "Hello, World444444!";
 
-    QGuiApplication app(argc, argv);
-    QGuiApplication::setApplicationDisplayName(
+    QApplication app(argc, argv);
+    QApplication::setApplicationDisplayName(
         QStringLiteral("This example is powered by qmltc!"));
 
     QQmlApplicationEngine engine;
@@ -54,7 +57,10 @@ int main(int argc, char *argv[]) {
     //        QMetaObject::invokeMethod(mainWindow, "sayHello");
     //    }
 
-    return QGuiApplication::exec();
+
+  showMacOSCheckeredWindow();
+
+    return QApplication::exec();
 }
 
 
