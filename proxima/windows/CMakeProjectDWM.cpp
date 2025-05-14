@@ -10,6 +10,7 @@
 #include <QtWidgets/QtWidgets>
 #include <Windows.h>
 #include <dwmapi.h>
+#include <iostream>
 #include <qquickview.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -25,10 +26,10 @@
 
 using namespace std;
 
-#define LEFTEXTENDWIDTH 8
-#define RIGHTEXTENDWIDTH 8
-#define BOTTOMEXTENDWIDTH 20
-#define TOPEXTENDWIDTH 27
+#define LEFTEXTENDWIDTH 2
+#define RIGHTEXTENDWIDTH 2
+#define BOTTOMEXTENDWIDTH 2
+#define TOPEXTENDWIDTH 60
 
 #define BIT_COUNT 32
 #define RECTWIDTH(rc) ((rc).right - (rc).left)
@@ -102,27 +103,31 @@ int WINAPI WinMain2(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   // SetParent(hwndQt, hwnd);
   // controller->show();
 
-  auto contentWindow = new QQuickView();
-  contentWindow->loadFromModule("quick", "App");
-  contentWindow->setResizeMode(QQuickView::SizeRootObjectToView);
-  contentWindow->setFlags(Qt::FramelessWindowHint);
-  QWidget *container = QWidget::createWindowContainer(contentWindow);
-  // container->setMinimumSize(1024, 768);
-  // container->setMaximumSize(2048, 1280);
-  HWND hwndQt = reinterpret_cast<HWND>(container->winId());
-  container->setWindowFlags(Qt::FramelessWindowHint);
-  container->show();
-  SetParent(hwndQt, hwnd);
-  MoveWindow(hwndQt, 40, 40, windowWidth - 55, windowHeight - 60, TRUE);
-
-  // 通过QQuickView嵌入Qt窗体
+  // 通过QWidget嵌入QQuickView再嵌入Qml窗体
   // auto contentWindow = new QQuickView();
   // contentWindow->loadFromModule("quick", "App");
   // contentWindow->setResizeMode(QQuickView::SizeRootObjectToView);
   // contentWindow->setFlags(Qt::FramelessWindowHint);
-  // HWND hwndQt = reinterpret_cast<HWND>(contentWindow->winId());
+  // QWidget *container = QWidget::createWindowContainer(contentWindow);
+  // // container->setMinimumSize(1024, 768);
+  // // container->setMaximumSize(2048, 1280);
+  // HWND hwndQt = reinterpret_cast<HWND>(container->winId());
+  // container->setWindowFlags(Qt::FramelessWindowHint);
+  // container->show();
   // SetParent(hwndQt, hwnd);
-  // contentWindow->show();
+  // MoveWindow(hwndQt, 40, 40, windowWidth - 55, windowHeight - 60, TRUE);
+
+  // 直接通过QQuickView嵌入Qt窗体
+  auto contentWindow = new QQuickView();
+  contentWindow->loadFromModule("quick", "App");
+  contentWindow->setResizeMode(QQuickView::SizeRootObjectToView);
+  contentWindow->setFlags(Qt::FramelessWindowHint);
+  HWND hwndQt = reinterpret_cast<HWND>(contentWindow->winId());
+  SetParent(hwndQt, hwnd);
+  contentWindow->show();
+  MoveWindow(hwndQt, LEFTEXTENDWIDTH, TOPEXTENDWIDTH,
+             windowWidth - LEFTEXTENDWIDTH - RIGHTEXTENDWIDTH,
+             windowHeight - TOPEXTENDWIDTH, TRUE);
 
   ShowWindow(hwnd, nCmdShow); // 显示窗口
   UpdateWindow(hwnd);         // 更新窗口
@@ -216,7 +221,8 @@ LRESULT HitTestNCA(HWND hWnd, WPARAM wParam, LPARAM lParam) {
 
   // Get the frame rectangle, adjusted for the style without a caption.
   RECT rcFrame = {0};
-  AdjustWindowRectEx(&rcFrame, WS_OVERLAPPEDWINDOW & ~WS_CAPTION, FALSE, NULL);
+  DWORD dwStyle = WS_OVERLAPPEDWINDOW & ~WS_CAPTION;
+  AdjustWindowRectEx(&rcFrame, dwStyle, FALSE, NULL);
 
   // Determine if the hit test is for resizing. Default middle (1,1).
   USHORT uRow = 1;
@@ -277,13 +283,16 @@ LRESULT CustomCaptionProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam,
 
   // Handle window activation.
   if (message == WM_ACTIVATE) {
+    SetWindowLong(hWnd, GWL_STYLE,
+                  GetWindowLong(hWnd, GWL_STYLE) & ~WS_SYSMENU);
+
     // Extend the frame into the client area.
     MARGINS margins;
 
-    margins.cxLeftWidth = LEFTEXTENDWIDTH;      // 8
-    margins.cxRightWidth = RIGHTEXTENDWIDTH;    // 8
-    margins.cyBottomHeight = BOTTOMEXTENDWIDTH; // 20
-    margins.cyTopHeight = TOPEXTENDWIDTH;       // 27
+    margins.cxLeftWidth = LEFTEXTENDWIDTH;
+    margins.cxRightWidth = RIGHTEXTENDWIDTH;
+    margins.cyBottomHeight = BOTTOMEXTENDWIDTH;
+    margins.cyTopHeight = TOPEXTENDWIDTH;
 
     hr = DwmExtendFrameIntoClientArea(hWnd, &margins);
 
@@ -308,13 +317,15 @@ LRESULT CustomCaptionProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam,
     lRet = 0;
   }
 
+  int customTitleHeight = 40;
+
   // Handle the non-client size message.
   if ((message == WM_NCCALCSIZE) && (wParam == TRUE)) {
     // Calculate new NCCALCSIZE_PARAMS based on custom NCA inset.
     NCCALCSIZE_PARAMS *pncsp = reinterpret_cast<NCCALCSIZE_PARAMS *>(lParam);
 
     pncsp->rgrc[0].left = pncsp->rgrc[0].left + 0;
-    pncsp->rgrc[0].top = pncsp->rgrc[0].top + 0;
+    pncsp->rgrc[0].top = pncsp->rgrc[0].top + customTitleHeight;
     pncsp->rgrc[0].right = pncsp->rgrc[0].right - 0;
     pncsp->rgrc[0].bottom = pncsp->rgrc[0].bottom - 0;
 
@@ -327,6 +338,17 @@ LRESULT CustomCaptionProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam,
   // Handle hit testing in the NCA if not handled by DwmDefWindowProc.
   if ((message == WM_NCHITTEST) && (lRet == 0)) {
     lRet = HitTestNCA(hWnd, wParam, lParam);
+
+    // 获取鼠标位置
+    POINT pt = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+    ScreenToClient(hWnd, &pt);
+
+    // 定义标题栏区域
+    RECT titleBarRect = {80, 0, 200, 30};
+    if (PtInRect(&titleBarRect, pt)) {
+      std::cerr << "Hello, PtInRect" << std::endl;
+      lRet = HTMAXBUTTON;
+    }
 
     if (lRet != HTNOWHERE) {
       fCallDWP = false;
