@@ -75,9 +75,25 @@
     },
     {
       "name": "date"
+    },
+    {
+      "name": "libpqxx",
+      "version>=": "7.8.1"
+    },
+    {
+      "name": "folly",
+      "version>=": "2024.01.01.00"
+    },
+    {
+      "name": "workflow",
+      "version>=": "0.10.9"
     }
   ],
   "overrides": [
+    {
+      "name": "fmt",
+      "version": "9.1.0"
+    },
     {
       "name": "spdlog",
       "version": "1.14.1"
@@ -119,6 +135,10 @@
       "version": "1.86.0"
     },
     {
+      "name": "date",
+      "version": "3.0.1"
+    },
+    {
       "name": "boost-property-map",
       "version": "1.86.0"
     },
@@ -137,6 +157,14 @@
     {
       "name": "openssl",
       "version": "3.4.0"
+    },
+    {
+      "name": "folly",
+      "version-string": "2024.01.01.00"
+    },
+    {
+      "name": "workflow",
+      "version": "0.10.9"
     }
   ]
 }

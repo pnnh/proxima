@@ -1,0 +1,10 @@
+module MTQuantum {
+	header "quantum/logger/logger.h"
+	header "quark/services/logger/logger.h"
+	header "quark/services/random/random.h"
+	header "quark/types/color.h"
+	header "quark/types/uuid.h"
+	header "quark/business/filesystem/file.h"
+
+    export *
+}

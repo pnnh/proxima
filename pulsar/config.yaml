@@ -1,0 +1,3 @@
+DATABASE: "host=127.0.0.1 user=lighting password=[E~P2VZnWPzU<&a^ dbname=portal port=5432 sslmode=disable"
+SOURCE_PATH: file://~/Projects/github/blog
+TARGET_PATH: file://./build
