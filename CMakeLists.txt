@@ -44,8 +44,8 @@ set(LIB_NAME "MTQuantum")
 file(GLOB_RECURSE QUANTUM_SOURCES
         quantum/*.c
         quantum/*.cpp
-        quark/tests/*.c
-        quark/tests/*.cpp
+        #        quark/tests/*.c
+        #        quark/tests/*.cpp
         quark/business/*.cpp
         quark/core/*.cpp
         quark/infra/*.cpp
@@ -129,9 +129,9 @@ qt_standard_project_setup()
 file(GLOB_RECURSE PROXIMA_SOURCES
         proxima/main.cpp
         proxima/services/*.cpp
-        proxima/tests/*.cpp
-        quark/tests/*.c
-        quark/tests/*.cpp
+        #        proxima/tests/*.cpp
+        #        quark/tests/*.c
+        #        quark/tests/*.cpp
         quark/business/*.cpp
         quark/core/*.cpp
         quark/infra/*.cpp
@@ -159,8 +159,8 @@ endif ()
 file(GLOB_RECURSE PROXIMA_MODULES
         proxima/*.cxx
         proxima/*.ixx
-        quark/tests/*.cxx
-        quark/tests/*.ixx
+        #        quark/tests/*.cxx
+        #        quark/tests/*.ixx
         quark/business/*.cxx
         quark/business/*.ixx
         quark/core/*.cxx

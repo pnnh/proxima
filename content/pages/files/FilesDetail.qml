@@ -27,7 +27,7 @@ Rectangle {
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             delegate: Item {
-                width: parent.width
+                width: filesList.width
                 height: 40
                 Rectangle {
                     color: "#FFFFFF"
@@ -50,6 +50,10 @@ Rectangle {
                         }
                         onExited: {
                             parent.color = "#FFFFFF"
+                        }
+                        onDoubleClicked: {
+                            console.log("double clicked", model.path)
+                            changePath(model.path)
                         }
                     }
                 }

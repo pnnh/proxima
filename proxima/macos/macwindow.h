@@ -6,36 +6,30 @@
 
 Q_FORWARD_DECLARE_OBJC_CLASS(NSWindow);
 
-class MacWindow
-{
+class MacWindow {
 public:
-    MacWindow(QWindow *contentWindow, QWindow *accessoryWindow = nullptr);
-    
-    // Content Windows
-    void setContentWindow(QWindow *contentWindow);
-    void setLeftAcccessoryWindow(QWindow *leftAccessoryWindow);
-    void setRightAcccessoryWindow(QWindow *rightAccessoryWindow);
+  MacWindow(QWindow *contentWindow, QWindow *leftAccessoryWindow,
+            QWindow *rightAccessoryWindow);
+  void setContentWindow(QWindow *contentWindow);
 
-    bool acceoryViews() const;
+  void setGeometry(QRect geometry);
+  QRect geometry() const;
+  void setSize(QSize &size);
+  QSize size() const;
+  void setVisible(bool visible);
+  void show();
 
-    // Duplicated QWindow API
-    void setGeometry(QRect geometry);
-    QRect geometry() const;
-    void setSize(QSize &size);
-    QSize size() const;
-    void setVisible(bool visible);
-    void show();
 protected:
-    void createNSWindow();
-    void destroyNSWindow();
-    void recreateNSWindow();
-    void scheduleRecreateNSWindow();
+  void createNSWindow();
+  void destroyNSWindow();
+  void recreateNSWindow();
+  void scheduleRecreateNSWindow();
 
 private:
-    QWindow *m_window = nullptr;
-    QWindow *m_accessoryWindow = nullptr;
-    QWindow *m_rightAccessoryWindow = nullptr;
-    NSWindow *m_nsWindow = nullptr;
-    QRect m_geometry;
-    bool m_visible;
+  QWindow *m_window = nullptr;
+  QWindow *m_leftAccessoryWindow = nullptr;
+  QWindow *m_rightAccessoryWindow = nullptr;
+  NSWindow *m_nsWindow = nullptr;
+  QRect m_geometry;
+  bool m_visible;
 };

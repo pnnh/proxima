@@ -1,6 +1,7 @@
 #include "macwindow.h"
 
 #import <AppKit/AppKit.h>
+#include <QQuickView>
 
 // An NSTitlebarAccessoryViewController that controls a programatically created view
 @interface ProgramaticViewController : NSTitlebarAccessoryViewController
@@ -15,9 +16,9 @@
 }
 @end
 
-MacWindow::MacWindow(QWindow *window, QWindow *accessoryWindow)
+MacWindow::MacWindow(QWindow *window, QWindow *leftAccessoryWindow, QWindow *rightAccessoryWindow)
 :m_window(window)
-,m_accessoryWindow(accessoryWindow)
+,m_leftAccessoryWindow(leftAccessoryWindow), m_rightAccessoryWindow(rightAccessoryWindow)
 {
 
 }
@@ -25,18 +26,6 @@ MacWindow::MacWindow(QWindow *window, QWindow *accessoryWindow)
 void MacWindow::setContentWindow(QWindow *contentWindow)
 {
     m_window = contentWindow;
-    scheduleRecreateNSWindow();
-}
-
-void MacWindow::setLeftAcccessoryWindow(QWindow *leftAccessoryWindow)
-{
-    m_accessoryWindow = leftAccessoryWindow;
-    scheduleRecreateNSWindow();
-}
-
-void MacWindow::setRightAcccessoryWindow(QWindow *rightAccessoryWindow)
-{
-    m_rightAccessoryWindow = rightAccessoryWindow;
     scheduleRecreateNSWindow();
 }
 
@@ -69,24 +58,48 @@ void MacWindow::createNSWindow()
     m_nsWindow.titlebarAppearsTransparent = false;
 
         NSToolbar *toolbar = [[NSToolbar alloc] initWithIdentifier:@"main"];
-        toolbar.showsBaselineSeparator = false;
+        toolbar.displayMode = NSToolbarDisplayModeIconOnly;
+        toolbar.sizeMode = NSToolbarSizeModeRegular;
         m_nsWindow.toolbar = toolbar;
 
     m_nsWindow.contentView = (__bridge NSView *)reinterpret_cast<void *>(m_window->winId());
+    // 添加最左侧地球图标
+//    {
+//
+//      auto toolGlobalView = new QQuickView();
+//      toolGlobalView->setResizeMode(QQuickView::SizeRootObjectToView);
+//      toolGlobalView->loadFromModule("quick", "MacToolGlobal");
+//
+//            NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(toolGlobalView->winId());
+//            ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
+//            leftViewController.layoutAttribute = NSLayoutAttributeLeft;
+//             CGRect currentFrame = leftView.frame;
+//                currentFrame.size.width = 40;
+//                leftView.frame = currentFrame;
+//            [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
+//
+//  toolGlobalView->show();
+//    }
 
         {
-            NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(m_accessoryWindow->winId());
+            NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(m_leftAccessoryWindow->winId());
             ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
             leftViewController.layoutAttribute = NSLayoutAttributeLeft;
+//             CGRect currentFrame = leftView.frame;
+//    currentFrame.size.width = windowRect.size.width;
+//    leftView.frame = currentFrame;
             [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
         }
         {
             NSView *rightView = (__bridge NSView *)reinterpret_cast<void *>(m_rightAccessoryWindow->winId());
             ProgramaticViewController *rightViewController = [[ProgramaticViewController alloc] initWithView:rightView];
             rightViewController.layoutAttribute = NSLayoutAttributeRight;
+//             CGRect currentFrame = leftView.frame;
+//    currentFrame.size.width = windowRect.size.width;
+//    leftView.frame = currentFrame;
             [m_nsWindow addTitlebarAccessoryViewController:rightViewController];
+          }
 
-        }
 
     [m_nsWindow center];
 }
