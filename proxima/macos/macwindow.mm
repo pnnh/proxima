@@ -64,30 +64,37 @@ void MacWindow::createNSWindow()
 
     m_nsWindow.contentView = (__bridge NSView *)reinterpret_cast<void *>(m_window->winId());
     // 添加最左侧地球图标
-//    {
-//
-//      auto toolGlobalView = new QQuickView();
-//      toolGlobalView->setResizeMode(QQuickView::SizeRootObjectToView);
-//      toolGlobalView->loadFromModule("quick", "MacToolGlobal");
-//
-//            NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(toolGlobalView->winId());
-//            ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
-//            leftViewController.layoutAttribute = NSLayoutAttributeLeft;
-//             CGRect currentFrame = leftView.frame;
-//                currentFrame.size.width = 40;
-//                leftView.frame = currentFrame;
-//            [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
-//
-//  toolGlobalView->show();
-//    }
+    {
+
+      auto toolGlobalView = new QQuickView();
+      toolGlobalView->setResizeMode(QQuickView::SizeRootObjectToView);
+      toolGlobalView->loadFromModule("quick", "MacToolGlobal");
+
+            NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(toolGlobalView->winId());
+            ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
+            leftViewController.layoutAttribute = NSLayoutAttributeLeft;
+             CGRect currentFrame = leftView.frame;
+                currentFrame.size.width = 40;
+                leftView.frame = currentFrame;
+            [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
+
+  toolGlobalView->show();
+    }
+
+    {
+      NSTitlebarAccessoryViewController *spacerVC = [[NSTitlebarAccessoryViewController alloc] init];
+        spacerVC.view = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 50, 20)];
+        spacerVC.layoutAttribute = NSLayoutAttributeLeft;
+        [m_nsWindow addTitlebarAccessoryViewController:spacerVC];
+      }
 
         {
             NSView *leftView = (__bridge NSView *)reinterpret_cast<void *>(m_leftAccessoryWindow->winId());
+//                         CGRect currentFrame = leftView.frame;
+//                currentFrame.size.height = 30;
+//                leftView.frame = currentFrame;
             ProgramaticViewController *leftViewController = [[ProgramaticViewController alloc] initWithView:leftView];
             leftViewController.layoutAttribute = NSLayoutAttributeLeft;
-//             CGRect currentFrame = leftView.frame;
-//    currentFrame.size.width = windowRect.size.width;
-//    leftView.frame = currentFrame;
             [m_nsWindow addTitlebarAccessoryViewController:leftViewController];
         }
         {
@@ -130,6 +137,15 @@ void MacWindow::scheduleRecreateNSWindow()
         recreateNSWindow();
     });
 }
+
+void MacWindow::setPosition(QPoint &position) {
+  NSPoint currentOrigin = m_nsWindow.frame.origin;
+  CGFloat dx = position.x();    // 向右移动50
+  CGFloat dy = position.y();   // 向上移动100
+  NSPoint newOrigin = NSMakePoint(currentOrigin.x + dx, currentOrigin.y - dy);
+  [m_nsWindow setFrameOrigin:newOrigin];
+}
+
 
 void MacWindow::setGeometry(QRect geometry)
 {

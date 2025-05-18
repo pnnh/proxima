@@ -18,6 +18,7 @@ public:
   QSize size() const;
   void setVisible(bool visible);
   void show();
+  void setPosition(QPoint &position);
 
 protected:
   void createNSWindow();

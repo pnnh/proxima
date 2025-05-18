@@ -1,10 +1,15 @@
 #include "checkeredwindow.h"
+
+#include "Toolbar.h"
+
 #include <QtWidgets/QtWidgets>
 #include <QQuickView>
 #include <QUrl>
 #include <QDebug>
 
 #include "macwindow.h"
+
+#include <qqmlcontext.h>
 
 CheckeredWindow::CheckeredWindow()
   : m_color(60, 40, 750, 255) {
@@ -67,8 +72,14 @@ void showMacOSCheckeredWindow() {
   //contentWindow -> setColor(QColor(10, 60, 130));
   // contentWindow -> resize(1024, 768);
   auto toolbarView = new QQuickView();
-  toolbarView->setResizeMode(QQuickView::SizeRootObjectToView);
+  // toolbarView->setResizeMode(QQuickView::SizeRootObjectToView);
   toolbarView->loadFromModule("quick", "MacToolbarLeft");
+
+  // qRegisterMetaType<MyStruct>("MyStruct");
+
+  auto appData = new ToolbarModel();
+
+  toolbarView->rootContext()->setContextProperty("appData", appData);
 
   auto rightToolbarView = new QQuickView();
   rightToolbarView->setResizeMode(QQuickView::SizeRootObjectToView);
@@ -77,6 +88,7 @@ void showMacOSCheckeredWindow() {
   auto macWindow = new MacWindow(contentWindow, toolbarView,
                                  rightToolbarView);
   macWindow->setContentWindow(contentWindow);
+  appData->setMacWindow(macWindow);
 
   macWindow->show();
 
