@@ -63,12 +63,14 @@ void showMacOSCheckeredWindow() {
   // auto contetWindow = new CheckeredWindow();
   // contetWindow->setColor(QColor(10, 60, 130));
 
+  auto appData = new ToolbarModel();
   auto contentWindow = new QQuickView();
   //contentWindow -> setSurfaceType(QSurface::OpenGLSurface);
   // const QUrl url(QStringLiteral(u"qrc:/qt/qml/quick/views/main.qml"));
   // contentWindow -> setSource(url);
   contentWindow->loadFromModule("quick", "App");
   contentWindow->setResizeMode(QQuickView::SizeRootObjectToView);
+  contentWindow->rootContext()->setContextProperty("appData", appData);
   //contentWindow -> setColor(QColor(10, 60, 130));
   // contentWindow -> resize(1024, 768);
   auto toolbarView = new QQuickView();
@@ -76,14 +78,12 @@ void showMacOSCheckeredWindow() {
   toolbarView->loadFromModule("quick", "MacToolbarLeft");
 
   // qRegisterMetaType<MyStruct>("MyStruct");
-
-  auto appData = new ToolbarModel();
-
   toolbarView->rootContext()->setContextProperty("appData", appData);
 
   auto rightToolbarView = new QQuickView();
   rightToolbarView->setResizeMode(QQuickView::SizeRootObjectToView);
   rightToolbarView->loadFromModule("quick", "MacToolbarRight");
+  rightToolbarView->rootContext()->setContextProperty("appData", appData);
 
   auto macWindow = new MacWindow(contentWindow, toolbarView,
                                  rightToolbarView);

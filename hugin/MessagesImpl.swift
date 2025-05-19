@@ -1,7 +1,13 @@
 import Cocoa
 import Foundation
 
-public class QuantumHostApiImpl {
+public struct DirectoryResponse {
+    var absoluteUrl: String? = nil
+    var bookmarkString: String? = nil
+}
+
+@MainActor
+public class HuginImpl {
     func getHostLanguage() throws -> String {
         return "Swift"
     }
@@ -67,7 +73,7 @@ public class QuantumHostApiImpl {
             } catch { fatalError("Remaking bookmark failed") }
         }
 
-        newURL?.startAccessingSecurityScopedResource()
+        _ = newURL!.startAccessingSecurityScopedResource()
         // < do whatever to file >
         //        newURL?.stopAccessingSecurityScopedResource()
 
@@ -76,4 +82,12 @@ public class QuantumHostApiImpl {
         }
         return nil
     }
+}
+
+public func fibonacciSwift2(_ x: CInt) -> CInt {
+    print("x [swift]: \(x)")
+    if x <= 1 {
+        return 1
+    }
+    return 111
 }

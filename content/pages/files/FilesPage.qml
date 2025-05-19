@@ -43,6 +43,13 @@ Rectangle {
                     anchors.right: parent.right
                     anchors.rightMargin: 8
                     source: "qrc:/qt/qml/quick/content/assets/icons/files/add.svg"
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            appData.selectDirectory({})
+                        }
+                    }
                 }
             }
         }

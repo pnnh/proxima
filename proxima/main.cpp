@@ -15,8 +15,6 @@
 
 #include <QApplication>
 
-import quark.logger;
-
 int showQtWindow() {
 
   QQmlApplicationEngine engine;
@@ -44,7 +42,6 @@ int showQtWindow() {
 }
 
 int main(int argc, char *argv[]) {
-  MXLogger::LogInfo("Hello, World22!");
 #ifndef NDEBUG
   spdlog::set_level(spdlog::level::info);
 #endif

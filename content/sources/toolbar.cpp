@@ -1,6 +1,7 @@
 #include "toolbar.h"
 
 #include <iostream>
+#include <hugin/MessagesImpl-swift.h>
 
 void ToolbarModel::receiveStruct(QVariant var) {
   std::cerr << "receiveStruct" << std::endl;
@@ -21,7 +22,7 @@ void ToolbarModel::receiveStruct(QVariant var) {
 
 void ToolbarModel::selectDirectory(QVariant var) {
   std::cout << "selectDirectory" << std::endl;
-
+  HuginLibrary::fibonacciSwift2(88);
 }
 
 void ToolbarModel::setMacWindow(MacWindow *macWindow) {
