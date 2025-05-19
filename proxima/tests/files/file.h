@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace quark::examples
+namespace quark::tests
 {
     int TestSelectFiles();
 }

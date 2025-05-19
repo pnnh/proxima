@@ -5,7 +5,7 @@
 
 typedef QVector<QString> FileViewData;
 
-class FileViewModel : public QAbstractListModel {
+class LocationViewModel : public QAbstractListModel {
   Q_OBJECT
   QML_ELEMENT
 
@@ -14,13 +14,13 @@ class FileViewModel : public QAbstractListModel {
   Q_PROPERTY(QString parentPath READ parentPath WRITE setParentPath)
 
 public:
-  explicit FileViewModel(QObject *parent = nullptr);
-  ~FileViewModel() override;
+  explicit LocationViewModel(QObject *parent = nullptr);
+  ~LocationViewModel() override;
 
-  FileViewModel(const FileViewModel &) = delete;
-  FileViewModel &operator=(const FileViewModel &) = delete;
-  FileViewModel(FileViewModel &&) = delete;
-  FileViewModel &operator=(FileViewModel &&) = delete;
+  LocationViewModel(const LocationViewModel &) = delete;
+  LocationViewModel &operator=(const LocationViewModel &) = delete;
+  LocationViewModel(LocationViewModel &&) = delete;
+  LocationViewModel &operator=(LocationViewModel &&) = delete;
 
   [[nodiscard]] bool directories() const;
   void setDirectories(const bool &directories);
@@ -28,7 +28,7 @@ public:
   void setFiles(const bool &files);
   [[nodiscard]] QString parentPath() const;
   void setParentPath(const QString &parentPath);
-
+  Q_INVOKABLE void appendDirectory(QVariant var);
 
   [[nodiscard]] int rowCount(const QModelIndex &parent) const override;
   [[nodiscard]] QHash<int, QByteArray> roleNames() const override;

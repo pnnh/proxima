@@ -2,7 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import quick 1.0
-import Qt.labs.platform
+import QtQuick.Dialogs
 
 Rectangle {
     id: filesPage
@@ -16,12 +16,15 @@ Rectangle {
 
     property int topNavHeight: 40
 
-
-    FileDialog {
+    FolderDialog {
         id: fileDialog
         title: "选择文件"
         onAccepted: {
-            console.log("你选择的文件: " + fileDialog.file)
+            console.log("你选择的文件: " + selectedFolder)
+            let newPathModel = {
+                path: selectedFolder
+            }
+            locationListModel.appendDirectory(newPathModel)
         }
         onRejected: {
             console.log("用户取消了选择")
@@ -35,8 +38,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         height: parent.height
         width: 200
-
-
+        
         Rectangle {
             id: topNav
             color: "#E0E0E0"
@@ -49,12 +51,10 @@ Rectangle {
                 height: 20
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
+                anchors.rightMargin: 8
                 Image {
                     width: 20
                     height: 20
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: 8
                     source: "qrc:/qt/qml/quick/content/assets/icons/files/add.svg"
 
                     MouseArea {
@@ -75,14 +75,17 @@ Rectangle {
             height: parent.height
         }
 
+        LocationViewModel {
+            id: locationListModel
+            files: false
+        }
+
         ListView {
             id: filesList
             anchors.top: topNav.bottom
             width: parent.width
             height: parent.height - topNavHeight
-            model: FileViewModel {
-                files: false
-            }
+            model: locationListModel
             anchors.rightMargin: 1
             clip: true
             boundsBehavior: Flickable.StopAtBounds

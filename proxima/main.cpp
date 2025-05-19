@@ -13,6 +13,8 @@
 #include "windows/CMakeProjectDWM.h"
 #endif
 
+#include "tests/cases.h"
+
 #include <QApplication>
 
 import quark.logger;
@@ -44,7 +46,24 @@ int showQtWindow() {
 }
 
 int main(int argc, char *argv[]) {
+
+  std::cout << "Hello, World!" << std::endl;
   MXLogger::LogInfo("Hello, World22!");
+
+  std::cout << "current path: " << std::filesystem::current_path() << std::endl;
+  printf("arguments: %d,%s\n", argc, argv[1]);
+  if (argc > 1) {
+
+    std::string caseName = argv[1];
+
+    std::cout << "selected case: " << caseName << " " << caseName << std::endl;
+
+    auto caseResult = quark::tests::runCase(caseName);
+    if (caseResult >= 0) {
+      return 0;
+    }
+  }
+
 #ifndef NDEBUG
   spdlog::set_level(spdlog::level::info);
 #endif

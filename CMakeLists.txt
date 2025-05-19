@@ -45,8 +45,8 @@ set(LIB_NAME "MTQuantum")
 file(GLOB_RECURSE QUANTUM_SOURCES
         quantum/*.c
         quantum/*.cpp
-        #        quark/tests/*.c
-        #        quark/tests/*.cpp
+        quark/tests/*.c
+        quark/tests/*.cpp
         quark/business/*.cpp
         quark/core/*.cpp
         quark/infra/*.cpp
@@ -90,9 +90,6 @@ if (APPLE)
     )
 endif ()
 
-# 添加测试代码
-#add_subdirectory(tests)
-
 install(TARGETS ${LIB_NAME}
         RUNTIME_DEPENDENCY_SET ${LIB_NAME}-dependencies
         DESTINATION .
@@ -116,6 +113,7 @@ find_package(
         Concurrent
         ShaderTools
         Sql
+        QuickDialogs2
         REQUIRED)
 
 set(CMAKE_AUTOUIC ON)
@@ -130,9 +128,9 @@ qt_standard_project_setup()
 file(GLOB_RECURSE PROXIMA_SOURCES
         proxima/main.cpp
         proxima/services/*.cpp
-        #        proxima/tests/*.cpp
-        #        quark/tests/*.c
-        #        quark/tests/*.cpp
+        proxima/tests/*.cpp
+        quark/tests/*.c
+        quark/tests/*.cpp
         quark/business/*.cpp
         quark/core/*.cpp
         quark/infra/*.cpp
@@ -161,8 +159,8 @@ endif ()
 file(GLOB_RECURSE PROXIMA_MODULES
         proxima/*.cxx
         proxima/*.ixx
-        #        quark/tests/*.cxx
-        #        quark/tests/*.ixx
+        quark/tests/*.cxx
+        quark/tests/*.ixx
         quark/business/*.cxx
         quark/business/*.ixx
         quark/core/*.cxx
@@ -207,7 +205,8 @@ target_link_libraries(
         Qt6::Gui
         Qt6::QuickControls2
         Qt6::Widgets
-        Qt6::Sql)
+        Qt6::Sql
+        Qt6::QuickDialogs2)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/content/sources)
 

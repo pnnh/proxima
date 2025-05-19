@@ -1,8 +1,7 @@
 #include <iostream>
 
-namespace quark::examples::sqlite
-{
-    int TestSqliteVersion();
+namespace quark::tests {
+int TestSqliteVersion();
 
-    int TestSqliteSelect();
+int TestSqliteSelect();
 }

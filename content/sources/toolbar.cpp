@@ -19,10 +19,6 @@ void ToolbarModel::receiveStruct(QVariant var) {
 
 }
 
-void ToolbarModel::selectDirectory(QVariant var) {
-  std::cout << "selectDirectory" << std::endl;
-}
-
 void ToolbarModel::setMacWindow(MacWindow *macWindow) {
 
   m_macWindow = macWindow;

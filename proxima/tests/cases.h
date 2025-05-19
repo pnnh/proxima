@@ -1,8 +1,7 @@
 #include <iostream>
 
-namespace quark::examples
-{
-    int runCase(const std::string& caseName);
+namespace quark::tests {
+int runCase(const std::string &caseName);
 
-    int TestHelloWorld();
+int TestHelloWorld();
 }

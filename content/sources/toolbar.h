@@ -24,7 +24,6 @@ class ToolbarModel : public QObject {
 
 public:
   Q_INVOKABLE void receiveStruct(QVariant var);
-  Q_INVOKABLE void selectDirectory(QVariant var);
 
   void setMacWindow(MacWindow *macWindow);
 
