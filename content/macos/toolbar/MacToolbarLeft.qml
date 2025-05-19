@@ -3,8 +3,7 @@ import quick 1.0
 
 Rectangle {
     id: titleBar
-    height: 30
-    width: parent.width
+    anchors.fill: parent
     color: "green"
 
     Text {

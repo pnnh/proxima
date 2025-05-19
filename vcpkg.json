@@ -82,7 +82,7 @@
     },
     {
       "name": "folly",
-      "version>=": "2024.01.01.00"
+      "version>=": "2025.01.20.00"
     },
     {
       "name": "workflow",
@@ -160,7 +160,7 @@
     },
     {
       "name": "folly",
-      "version-string": "2024.01.01.00"
+      "version-string": "2025.01.20.00"
     },
     {
       "name": "workflow",
