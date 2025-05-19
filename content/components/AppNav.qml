@@ -15,19 +15,6 @@ Rectangle {
         Image {
             width: 20
             height: 20
-            source: "qrc:/qt/qml/quick/content/assets/icons/global.png"
-
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    console.log(parent.width, parent.height)
-                    appItem.routeUrlToItem('/')
-                }
-            }
-        }
-        Image {
-            width: 20
-            height: 20
             source: "qrc:/qt/qml/quick/content/assets/icons/files/back.svg"
         }
         Image {
@@ -39,10 +26,6 @@ Rectangle {
             width: 20
             height: 20
             source: "qrc:/qt/qml/quick/content/assets/icons/files/forward.svg"
-        }
-        Rectangle {
-            width: 600
-            height: 20
         }
     }
 }

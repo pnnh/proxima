@@ -6,11 +6,26 @@ Rectangle {
     anchors.fill: parent
     color: "green"
 
-    Text {
-        anchors.centerIn: parent
-        text: "ToolbarLeft"
-        font.pixelSize: 20
-        color: "#333"
+    Row {
+        width: parent.width
+        height: 20
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: 8
+        Image {
+            width: 20
+            height: 20
+            source: "qrc:/qt/qml/quick/content/assets/icons/files/back.svg"
+        }
+        Image {
+            width: 20
+            height: 20
+            source: "qrc:/qt/qml/quick/content/assets/icons/files/up.svg"
+        }
+        Image {
+            width: 20
+            height: 20
+            source: "qrc:/qt/qml/quick/content/assets/icons/files/forward.svg"
+        }
     }
 
     property bool dragging: false

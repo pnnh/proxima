@@ -1,4 +1,4 @@
-#include "Toolbar.h"
+#include "toolbar.h"
 
 #include <iostream>
 
@@ -16,6 +16,11 @@ void ToolbarModel::receiveStruct(QVariant var) {
   } else {
     std::cerr << "m_macWindow is nullptr" << std::endl;
   }
+
+}
+
+void ToolbarModel::selectDirectory(QVariant var) {
+  std::cout << "selectDirectory" << std::endl;
 
 }
 

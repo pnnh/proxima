@@ -36,24 +36,27 @@ void pulsar::HandleFileList(WFHttpTask *httpTask) {
 
   std::ostringstream oss;
   auto fileServer = std::make_shared<quark::FileServerBusiness>();
-  auto filesPtr = fileServer->selectFilesVector(baseUrl);
+  auto selectResult = quark::FileServerBusiness::selectFilesVector(baseUrl);
   json range = json::array();
-  for (const auto &model : filesPtr) {
-    json item = {
-        {"URN", model.URN},
-        {"Title", model.Title},
-        {"Name", model.Name},
-        {"Description", model.Description},
-        {"IsDir", model.IsDir},
-        {"IsHidden", model.IsHidden},
-        {"IsIgnore", model.IsIgnore},
-        {"CreateTime", model.CreateTime.toString()},
-        {"UpdateTime", model.UpdateTime.toString()},
-    };
-    range.push_back(item);
+  auto count = 0;
+  if (selectResult.has_value()) {
+    auto filesVector = selectResult.value();
+    count = static_cast<int>(filesVector.size());
+    for (const auto &model : filesVector) {
+      json item = {
+          {"URN", model.URN},
+          {"Title", model.Title},
+          {"Name", model.Name},
+          {"Description", model.Description},
+          {"IsDir", model.IsDir},
+          {"IsHidden", model.IsHidden},
+          {"IsIgnore", model.IsIgnore},
+          {"CreateTime", model.CreateTime.toString()},
+          {"UpdateTime", model.UpdateTime.toString()},
+      };
+      range.push_back(item);
+    }
   }
-
-  auto count = filesPtr.size();
   json data = json::object({
       {"code", 200},
       {"message", "Hello, World!"},

@@ -11,17 +11,42 @@ Rectangle {
     anchors.bottom: parent.bottom
     height: parent.height
 
-    AppNav{}
-
     signal pathChanged(string name)
+
+    property int topNavHeight: 40
 
     Rectangle {
         id: leftNavView
         color: "#FFFFFF"
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        height: parent.height - 40
+        height: parent.height
         width: 200
+
+
+        Rectangle {
+            id: topNav
+            color: "#E0E0E0"
+            anchors.top: parent.top
+            anchors.left: parent.left
+            width: parent.width
+            height: topNavHeight
+            Row {
+                width: parent.width / 2
+                height: 20
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                Image {
+                    width: 20
+                    height: 20
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: 8
+                    source: "qrc:/qt/qml/quick/content/assets/icons/files/add.svg"
+                }
+            }
+        }
+
         Rectangle {
             color: "#E0E0E0"
             anchors.top: parent.top
@@ -31,8 +56,11 @@ Rectangle {
         }
 
         ListView {
-            anchors.fill: parent
-            model: FileViewModel{
+            id: filesList
+            anchors.top: topNav.bottom
+            width: parent.width
+            height: parent.height - topNavHeight
+            model: FileViewModel {
                 files: false
             }
             anchors.rightMargin: 1
@@ -74,20 +102,20 @@ Rectangle {
         }
     }
 
-    Loader{
-        id:myLoader
+    Loader {
+        id: myLoader
         width: parent.width - leftNavView.width
-        height: parent.height - 40
+        height: parent.height
         anchors.right: parent.right
         anchors.bottom: parent.bottom
     }
-    Component{
-        id:detailComponent
+    Component {
+        id: detailComponent
         FilesDetail {
         }
     }
-    Component{
-        id:emptyComponent
+    Component {
+        id: emptyComponent
 
         Text {
             anchors.centerIn: parent
@@ -96,7 +124,7 @@ Rectangle {
     }
     Component.onCompleted: () => {
 
-                               myLoader.sourceComponent = detailComponent
-}
+        myLoader.sourceComponent = detailComponent
+    }
 }
 

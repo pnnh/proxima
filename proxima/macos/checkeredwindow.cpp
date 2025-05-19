@@ -1,6 +1,6 @@
 #include "checkeredwindow.h"
 
-#include "Toolbar.h"
+#include "toolbar.h"
 
 #include <QtWidgets/QtWidgets>
 #include <QQuickView>
