@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.3
 import quick 1.0
+import Qt.labs.platform
 
 Rectangle {
     id: filesPage
@@ -14,6 +15,18 @@ Rectangle {
     signal pathChanged(string name)
 
     property int topNavHeight: 40
+
+
+    FileDialog {
+        id: fileDialog
+        title: "选择文件"
+        onAccepted: {
+            console.log("你选择的文件: " + fileDialog.file)
+        }
+        onRejected: {
+            console.log("用户取消了选择")
+        }
+    }
 
     Rectangle {
         id: leftNavView
@@ -47,7 +60,7 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            appData.selectDirectory({})
+                            fileDialog.open()
                         }
                     }
                 }

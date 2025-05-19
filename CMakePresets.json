@@ -27,7 +27,7 @@
     {
       "name": "macos",
       "displayName": "macOS Config",
-      "generator": "Xcode",
+      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/macos",
       "installDir": "${sourceDir}/install/macos",
       "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
@@ -38,8 +38,10 @@
         "CMAKE_OSX_DEPLOYMENT_TARGET": "15.4",
         "VCPKG_HOST_TRIPLET": "arm64-osx",
         "VCPKG_TARGET_TRIPLET": "arm64-osx",
-        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
-        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "/opt/homebrew/bin/ccache",
+        "CMAKE_C_COMPILER_LAUNCHER": "/opt/homebrew/bin/ccache",
+        "CMAKE_C_COMPILER": "/opt/homebrew/opt/llvm/bin/clang",
+        "CMAKE_CXX_COMPILER": "/opt/homebrew/opt/llvm/bin/clang++",
         "CMAKE_PREFIX_PATH": "$env{QTRELEASE}/macos/lib/cmake"
       },
       "environment": {}

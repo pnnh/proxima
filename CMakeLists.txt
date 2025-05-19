@@ -21,9 +21,7 @@ enable_testing()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
-include_directories(${PROJECT_BINARY_DIR}/include)
 link_directories(${PROJECT_BINARY_DIR})
-link_directories(${PROJECT_BINARY_DIR}/lib)
 
 if (APPLE)
     set(CMAKE_MACOSX_RPATH 1)
@@ -141,8 +139,6 @@ file(GLOB_RECURSE PROXIMA_SOURCES
         quark/services/*.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
-    add_subdirectory(hugin)
     file(GLOB_RECURSE DARWIN_SOURCES
             proxima/macos/*.cpp
             proxima/macos/*.mm)
@@ -157,32 +153,30 @@ qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    add_dependencies(${APP_NAME} HuginLibrary)
-    target_link_libraries(${APP_NAME} PRIVATE HuginLibrary)
 elseif (WIN32)
     target_compile_definitions(${APP_NAME} PUBLIC UNICODE _UNICODE)
     target_link_libraries(${APP_NAME} PUBLIC dwmapi UxTheme)
 endif ()
 
-#file(GLOB_RECURSE PROXIMA_MODULES
-#        proxima/*.cxx
-#        proxima/*.ixx
-#        #        quark/tests/*.cxx
-#        #        quark/tests/*.ixx
-#        quark/business/*.cxx
-#        quark/business/*.ixx
-#        quark/core/*.cxx
-#        quark/core/*.ixx
-#        quark/infra/*.cxx
-#        quark/infra/*.ixx
-#        quark/services/*.cxx
-#        quark/services/*.ixx)
+file(GLOB_RECURSE PROXIMA_MODULES
+        proxima/*.cxx
+        proxima/*.ixx
+        #        quark/tests/*.cxx
+        #        quark/tests/*.ixx
+        quark/business/*.cxx
+        quark/business/*.ixx
+        quark/core/*.cxx
+        quark/core/*.ixx
+        quark/infra/*.cxx
+        quark/infra/*.ixx
+        quark/services/*.cxx
+        quark/services/*.ixx)
 
-#target_sources(${APP_NAME}
-#        PUBLIC
-#        FILE_SET CXX_MODULES FILES
-#        ${PROXIMA_MODULES}
-#)
+target_sources(${APP_NAME}
+        PUBLIC
+        FILE_SET CXX_MODULES FILES
+        ${PROXIMA_MODULES}
+)
 
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
@@ -270,13 +264,13 @@ file(GLOB_RECURSE APP_SOURCES pulsar/*.cpp
 
 target_sources(${SVC_NAME} PUBLIC ${APP_SOURCES})
 
-#file(GLOB_RECURSE SVC_MODULES pulsar/*.cxx quark/*.cxx)
+file(GLOB_RECURSE SVC_MODULES pulsar/*.cxx quark/*.cxx)
 
-#target_sources(${SVC_NAME}
-#        PUBLIC
-#        FILE_SET CXX_MODULES FILES
-#        ${SVC_MODULES}
-#)
+target_sources(${SVC_NAME}
+        PUBLIC
+        FILE_SET CXX_MODULES FILES
+        ${SVC_MODULES}
+)
 
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
