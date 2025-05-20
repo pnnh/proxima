@@ -5,6 +5,8 @@ project(Proxima VERSION 0.1.0 LANGUAGES C CXX)
 if (APPLE)
     enable_language(OBJC OBJCXX Swift)
     set(CMAKE_Swift_LANGUAGE_VERSION 6.1)
+    link_directories(${SWIFT_LIBRARY_SEARCH_PATHS})
+    set(CMAKE_Swift_FLAGS "${CMAKE_Swift_FLAGS} -cxx-interoperability-mode=default")
 endif ()
 
 # 设置语言标准
@@ -139,7 +141,8 @@ file(GLOB_RECURSE PROXIMA_SOURCES
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     file(GLOB_RECURSE DARWIN_SOURCES
             proxima/macos/*.cpp
-            proxima/macos/*.mm)
+            proxima/macos/*.mm
+            proxima/macos/*.swift)
     list(APPEND PROXIMA_SOURCES ${DARWIN_SOURCES})
 elseif (WIN32)
     file(GLOB_RECURSE WINDOWS_SOURCES
@@ -151,30 +154,32 @@ qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    #    add_dependencies(${APP_NAME} fibonacci)
+    #    target_link_libraries(${APP_NAME} PRIVATE fibonacci)
 elseif (WIN32)
     target_compile_definitions(${APP_NAME} PUBLIC UNICODE _UNICODE)
     target_link_libraries(${APP_NAME} PUBLIC dwmapi UxTheme)
 endif ()
 
-file(GLOB_RECURSE PROXIMA_MODULES
-        proxima/*.cxx
-        proxima/*.ixx
-        quark/tests/*.cxx
-        quark/tests/*.ixx
-        quark/business/*.cxx
-        quark/business/*.ixx
-        quark/core/*.cxx
-        quark/core/*.ixx
-        quark/infra/*.cxx
-        quark/infra/*.ixx
-        quark/services/*.cxx
-        quark/services/*.ixx)
-
-target_sources(${APP_NAME}
-        PUBLIC
-        FILE_SET CXX_MODULES FILES
-        ${PROXIMA_MODULES}
-)
+#file(GLOB_RECURSE PROXIMA_MODULES
+#        proxima/*.cxx
+#        proxima/*.ixx
+#        quark/tests/*.cxx
+#        quark/tests/*.ixx
+#        quark/business/*.cxx
+#        quark/business/*.ixx
+#        quark/core/*.cxx
+#        quark/core/*.ixx
+#        quark/infra/*.cxx
+#        quark/infra/*.ixx
+#        quark/services/*.cxx
+#        quark/services/*.ixx)
+#
+#target_sources(${APP_NAME}
+#        PUBLIC
+#        FILE_SET CXX_MODULES FILES
+#        ${PROXIMA_MODULES}
+#)
 
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
@@ -263,13 +268,13 @@ file(GLOB_RECURSE APP_SOURCES pulsar/*.cpp
 
 target_sources(${SVC_NAME} PUBLIC ${APP_SOURCES})
 
-file(GLOB_RECURSE SVC_MODULES pulsar/*.cxx quark/*.cxx)
-
-target_sources(${SVC_NAME}
-        PUBLIC
-        FILE_SET CXX_MODULES FILES
-        ${SVC_MODULES}
-)
+#file(GLOB_RECURSE SVC_MODULES pulsar/*.cxx quark/*.cxx)
+#
+#target_sources(${SVC_NAME}
+#        PUBLIC
+#        FILE_SET CXX_MODULES FILES
+#        ${SVC_MODULES}
+#)
 
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)

@@ -13,11 +13,13 @@
 #include "windows/CMakeProjectDWM.h"
 #endif
 
+#include "macos/fibonacci.h"
 #include "tests/cases.h"
 
 #include <QApplication>
+// #include <fibonacci/fibonacci-swift.h>
 
-import quark.logger;
+// import quark.logger;
 
 int showQtWindow() {
 
@@ -48,7 +50,9 @@ int showQtWindow() {
 int main(int argc, char *argv[]) {
 
   std::cout << "Hello, World!" << std::endl;
-  MXLogger::LogInfo("Hello, World22!");
+  // MXLogger::LogInfo("Hello, World22!");
+  // auto abc = SwiftFibonacci::fibonacciSwift(5);
+  std::cout << "abc2: " << fibo::calcFibonacci() << std::endl;
 
   std::cout << "current path: " << std::filesystem::current_path() << std::endl;
   printf("arguments: %d,%s\n", argc, argv[1]);
