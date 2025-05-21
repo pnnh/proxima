@@ -61,6 +61,8 @@ file(GLOB_RECURSE QUANTUM_SOURCES
 
 if (APPLE)
     list(APPEND QUANTUM_SOURCES module.modulemap)
+    # 添加xcode生成的Swift头文件路径
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}.build/Debug/DerivedSources)
 endif ()
 add_library(${LIB_NAME} SHARED ${QUANTUM_SOURCES})
 
@@ -114,12 +116,10 @@ find_package(
         Quick
         Gui
         QuickControls2
-        Sql
         Widgets
         Network
         Concurrent
         ShaderTools
-        Sql
         QuickDialogs2
         REQUIRED)
 
@@ -157,6 +157,12 @@ add_dependencies(${APP_NAME} ${LIB_NAME})
 target_link_libraries(${APP_NAME} PRIVATE ${LIB_NAME})
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    # 添加xcode生成的Swift头文件路径
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.build/Debug/DerivedSources)
+    # 设置xcode 的CODE_SIGN_ENTITLEMENTS 构建设置以启用 App sandbox
+    set(ENTITLEMENTS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/proxima/macos/proxima.entitlements")
+    set_target_properties(${APP_NAME} PROPERTIES
+            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${ENTITLEMENTS_FILE}")
 elseif (WIN32)
     target_compile_definitions(${APP_NAME} PUBLIC UNICODE _UNICODE)
     target_link_libraries(${APP_NAME} PUBLIC dwmapi UxTheme)
@@ -182,27 +188,6 @@ endif ()
 #        ${PROXIMA_MODULES}
 #)
 
-# 查找并引用Boost库
-#find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
-#target_include_directories(${APP_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
-#target_link_libraries(${APP_NAME} PRIVATE ${Boost_LIBRARIES})
-
-# 查找并引用日志库
-#find_package(spdlog CONFIG REQUIRED)
-#target_link_libraries(${APP_NAME} PRIVATE spdlog::spdlog)
-
-# 查找并引用Markdown解析库
-#find_package(cmark CONFIG REQUIRED)
-#target_link_libraries(${APP_NAME} PRIVATE cmark::cmark)
-
-# 查找并引用Sqlite解析库
-#find_package(unofficial-sqlite3 CONFIG REQUIRED)
-#target_link_libraries(${APP_NAME} PRIVATE unofficial::sqlite3::sqlite3)
-
-# 查找并引用yaml-cpp解析库
-#find_package(yaml-cpp CONFIG REQUIRED)
-#target_link_libraries(${APP_NAME} PRIVATE yaml-cpp::yaml-cpp)
-
 target_link_libraries(
         ${APP_NAME}
         PRIVATE Qt6::Core
@@ -211,7 +196,6 @@ target_link_libraries(
         Qt6::Gui
         Qt6::QuickControls2
         Qt6::Widgets
-        Qt6::Sql
         Qt6::QuickDialogs2)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/content/sources)

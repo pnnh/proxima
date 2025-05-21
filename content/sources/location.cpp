@@ -3,6 +3,8 @@
 #include <quark/services/filesystem/filesystem.h>
 
 #include "quark/business/filesystem/file.h"
+#include "proxima/services/location_service.h"
+#include "quark/infra/utils/md5.h"
 
 LocationViewModel::LocationViewModel(QObject *parent)
   : QAbstractListModel(parent) {
@@ -10,7 +12,6 @@ LocationViewModel::LocationViewModel(QObject *parent)
   dataNames.insert(role++, "uid");
   dataNames.insert(role++, "name");
   dataNames.insert(role++, "path");
-  m_parentPath = QString::fromStdString(quark::UserHomeDirectory());
 
   loadData();
 }
@@ -31,41 +32,42 @@ void LocationViewModel::setFiles(const bool &files) {
   loadData();
 }
 
-QString LocationViewModel::parentPath() const { return this->m_parentPath; }
-
-void LocationViewModel::setParentPath(const QString &parentPath) {
-  this->m_parentPath = parentPath;
-  loadData();
-}
-
 void LocationViewModel::appendDirectory(QVariant qmlVar) {
   std::cerr << "appendDirectory" << std::endl;
   QVariantMap map = qmlVar.toMap();
   auto newPath = map["path"].toString();
   std::cerr << "value: " << newPath.toStdString() << std::endl;
+
+  std::filesystem::path stdPath = newPath.toStdString();
+  auto locSvc = proxima::LocationService();
+  quark::PSLocationModel model;
+  model.URN = quark::calcMd5(newPath.toStdString(), true);
+  model.Name = stdPath.filename();
+  model.Path = newPath.toStdString();
+
+  locSvc.InsertOrUpdateLocation(model);
 }
 
 void LocationViewModel::loadData() {
   qDebug() << "loadData";
-  if (m_parentPath.isEmpty()) {
-    return;
-  }
-  auto options = quark::FileServerBusiness::SelectFilesOptions();
-  options.directories = this->m_directories;
-  options.files = this->m_files;
 
-  auto selectResult = quark::FileServerBusiness::selectFilesVector(
-      this->m_parentPath.toStdString(), options);
+  const auto locSvc = proxima::LocationService();
+
+  auto selectResult = locSvc.SelectLocations();
   if (!selectResult.has_value()) {
     std::cout << "loadData error: " << selectResult.error();
+    return;
+  }
+  auto selectData = selectResult.value();
+  if (selectData.empty()) {
+    qDebug() << "loadData empty";
     return;
   }
 
   beginResetModel();
   dataList.clear();
-  auto fileList = selectResult.value();
 
-  for (auto &model : fileList) {
+  for (auto &model : selectData) {
     auto dataPtr = FileViewData();
 
     QString uid = QString::fromStdString(model.URN);

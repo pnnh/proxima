@@ -1,6 +1,6 @@
 #pragma once
 
-#include "LibraryService.h"
+#include "location_service.h"
 
 class SyncService {
 public:
@@ -8,5 +8,5 @@ public:
   int SyncImages(const QString &path);
 
 private:
-  LibraryService libraryService;
+  proxima::LocationService libraryService;
 };

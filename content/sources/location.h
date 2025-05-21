@@ -11,7 +11,6 @@ class LocationViewModel : public QAbstractListModel {
 
   Q_PROPERTY(bool directories READ directories WRITE setDirectories)
   Q_PROPERTY(bool files READ files WRITE setFiles)
-  Q_PROPERTY(QString parentPath READ parentPath WRITE setParentPath)
 
 public:
   explicit LocationViewModel(QObject *parent = nullptr);
@@ -26,8 +25,6 @@ public:
   void setDirectories(const bool &directories);
   [[nodiscard]] bool files() const;
   void setFiles(const bool &files);
-  [[nodiscard]] QString parentPath() const;
-  void setParentPath(const QString &parentPath);
   Q_INVOKABLE void appendDirectory(QVariant var);
 
   [[nodiscard]] int rowCount(const QModelIndex &parent) const override;
@@ -38,7 +35,6 @@ public:
 private:
   bool m_directories{true};
   bool m_files{true};
-  QString m_parentPath{""};
   void loadData();
   QHash<int, QByteArray> dataNames;
   QVector<FileViewData> dataList;

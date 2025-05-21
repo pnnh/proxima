@@ -7,12 +7,10 @@
 
 #include "quark/infra/utils/basex.h"
 
-void SyncService::SyncLibraries()
-{
+void SyncService::SyncLibraries() {
   auto appDir = UserService::EnsureApplicationDirectory("/Polaris/Data");
   QDir dir(appDir);
-  if (!dir.exists())
-  {
+  if (!dir.exists()) {
     std::cerr << "应用主目录不存在无法同步" << std::endl;
     return;
   }
@@ -20,29 +18,26 @@ void SyncService::SyncLibraries()
   dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
   dir.setSorting(QDir::Name | QDir::IgnoreCase); // 按照名称排序
   QDirIterator iterator(dir);
-  QVector<quark::PSLibraryModel> libraryList;
-  while (iterator.hasNext())
-  {
+  QVector<quark::PSLocationModel> libraryList;
+  while (iterator.hasNext()) {
     QFileInfo info(iterator.next());
     QString fileName = info.fileName(); // 获取文件名
     QString filePath = info.filePath(); // 文件目录+文件名
 
-    if (!filePath.isEmpty() && !filePath.isNull())
-    {
-      if (fileName == "Index.db" || !fileName.endsWith(".vslibrary"))
-      {
+    if (!filePath.isEmpty() && !filePath.isNull()) {
+      if (fileName == "Index.db" || !fileName.endsWith(".vslibrary")) {
         continue;
       }
       auto stdPathString = filePath.toStdString();
       auto uid = quark::encode64(stdPathString);
-      auto model = quark::PSLibraryModel();
+      auto model = quark::PSLocationModel();
       model.URN = uid;
       model.Name = fileName.toStdString();
       model.Path = filePath.toStdString();
       libraryList.push_back(model);
     }
   }
-  // std::cout << "SyncLibraries: " << libraryList.size() << std::endl;
-  libraryService.InsertOrUpdateLibrary(libraryList);
+  std::cout << "SyncLibraries: " << libraryList.size() << std::endl;
+  libraryService.InsertOrUpdateLocation(libraryList);
 }
 
