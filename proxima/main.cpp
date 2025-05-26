@@ -90,8 +90,8 @@ int main(int argc, char *argv[]) {
 #ifndef NDEBUG
   spdlog::set_level(spdlog::level::info);
 #endif
-  QQmlDebuggingEnabler::enableDebugging(true);
-  QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, true);
+  // QQmlDebuggingEnabler::enableDebugging(true);
+  // QLoggingCategory::defaultCategory()->setEnabled(QtDebugMsg, true);
 
   spdlog::debug("i love c++1");
   spdlog::info("i love c++2");

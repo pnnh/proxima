@@ -150,7 +150,7 @@ elseif (WIN32)
     list(APPEND PROXIMA_SOURCES ${WINDOWS_SOURCES})
 endif ()
 
-qt6_add_executable(${APP_NAME} MANUAL_FINALIZATION)
+qt_add_executable(${APP_NAME} MACOSX_BUNDLE WIN32 MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
 
 add_dependencies(${APP_NAME} ${LIB_NAME})
@@ -159,10 +159,15 @@ target_link_libraries(${APP_NAME} PRIVATE ${LIB_NAME})
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # 添加xcode生成的Swift头文件路径
     include_directories(${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.build/Debug/DerivedSources)
+
     # 设置xcode 的CODE_SIGN_ENTITLEMENTS 构建设置以启用 App sandbox
     set(ENTITLEMENTS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/proxima/macos/proxima.entitlements")
     set_target_properties(${APP_NAME} PROPERTIES
-            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${ENTITLEMENTS_FILE}")
+            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${ENTITLEMENTS_FILE}"
+            MACOSX_BUNDLE_BUNDLE_IDENTIFIER "xyz.huable.${APP_NAME}"
+            MACOSX_BUNDLE_BUNDLE_NAME ${APP_NAME}
+            MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+    )
 elseif (WIN32)
     target_compile_definitions(${APP_NAME} PUBLIC UNICODE _UNICODE)
     target_link_libraries(${APP_NAME} PUBLIC dwmapi UxTheme)
@@ -267,3 +272,6 @@ target_link_libraries(${APP_NAME} PRIVATE libpqxx::pqxx)
 
 # 拷贝资源文件到二进制目录，方便调试
 file(COPY pulsar/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/pulsar)
+
+# 完成 Qt 目标配置
+qt_finalize_target(${APP_NAME})
