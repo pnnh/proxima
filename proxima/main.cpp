@@ -17,9 +17,7 @@
 #include "tests/cases.h"
 
 #include <QApplication>
-#include "pulsar/controllers/article.h"
-#include "pulsar/process.h"
-#include "pulsar/services/syncer/syncer.h"
+
 #include <thread>
 
 // import quark.logger;
@@ -60,24 +58,7 @@ int main(int argc, char *argv[]) {
   std::cout << "current path: " << std::filesystem::current_path() << std::endl;
   printf("arguments: %d,%s\n", argc, argv[1]);
   if (argc > 1) {
-
     std::string caseName = argv[1];
-
-    if (caseName == "pulsar") {
-
-      constexpr int PORT = 7101;
-
-      spdlog::info("Server started {}", PORT);
-
-      std::thread syncer(pulsar::runSync);
-
-      auto server = pulsar::PLServer(PORT);
-      server.Reg("GET", "/articles", pulsar::HandleArticles);
-      server.Reg("GET", "/articles/:uid", pulsar::HandleArticleGet);
-      server.Reg("GET", "/articles/get", pulsar::HandleArticleGet);
-
-      return server.runServer();
-    }
 
     std::cout << "selected case: " << caseName << " " << caseName << std::endl;
 

@@ -45,67 +45,6 @@ endif ()
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 
-
-# 库名称
-set(LIB_NAME "MTQuantum")
-
-file(GLOB_RECURSE QUANTUM_SOURCES
-        quantum/*.c
-        quantum/*.cpp
-        quark/tests/*.c
-        quark/tests/*.cpp
-        quark/business/*.cpp
-        quark/core/*.cpp
-        quark/infra/*.cpp
-        quark/services/*.cpp)
-
-if (APPLE)
-    list(APPEND QUANTUM_SOURCES module.modulemap)
-    # 添加xcode生成的Swift头文件路径
-    include_directories(${CMAKE_CURRENT_BINARY_DIR}/${LIB_NAME}.build/Debug/DerivedSources)
-endif ()
-add_library(${LIB_NAME} SHARED ${QUANTUM_SOURCES})
-
-# 查找并引用日志库
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${LIB_NAME} PUBLIC spdlog::spdlog)
-
-# 查找并引用Boost库
-find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
-target_include_directories(${LIB_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
-target_link_libraries(${LIB_NAME} PUBLIC ${Boost_LIBRARIES})
-
-# 查找并引用Markdown解析库
-find_package(cmark CONFIG REQUIRED)
-target_link_libraries(${LIB_NAME} PUBLIC cmark::cmark)
-
-# 查找并引用Sqlite解析库
-find_package(unofficial-sqlite3 CONFIG REQUIRED)
-target_link_libraries(${LIB_NAME} PUBLIC unofficial::sqlite3::sqlite3)
-
-# 查找并引用yaml-cpp解析库
-find_package(yaml-cpp CONFIG REQUIRED)
-target_link_libraries(${LIB_NAME} PUBLIC yaml-cpp::yaml-cpp)
-
-if (APPLE)
-    set_target_properties(${LIB_NAME} PROPERTIES
-            FRAMEWORK TRUE
-            FRAMEWORK_VERSION A
-            MACOSX_FRAMEWORK_IDENTIFIER xyz.huable.MTQuantum
-            VERSION 0.0.1
-            SOVERSION 0.0.1
-            PUBLIC_HEADER "src/quantum/quantum.h"
-            MACOSX_BUNDLE TRUE
-    )
-endif ()
-
-install(TARGETS ${LIB_NAME}
-        RUNTIME_DEPENDENCY_SET ${LIB_NAME}-dependencies
-        DESTINATION .
-)
-install(RUNTIME_DEPENDENCY_SET ${LIB_NAME}-dependencies)
-
-
 set(APP_NAME MTProxima)
 
 # 查找并引用Qt库
@@ -117,8 +56,6 @@ find_package(
         Gui
         QuickControls2
         Widgets
-        Network
-        Concurrent
         ShaderTools
         QuickDialogs2
         REQUIRED)
@@ -136,14 +73,23 @@ file(GLOB_RECURSE PROXIMA_SOURCES
         proxima/main.cpp
         proxima/services/*.cpp
         proxima/tests/*.cpp
-        pulsar/*.cpp)
+        quark/tests/*.c
+        quark/tests/*.cpp
+        quark/business/*.cpp
+        quark/core/*.cpp
+        quark/infra/*.cpp
+        quark/services/*.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     file(GLOB_RECURSE DARWIN_SOURCES
             proxima/macos/*.cpp
             proxima/macos/*.mm
-            proxima/macos/*.swift)
+            proxima/macos/*.swift
+            module.modulemap)
     list(APPEND PROXIMA_SOURCES ${DARWIN_SOURCES})
+
+    # 添加xcode生成的Swift头文件路径
+    include_directories(${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.build/Debug/DerivedSources)
 elseif (WIN32)
     file(GLOB_RECURSE WINDOWS_SOURCES
             proxima/windows/*.cpp)
@@ -153,21 +99,13 @@ endif ()
 qt_add_executable(${APP_NAME} MACOSX_BUNDLE WIN32 MANUAL_FINALIZATION)
 target_sources(${APP_NAME} PUBLIC ${PROXIMA_SOURCES})
 
-add_dependencies(${APP_NAME} ${LIB_NAME})
-target_link_libraries(${APP_NAME} PRIVATE ${LIB_NAME})
-
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     # 添加xcode生成的Swift头文件路径
     include_directories(${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.build/Debug/DerivedSources)
-
-    # 设置xcode 的CODE_SIGN_ENTITLEMENTS 构建设置以启用 App sandbox
-    set(ENTITLEMENTS_FILE "${CMAKE_CURRENT_SOURCE_DIR}/proxima/macos/proxima.entitlements")
     set_target_properties(${APP_NAME} PROPERTIES
-            XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS "${ENTITLEMENTS_FILE}"
             MACOSX_BUNDLE_BUNDLE_IDENTIFIER "xyz.huable.${APP_NAME}"
             MACOSX_BUNDLE_BUNDLE_NAME ${APP_NAME}
-            MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
-    )
+            MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}")
 elseif (WIN32)
     target_compile_definitions(${APP_NAME} PUBLIC UNICODE _UNICODE)
     target_link_libraries(${APP_NAME} PUBLIC dwmapi UxTheme)
@@ -245,11 +183,6 @@ qt_add_shaders(
         "content/shaders/rounded.frag"
         "content/shaders/rounded.vert")
 
-# 查找Workflow库，实现HTTP服务
-set(WORKFLOW_BUILD_STATIC_RUNTIME ON)
-find_library(workflow_lib workflow)
-target_link_libraries(${APP_NAME} PRIVATE ${workflow_lib})
-
 # 查找JSON库
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE nlohmann_json::nlohmann_json)
@@ -266,12 +199,26 @@ target_link_libraries(${APP_NAME} PRIVATE libenvpp::libenvpp)
 find_package(date CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE date::date-tz)
 
-# 查找并引用PostgreSQL解析库
-find_package(libpqxx CONFIG REQUIRED)
-target_link_libraries(${APP_NAME} PRIVATE libpqxx::pqxx)
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PUBLIC spdlog::spdlog)
 
-# 拷贝资源文件到二进制目录，方便调试
-file(COPY pulsar/assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/pulsar)
+# 查找并引用Boost库
+find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
+target_include_directories(${APP_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(${APP_NAME} PUBLIC ${Boost_LIBRARIES})
+
+# 查找并引用Markdown解析库
+find_package(cmark CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PUBLIC cmark::cmark)
+
+# 查找并引用Sqlite解析库
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PUBLIC unofficial::sqlite3::sqlite3)
+
+# 查找并引用yaml-cpp解析库
+find_package(yaml-cpp CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PUBLIC yaml-cpp::yaml-cpp)
 
 # 完成 Qt 目标配置
 qt_finalize_target(${APP_NAME})
