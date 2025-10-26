@@ -52,9 +52,10 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Hello, World!" << std::endl;
   // MXLogger::LogInfo("Hello, World22!");
+#ifdef __APPLE__
   // auto abc = SwiftFibonacci::fibonacciSwift(5);
   std::cout << "abc2: " << fibo::calcFibonacci() << std::endl;
-
+#endif
   std::cout << "current path: " << std::filesystem::current_path() << std::endl;
   printf("arguments: %d,%s\n", argc, argv[1]);
   if (argc > 1) {

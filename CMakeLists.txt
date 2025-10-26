@@ -152,7 +152,13 @@ file(GLOB_RECURSE ASSETS_SOURCES
 
 file(GLOB_RECURSE MODEL_SOURCES
         RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-        content/*.cpp)
+        content/sources/*.cpp)
+
+if (APPLE)
+    file(GLOB_RECURSE APPLE_MODEL_SOURCES
+        content/macos/sources/*.cpp)
+    list(APPEND ASSETS_SOURCES ${APPLE_MODEL_SOURCES})
+endif ()
 
 file(GLOB_RECURSE QUICK_SOURCES
         RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}

@@ -20,7 +20,7 @@
         "CMAKE_MAKE_PROGRAM": "ninja",
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++",
-        "CMAKE_PREFIX_PATH": "$env{QTRELEASE}/macos/lib/cmake"
+        "CMAKE_PREFIX_PATH": "$env{QT_VERSION}/gcc_64/lib/cmake"
       },
       "environment": {}
     },
