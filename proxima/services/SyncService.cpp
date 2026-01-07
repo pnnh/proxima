@@ -18,7 +18,7 @@ void SyncService::SyncLibraries() {
   dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
   dir.setSorting(QDir::Name | QDir::IgnoreCase); // 按照名称排序
   QDirIterator iterator(dir);
-  QVector<quark::PSLocationModel> libraryList;
+  QVector<pulsar::PSLocationModel> libraryList;
   while (iterator.hasNext()) {
     QFileInfo info(iterator.next());
     QString fileName = info.fileName(); // 获取文件名
@@ -30,7 +30,7 @@ void SyncService::SyncLibraries() {
       }
       auto stdPathString = filePath.toStdString();
       auto uid = quark::encode64(stdPathString);
-      auto model = quark::PSLocationModel();
+      auto model = pulsar::PSLocationModel();
       model.URN = uid;
       model.Name = fileName.toStdString();
       model.Path = filePath.toStdString();

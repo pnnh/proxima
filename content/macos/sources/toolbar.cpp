@@ -1,4 +1,4 @@
-#include "../sources/toolbar.h"
+#include "toolbar.h"
 
 #include <iostream>
 

@@ -2,8 +2,6 @@
 
 #include <quark/services/filesystem/filesystem.h>
 
-#include "quark/business/filesystem/file.h"
-
 FileViewModel::FileViewModel(QObject *parent)
   : QAbstractListModel(parent) {
   int role = Qt::UserRole;
@@ -43,12 +41,12 @@ void FileViewModel::loadData() {
   if (m_parentPath.isEmpty()) {
     return;
   }
-  auto options = quark::FileServerBusiness::SelectFilesOptions();
+  auto options = quark::filesystem::MTFileServerBusiness::SelectFilesOptions();
   options.directories = this->m_directories;
   options.files = this->m_files;
 
-  auto selectResult = quark::FileServerBusiness::selectFilesVector(
-      this->m_parentPath.toStdString(), options);
+  auto selectResult = quark::filesystem::MTFileServerBusiness::selectFilesVector(
+    this->m_parentPath.toStdString(), options);
   if (!selectResult.has_value()) {
     std::cout << "loadData error: " << selectResult.error();
     return;
@@ -58,7 +56,7 @@ void FileViewModel::loadData() {
   dataList.clear();
   auto fileList = selectResult.value();
 
-  for (auto &model : fileList) {
+  for (auto &model: fileList) {
     auto dataPtr = FileViewData();
 
     QString uid = QString::fromStdString(model.URN);

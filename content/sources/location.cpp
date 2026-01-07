@@ -2,7 +2,7 @@
 
 #include <quark/services/filesystem/filesystem.h>
 
-#include "quark/business/filesystem/file.h"
+#include "pulsar/business/filesystem/file.h"
 #include "proxima/services/location_service.h"
 #include "quark/infra/utils/md5.h"
 
@@ -40,7 +40,7 @@ void LocationViewModel::appendDirectory(QVariant qmlVar) {
 
   std::filesystem::path stdPath = newPath.toStdString();
   auto locSvc = proxima::LocationService();
-  quark::PSLocationModel model;
+  pulsar::PSLocationModel model;
   model.URN = quark::calcMd5(newPath.toStdString(), true);
   model.Name = stdPath.filename();
   model.Path = newPath.toStdString();
@@ -67,7 +67,7 @@ void LocationViewModel::loadData() {
   beginResetModel();
   dataList.clear();
 
-  for (auto &model : selectData) {
+  for (auto &model: selectData) {
     auto dataPtr = FileViewData();
 
     QString uid = QString::fromStdString(model.URN);

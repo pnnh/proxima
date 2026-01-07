@@ -1,5 +1,5 @@
 
-#include "MTProxima-swift.h"
+#include "MTProxima-Swift.h"
 
 #include <iostream>
 #include "fibonacci.h"

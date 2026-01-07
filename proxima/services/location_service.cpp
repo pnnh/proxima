@@ -4,18 +4,20 @@
 #include <qdir.h>
 #include <qdiriterator.h>
 
-#include "quark/business/models/articles/location.h"
-#include "quark/business/models/articles/Notebook.h"
+#include "pulsar/business/models/articles/location.h"
+#include "pulsar/business/models/articles/Notebook.h"
 #include "quark/services/database/sqlite_service.h"
 
 proxima::LocationService::LocationService() {
   auto appDir = UserService::EnsureApplicationDirectory("/Polaris/Index");
   dbPath = appDir.toStdString() + "/Library.db";
 
-  std::string createSql{"create table if not exists locations("
-      "uid varchar primary key not null,"
-      "name varchar(128) not null,"
-      "path varchar(512) not null)"};
+  std::string createSql{
+    "create table if not exists locations("
+    "uid varchar primary key not null,"
+    "name varchar(128) not null,"
+    "path varchar(512) not null)"
+  };
 
   auto sqliteService = quark::MTSqliteService(dbPath);
   auto sqlResult = sqliteService.runSql(createSql);
@@ -25,22 +27,23 @@ proxima::LocationService::LocationService() {
   }
 
   std::string indexSql{
-      "create index if not exists index_locations_path on locations(path);"};
+    "create index if not exists index_locations_path on locations(path);"
+  };
   if (!sqliteService.runSql(indexSql)) {
     throw std::runtime_error("create index index_locations_path error");
   }
 }
 
-std::optional<quark::PSLocationModel>
+std::optional<pulsar::PSLocationModel>
 proxima::LocationService::FindLocation(const QString &uid) const {
   auto findSql = QString("select * from locations where uid = :uid").
       toStdString();
 
   QMap<QString, QVariant> parameters = {
-      {
-          ":uid",
-          uid,
-      }
+    {
+      ":uid",
+      uid,
+    }
   };
   auto sqliteService = quark::MTSqliteService(dbPath);
   auto sqlCmd = sqliteService.createCommand(findSql);
@@ -57,16 +60,16 @@ proxima::LocationService::FindLocation(const QString &uid) const {
     return std::nullopt;
   }
   auto sqlRow = sqlResult->getRow(0);
-  auto model = std::make_optional<quark::PSLocationModel>();
+  auto model = std::make_optional<pulsar::PSLocationModel>();
   model->URN = sqlRow->getColumn("uid")->getStringValue();
   model->Name = sqlRow->getColumn("name")->getStringValue();
   model->Path = sqlRow->getColumn("path")->getStringValue();
   return model;
 }
 
-std::expected<QVector<quark::PSLocationModel>, quark::MTCode>
+std::expected<QVector<pulsar::PSLocationModel>, quark::MTCode>
 proxima::LocationService::SelectLocations() const {
-  QVector<quark::PSLocationModel> libraryList;
+  QVector<pulsar::PSLocationModel> libraryList;
   auto selectSql = QString("select * from locations").toStdString();
   auto sqliteService = quark::MTSqliteService(dbPath);
   auto sqlResult = sqliteService.runSql(selectSql);
@@ -79,7 +82,7 @@ proxima::LocationService::SelectLocations() const {
 
   for (int rowIndex = 0; rowIndex < rowCount; ++rowIndex) {
     auto sqlRow = sqlResult->getRow(rowIndex);
-    auto model = quark::PSLocationModel();
+    auto model = pulsar::PSLocationModel();
     model.URN = sqlRow->getColumn("uid")->getStringValue();
     model.Name = sqlRow->getColumn("name")->getStringValue();
     model.Path = sqlRow->getColumn("path")->getStringValue();
@@ -91,19 +94,18 @@ proxima::LocationService::SelectLocations() const {
 }
 
 void proxima::LocationService::InsertOrUpdateLocation(
-    const QVector<quark::PSLocationModel> &libraryList) {
-
+  const QVector<pulsar::PSLocationModel> &libraryList) {
   const auto insertSql =
       QString("insert into locations(uid, name, path)"
-          " values(:uid, :name, :path)"
-          " on conflict (uid) do update set name = :name;").toStdString();
+        " values(:uid, :name, :path)"
+        " on conflict (uid) do update set name = :name;").toStdString();
   auto sqliteService = quark::MTSqliteService(dbPath);
   auto sqlCmd = sqliteService.createCommand(insertSql);
   if (!sqlCmd) {
     std::cout << "run sql error" << std::endl;
     throw std::runtime_error("FindLibrary createCommand error");
   }
-  for (const auto &library : libraryList) {
+  for (const auto &library: libraryList) {
     sqlCmd->Reset();
     sqlCmd->BindString(":uid", library.URN);
     sqlCmd->BindString(":name", library.Name);
@@ -118,8 +120,8 @@ void proxima::LocationService::InsertOrUpdateLocation(
 }
 
 void proxima::LocationService::InsertOrUpdateLocation(
-    const quark::PSLocationModel &libraryModel) {
-  QVector<quark::PSLocationModel> libraryList;
+  const pulsar::PSLocationModel &libraryModel) {
+  QVector<pulsar::PSLocationModel> libraryList;
   libraryList.append(libraryModel);
   InsertOrUpdateLocation(libraryList);
 }

@@ -3,69 +3,46 @@
   "version": "0.1.0",
   "dependencies": [
     {
-      "name": "spdlog",
-      "version>=": "1.14.1"
+      "name": "spdlog"
     },
     {
       "name": "zlib"
     },
     {
-      "name": "boost-core",
-      "version>=": "1.86.0"
+      "name": "boost-filesystem"
     },
     {
-      "name": "boost-serialization",
-      "version>=": "1.86.0"
+      "name": "boost-chrono"
     },
     {
-      "name": "boost-system",
-      "version>=": "1.86.0"
+      "name": "boost-thread"
     },
     {
-      "name": "boost-filesystem",
-      "version>=": "1.86.0"
+      "name": "boost-url"
     },
     {
-      "name": "boost-chrono",
-      "version>=": "1.86.0"
+      "name": "boost-iterator"
     },
     {
-      "name": "boost-thread",
-      "version>=": "1.86.0"
+      "name": "boost-uuid"
     },
     {
-      "name": "boost-url",
-      "version>=": "1.86.0"
+      "name": "boost-property-map"
     },
     {
-      "name": "boost-iterator",
-      "version>=": "1.86.0"
-    },
-    {
-      "name": "boost-uuid",
-      "version>=": "1.86.0"
-    },
-    {
-      "name": "boost-property-map",
-      "version>=": "1.86.0"
-    },
-    {
-      "name": "boost-property-tree",
-      "version>=": "1.86.0"
+      "name": "boost-property-tree"
     },
     {
       "name": "inja"
     },
     {
-      "name": "yaml-cpp",
-      "version>=": "0.8.0"
+      "name": "yaml-cpp"
     },
     {
       "name": "nlohmann-json"
     },
     {
-      "name": "cmark",
-      "version>=": "0.31.1"
+      "name": "cmark"
     },
     {
       "name": "sqlite3"
@@ -75,76 +52,58 @@
     },
     {
       "name": "date"
+    },
+    {
+      "name": "spdlog"
+    },
+    {
+      "name": "boost-system"
+    },
+    {
+      "name": "boost-thread"
+    },
+    {
+      "name": "boost-chrono"
+    },
+    {
+      "name": "boost-filesystem"
+    },
+    {
+      "name": "boost-url"
+    },
+    {
+      "name": "boost-property-tree"
+    },
+    {
+      "name": "boost-uuid"
+    },
+    {
+      "name": "inja"
+    },
+    {
+      "name": "nlohmann-json"
+    },
+    {
+      "name": "cmark"
+    },
+    {
+      "name": "sqlite3"
+    },
+    {
+      "name": "libenvpp"
+    },
+    {
+      "name": "date"
+    },
+    {
+      "name": "libpqxx"
+    },
+    {
+      "name": "workflow"
+    },
+    {
+      "name": "yaml-cpp"
     }
   ],
-  "overrides": [
-    {
-      "name": "fmt",
-      "version": "9.1.0"
-    },
-    {
-      "name": "spdlog",
-      "version": "1.14.1"
-    },
-    {
-      "name": "boost-core",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-system",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-filesystem",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-chrono",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-thread",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-url",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-uuid",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-program-options",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-iterator",
-      "version": "1.86.0"
-    },
-    {
-      "name": "date",
-      "version": "3.0.1"
-    },
-    {
-      "name": "boost-property-map",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-property-tree",
-      "version": "1.86.0"
-    },
-    {
-      "name": "boost-serialization",
-      "version": "1.86.0"
-    },
-    {
-      "name": "cmark",
-      "version": "0.31.1"
-    },
-    {
-      "name": "openssl",
-      "version": "3.4.0"
-    }
-  ]
+  "overrides": []
 }
