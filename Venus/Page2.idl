@@ -1,0 +1,9 @@
+namespace Venus
+{
+    [default_interface]
+    runtimeclass Page2 : Microsoft.UI.Xaml.Controls.Page
+    {
+        Page2();
+        Int32 MyProperty;
+    }
+}

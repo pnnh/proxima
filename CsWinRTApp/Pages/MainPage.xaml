@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="CsWinRTApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CsWinRTApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:CsWinRTApp.Models"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid HorizontalAlignment="Stretch"
+          VerticalAlignment="Top"
+          RowDefinitions="*,*"
+          ColumnDefinitions="*">
+        <Grid HorizontalAlignment="Stretch"
+              RowDefinitions="*"
+              ColumnDefinitions="*">
+            <StackPanel VerticalAlignment="Top" Name="MainNavbar" Orientation="Horizontal" 
+                        Background="LightBlue" Height="32">
+                <TextBlock>导航条</TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch"
+              RowDefinitions="*,*,*"
+              ColumnDefinitions="*">
+
+            <StackPanel Name="LocationStack" Orientation="Vertical" HorizontalAlignment="Left" 
+                        VerticalAlignment="Top"
+                                Grid.Row="0"
+                                Background="Transparent">
+                <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <TextBlock>位置</TextBlock>
+                </StackPanel>
+                <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Button x:Name="myButton" Click="myButton_Click">选择目录</Button>
+                </StackPanel>
+                <StackPanel>
+                    <HyperlinkButton Content="Click to go to page 2"
+                                             Click="HyperlinkButton_Click"
+                                             HorizontalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left"
+                         Grid.Row="1">
+                <Image Width="100" Height="100" Source="/Assets/bird.jpg" Stretch="Uniform"/>
+            </StackPanel>
+            <GridView  x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
+                       ContainerContentChanging="ImageGridView_ContainerContentChanging"
+                       Grid.Row="4">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ImageFileInfo">
+                        <Image Width="200" Height="200" Stretch="Uniform" />
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+            </GridView>
+        </Grid>
+
+    </Grid>
+
+</Page>
