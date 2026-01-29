@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.29...3.31)
+cmake_minimum_required(VERSION 3.29...4.2.3)
 
 project(Proxima VERSION 0.1.0 LANGUAGES C CXX)
 
@@ -290,9 +290,11 @@ target_link_libraries(${PULSAR_APP_NAME} PRIVATE yaml-cpp::yaml-cpp)
 find_package(cmark CONFIG REQUIRED)
 target_link_libraries(${PULSAR_APP_NAME} PRIVATE cmark::cmark)
 
-# 查找并引用PostgreSQL解析库
-find_package(libpqxx CONFIG REQUIRED)
-target_link_libraries(${PULSAR_APP_NAME} PRIVATE libpqxx::pqxx)
+if (LINUX)
+    # 查找并引用PostgreSQL解析库
+    find_package(libpqxx CONFIG REQUIRED)
+    target_link_libraries(${PULSAR_APP_NAME} PRIVATE libpqxx::pqxx)
+endif ()
 
 # 拷贝资源文件到二进制目录，方便调试
 file(COPY assets DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
@@ -343,3 +345,49 @@ target_link_libraries(${MAC_LIB_NAME} PRIVATE unofficial::sqlite3::sqlite3)
 # 查找并引用yaml-cpp解析库
 find_package(yaml-cpp CONFIG REQUIRED)
 target_link_libraries(${MAC_LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)
+
+#======================windows config=============================#
+
+set(WIN_LIB_NAME "MTGliese")
+file(GLOB_RECURSE GLIESE_SOURCES 
+	windows/*.cpp
+        quark/core/*.cpp
+        quark/infra/*.cpp
+        quark/services/filesystem/*.cpp
+        quark/services/logger/*.cpp)
+
+add_library(${WIN_LIB_NAME} STATIC)
+target_sources(${WIN_LIB_NAME} PUBLIC ${GLIESE_SOURCES})
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用Boost库
+find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
+target_include_directories(${WIN_LIB_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(${WIN_LIB_NAME} PRIVATE ${Boost_LIBRARIES})
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用Markdown解析库
+find_package(cmark CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE cmark::cmark)
+
+# 查找并引用Sqlite解析库
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE unofficial::sqlite3::sqlite3)
+
+# 查找并引用yaml-cpp解析库
+find_package(yaml-cpp CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)
+
+
+
+

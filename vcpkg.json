@@ -96,7 +96,8 @@
       "name": "date"
     },
     {
-      "name": "libpqxx"
+      "name": "libpqxx",
+      "platform": "linux"
     },
     {
       "name": "workflow"
