@@ -39,8 +39,6 @@
         "VCPKG_HOST_TRIPLET": "arm64-osx",
         "VCPKG_TARGET_TRIPLET": "arm64-osx",
         "CMAKE_PREFIX_PATH": "$env{HOME}/Qt/6.10.1/macos/lib/cmake",
-        "CMAKE_C_COMPILER": "/usr/bin/clang",
-        "CMAKE_CXX_COMPILER": "/usr/bin/clang++",
         "CMAKE_CXX_COMPILER_LAUNCHER": "/opt/homebrew/bin/ccache",
         "CMAKE_C_COMPILER_LAUNCHER": "/opt/homebrew/bin/ccache",
         "CMAKE_OSX_SYSROOT": "macosx"

@@ -5,8 +5,6 @@ project(Proxima VERSION 0.1.0 LANGUAGES C CXX)
 if (APPLE)
     enable_language(OBJC OBJCXX Swift)
     set(CMAKE_Swift_LANGUAGE_VERSION 6.1)
-    # 强制禁用已过时的 AGL 框架，防止其进入链接列表 (针对新版 Xcode SDK)
-    set(OPENGL_agl_LIBRARY "OPENGL_agl_LIBRARY-NOTFOUND" CACHE STRING "" FORCE)
 endif ()
 
 # 设置语言标准
@@ -34,7 +32,8 @@ if (APPLE)
     link_directories(${SWIFT_LIBRARY_SEARCH_PATHS})
     set(CMAKE_Swift_FLAGS "${CMAKE_Swift_FLAGS} -cxx-interoperability-mode=default")
     set(CMAKE_XCODE_ATTRIBUTE_XCODE_VERSION "26.0")
-
+    set(CMAKE_Swift_LANGUAGE_VERSION 6)
+    set(CMAKE_Swift_FLAGS "-strict-concurrency=complete")
 endif ()
 
 # 避免警告
@@ -112,7 +111,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
             MACOSX_BUNDLE_BUNDLE_NAME ${PROXIMA_APP_NAME}
             MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}")
     set_target_properties(${PROXIMA_APP_NAME} PROPERTIES XCODE_ATTRIBUTE_LINK_WITH_STANDARD_LIBRARIES "YES")
-    
+
 elseif (WIN32)
     target_compile_definitions(${PROXIMA_APP_NAME} PUBLIC UNICODE _UNICODE)
     target_link_libraries(${PROXIMA_APP_NAME} PUBLIC dwmapi UxTheme)
@@ -303,3 +302,44 @@ install(TARGETS ${PULSAR_APP_NAME}
         RUNTIME_DEPENDENCY_SET ${PULSAR_APP_NAME}-dependencies
         DESTINATION lib)
 install(RUNTIME_DEPENDENCY_SET ${PULSAR_APP_NAME}-dependencies)
+
+#=====================macOS config========================#
+
+set(MAC_LIB_NAME "MTKepler")
+
+file(GLOB_RECURSE KEPLER_SOURCES
+        macos/*.cpp
+        quark/core/*.cpp
+        quark/infra/*.cpp
+        quark/services/*.cpp)
+
+add_library(${MAC_LIB_NAME} ${KEPLER_SOURCES} macos/module.modulemap)
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${MAC_LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${MAC_LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用Boost库
+find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
+target_include_directories(${MAC_LIB_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
+target_link_libraries(${MAC_LIB_NAME} PRIVATE ${Boost_LIBRARIES})
+
+# 查找并引用日志库
+find_package(spdlog CONFIG REQUIRED)
+target_link_libraries(${MAC_LIB_NAME} PRIVATE spdlog::spdlog)
+
+# 查找并引用Markdown解析库
+find_package(cmark CONFIG REQUIRED)
+target_link_libraries(${MAC_LIB_NAME} PRIVATE cmark::cmark)
+
+# 查找并引用Sqlite解析库
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+target_link_libraries(${MAC_LIB_NAME} PRIVATE unofficial::sqlite3::sqlite3)
+
+# 查找并引用yaml-cpp解析库
+find_package(yaml-cpp CONFIG REQUIRED)
+target_link_libraries(${MAC_LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)
