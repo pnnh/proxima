@@ -1,4 +1,4 @@
-using CsWinRTApp.Models;
+﻿using CsWinRTApp.Models;
 using CsWinRTApp.Pages;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
@@ -22,6 +22,7 @@ using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Search;
+using CsWinRTApp.Services;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -33,7 +34,9 @@ namespace CsWinRTApp
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        public ObservableCollection<ImageFileInfo> Images { get; } = new();
+        public ObservableCollection<GeFileView> Images { get; } = new();
+        private FileService _fileService = new FileService();
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -50,7 +53,7 @@ namespace CsWinRTApp
         private async Task LoadImagesAsync(string imageDir)
         {
             IReadOnlyList<StorageFile> filesList;
-            // Ïà¶ÔÄ¿Â¼£¬Ôò´ÓÓ¦ÓÃ°üÖÐ¼ÓÔØÍ¼Æ¬
+
             if (string.IsNullOrEmpty(imageDir))
             {
                 imageDir = "Assets\\Images";
@@ -64,43 +67,23 @@ namespace CsWinRTApp
                 var query = samplesFolder.CreateFileQueryWithOptions(queryOptions);
                 filesList = await query.GetFilesAsync();
 
+                foreach (var file in filesList)
+                {
+                    var fileInfo = new GeFileInfo2
+                    {
+                        FilePath = file.Path, 
+                    };
+                    Images.Add(new GeFileView(fileInfo));
+                }
             }
             else
             {
-                // Define common image file extensions
-                var imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-                {
-                    ".jpg", ".jpeg", ".png", ".gif", ".bmp"
-                };
-
-                // Get all files in the directory (non-recursive)
-                string[] files = Directory.GetFiles(imageDir);
-
-                var list = new List<StorageFile>();
-
-                foreach (string file in files)
-                {
-                    string extension = Path.GetExtension(file);
-                    if (imageExtensions.Contains(extension))
-                    {
-                        StorageFile storageFile = await StorageFile.GetFileFromPathAsync(file);
-                        list.Add(storageFile);
-                        // Print the full path of the image file
-                        Console.WriteLine($"Image file: {file}");
-
-                    }
+                var list = await _fileService.LoadFilesAsync(imageDir);
+                foreach (var file in list)
+                { 
+                    Images.Add(new GeFileView(file));
                 }
-
-                filesList = list;
             }
-
-
-            foreach (var file in filesList)
-            {
-                Images.Add(new ImageFileInfo(file));
-            }
-
-
         }
 
 
@@ -144,13 +127,53 @@ namespace CsWinRTApp
 
         private async void LoadImage(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
-            if (args.Phase == 1)
+            if (args.Phase != 1)
             {
-                var item = args.Item as ImageFileInfo;
-                var image = args.ItemContainer.ContentTemplateRoot as Image;
-                image.Source = await item.GetThumbnailAsync();
+                return;
+            }
+
+            var item = args.Item as GeFileView;
+                if (item == null) return;
+                var ctrBorder = args.ItemContainer.ContentTemplateRoot as Border;
+                if (ctrBorder == null) return;
+
+                if (_fileService.IsImageFile(item.FileInfo.FilePath))
+                {
+
+                    var ctrImage = new Image
+                    {
+                        Source = await item.GetThumbnailAsync(),
+                        Stretch = Stretch.UniformToFill
+                    };
+                    ctrBorder.Child = ctrImage;
+                }
+                else
+                {
+                    var ctrText = new TextBlock
+                    {
+                        Text = Path.GetFileName(item.FileInfo.FilePath),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        TextWrapping = TextWrapping.Wrap
+                    };
+                    ctrBorder.Child = ctrText;
+                } 
+        }
+
+        private void ImageGridView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Calculate item width based on GridView width and column count
+            // Assuming 4 columns by default, adjust as needed
+            const int columnCount = 8;
+            double itemWidth = (ImageGridView.ActualWidth - 4) / columnCount; // 4px for margins
+
+            if (ImageGridView.ItemsPanelRoot is ItemsWrapGrid wrapGrid)
+            {
+                wrapGrid.ItemWidth = itemWidth;
+                wrapGrid.ItemHeight = itemWidth; // Keep 1:1 aspect ratio
             }
         }
+
         private async void myButton_Click(object sender, RoutedEventArgs e)
         {
             //myButton.Content = "Clicked";

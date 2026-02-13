@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="CsWinRTApp.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -12,21 +12,37 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid HorizontalAlignment="Stretch"
-          VerticalAlignment="Top"
-          RowDefinitions="*,*"
-          ColumnDefinitions="*">
-        <Grid HorizontalAlignment="Stretch"
-              RowDefinitions="*"
-              ColumnDefinitions="*">
+          VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
             <StackPanel VerticalAlignment="Top" Name="MainNavbar" Orientation="Horizontal" 
                         Background="LightBlue" Height="32">
                 <TextBlock>导航条</TextBlock>
             </StackPanel>
         </Grid>
 
-        <Grid Grid.Row="1" HorizontalAlignment="Stretch"
-              RowDefinitions="*,*,*"
-              ColumnDefinitions="*">
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
             <StackPanel Name="LocationStack" Orientation="Vertical" HorizontalAlignment="Left" 
                         VerticalAlignment="Top"
@@ -44,26 +60,26 @@
                                              HorizontalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left"
-                         Grid.Row="1">
-                <Image Width="100" Height="100" Source="/Assets/bird.jpg" Stretch="Uniform"/>
-            </StackPanel>
-            <GridView  x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
-                       ContainerContentChanging="ImageGridView_ContainerContentChanging"
-                       Grid.Row="4">
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="models:ImageFileInfo">
-                        <Image Width="200" Height="200" Stretch="Uniform" />
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-                <GridView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <ItemsWrapGrid Orientation="Horizontal" />
-                    </ItemsPanelTemplate>
-                </GridView.ItemsPanel>
-            </GridView>
         </Grid>
 
+        <GridView Grid.Row="2"  x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
+                  ContainerContentChanging="ImageGridView_ContainerContentChanging" 
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch"
+                  SizeChanged="ImageGridView_SizeChanged">
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:GeFileView">
+                    <Border x:Name="ImageContainer" Background="LightGray">
+                        <!--<Image x:Name="ItemImage" Stretch="UniformToFill" />-->
+                    </Border>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        </GridView>
     </Grid>
 
 </Page>
