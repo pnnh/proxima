@@ -23,17 +23,35 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <Grid HorizontalAlignment="Stretch">
+        <Grid HorizontalAlignment="Stretch" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+              BorderThickness="0,0,0,1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel VerticalAlignment="Top" Name="MainNavbar" Orientation="Horizontal" 
-                        Background="LightBlue" Height="32">
-                <TextBlock>导航条</TextBlock>
+
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                <Button x:Name="BackButton" 
+                        Click="BackButton_Click"
+                        IsEnabled="False"
+                        ToolTipService.ToolTip="返回上一级">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <FontIcon Glyph="&#xE72B;" FontSize="16"/>
+                        <TextBlock Text="返回" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
+
+            <TextBlock Grid.Column="1" 
+                       Text="文件浏览器" 
+                       VerticalAlignment="Center"
+                       Margin="16,0,0,0"
+                       FontSize="16"
+                       FontWeight="SemiBold"/>
         </Grid>
 
         <Grid Grid.Row="1" HorizontalAlignment="Stretch">
@@ -49,9 +67,6 @@
                         VerticalAlignment="Top"
                                 Grid.Row="0"
                                 Background="Transparent">
-                <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <TextBlock>位置</TextBlock>
-                </StackPanel>
                 <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Button x:Name="myButton" Click="myButton_Click">选择目录</Button>
                 </StackPanel>

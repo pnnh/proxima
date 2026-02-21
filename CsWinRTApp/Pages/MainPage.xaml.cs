@@ -37,11 +37,55 @@ namespace CsWinRTApp
         public ObservableCollection<GeFileView> Images { get; } = new();
         private FileService _fileService = new FileService();
         private string _currentDirectory = string.Empty;
+        private string _rootDirectory = string.Empty;
 
         public MainPage()
         {
             this.InitializeComponent();
             _ = LoadImagesAsync(null);  // Call async load
+        }
+
+        private void BackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_currentDirectory) && _currentDirectory != _rootDirectory)
+            {
+                try
+                {
+                    var parentDir = Directory.GetParent(_currentDirectory);
+                    if (parentDir != null && !string.IsNullOrEmpty(parentDir.FullName))
+                    {
+                        _ = NavigateToDirectoryAsync(parentDir.FullName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusBarText.Text = $"错误: 无法返回上一级 - {ex.Message}";
+                }
+            }
+        }
+
+        private void UpdateBackButtonState()
+        {
+            // 如果当前目录为空或等于根目录，禁用返回按钮
+            if (string.IsNullOrEmpty(_currentDirectory) || 
+                string.IsNullOrEmpty(_rootDirectory) ||
+                _currentDirectory == _rootDirectory)
+            {
+                BackButton.IsEnabled = false;
+            }
+            else
+            {
+                // 检查是否有父目录
+                try
+                {
+                    var parentDir = Directory.GetParent(_currentDirectory);
+                    BackButton.IsEnabled = (parentDir != null && !string.IsNullOrEmpty(parentDir.FullName));
+                }
+                catch
+                {
+                    BackButton.IsEnabled = false;
+                }
+            }
         }
 
         private void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -66,6 +110,8 @@ namespace CsWinRTApp
             {
                 StatusBarText.Text = "就绪";
             }
+
+            UpdateBackButtonState();
         }
 
         private void ImageContainer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
@@ -86,8 +132,8 @@ namespace CsWinRTApp
             {
                 Images.Clear();
                 _currentDirectory = directoryPath;
-                UpdateStatusBar();
                 await LoadImagesAsync(directoryPath);
+                // LoadImagesAsync 内部会调用 UpdateStatusBar，所以这里不需要再调用
             }
             catch (Exception ex)
             {
@@ -174,6 +220,8 @@ namespace CsWinRTApp
                 Console.WriteLine($"Selected directory: {selectedFolder.Path}");
 
                 Images.Clear();
+                // 重置根目录
+                _rootDirectory = selectedFolder.Path;
                 // Call the function to traverse and print image files
                 await LoadImagesAsync(selectedFolder.Path);
             }
