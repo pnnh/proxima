@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Page
     x:Class="CsWinRTApp.Pages.Page2"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -9,10 +9,30 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <StackPanel VerticalAlignment="Center">
-        <TextBlock HorizontalAlignment="Center" x:Name="greeting"/>
-        <HyperlinkButton Content="Click to go to page 1"
-                         Click="HyperlinkButton_Click"
-                         HorizontalAlignment="Center"/>
-    </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="16" Spacing="8">
+            <Button Content="返回" Click="BackButton_Click"/>
+            <TextBlock x:Name="FileNameText" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
+        </StackPanel>
+
+        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Grid x:Name="ContentGrid" Padding="16">
+                <Image x:Name="ImageViewer" Visibility="Collapsed" Stretch="Uniform"/>
+                <TextBlock x:Name="TextViewer" Visibility="Collapsed" TextWrapping="Wrap" FontFamily="Consolas"/>
+                <StackPanel x:Name="FileInfoViewer" Visibility="Collapsed" Spacing="12">
+                    <TextBlock x:Name="FileInfoTitle" FontSize="20" FontWeight="Bold"/>
+                    <TextBlock x:Name="FileInfoSize"/>
+                    <TextBlock x:Name="FileInfoPath" TextWrapping="Wrap"/>
+                    <TextBlock x:Name="FileInfoExtension"/>
+                    <TextBlock x:Name="FileInfoCreated"/>
+                    <TextBlock x:Name="FileInfoModified"/>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </Page>

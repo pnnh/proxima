@@ -42,12 +42,16 @@ namespace CsWinRTApp
             this.InitializeComponent();
             _ = LoadImagesAsync(null);  // Call async load
         }
-        private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+
+        private void ImageGridView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            Frame.Navigate(typeof(Page2), "SomeText", new SlideNavigationTransitionInfo
+            if (e.ClickedItem is GeFileView fileView)
             {
-                Effect = SlideNavigationTransitionEffect.FromRight
-            });
+                Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
+                {
+                    Effect = SlideNavigationTransitionEffect.FromRight
+                });
+            }
         }
 
         private async Task LoadImagesAsync(string imageDir)

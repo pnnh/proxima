@@ -54,16 +54,14 @@
                 <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Button x:Name="myButton" Click="myButton_Click">选择目录</Button>
                 </StackPanel>
-                <StackPanel>
-                    <HyperlinkButton Content="Click to go to page 2"
-                                             Click="HyperlinkButton_Click"
-                                             HorizontalAlignment="Center"/>
-                </StackPanel>
             </StackPanel>
         </Grid>
 
         <GridView Grid.Row="2"  x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
                   ContainerContentChanging="ImageGridView_ContainerContentChanging" 
+                  ItemClick="ImageGridView_ItemClick"
+                  IsItemClickEnabled="True"
+                  SelectionMode="None"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   SizeChanged="ImageGridView_SizeChanged">
