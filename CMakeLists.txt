@@ -321,18 +321,10 @@ add_library(${MAC_LIB_NAME} ${KEPLER_SOURCES} macos/module.modulemap)
 find_package(spdlog CONFIG REQUIRED)
 target_link_libraries(${MAC_LIB_NAME} PRIVATE spdlog::spdlog)
 
-# 查找并引用日志库
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${MAC_LIB_NAME} PRIVATE spdlog::spdlog)
-
 # 查找并引用Boost库
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
 target_include_directories(${MAC_LIB_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(${MAC_LIB_NAME} PRIVATE ${Boost_LIBRARIES})
-
-# 查找并引用日志库
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${MAC_LIB_NAME} PRIVATE spdlog::spdlog)
 
 # 查找并引用Markdown解析库
 find_package(cmark CONFIG REQUIRED)
@@ -350,18 +342,13 @@ target_link_libraries(${MAC_LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)
 
 set(WIN_LIB_NAME "MTGliese")
 file(GLOB_RECURSE GLIESE_SOURCES 
-	windows/*.cpp
-        quark/core/*.cpp
-        quark/infra/*.cpp
-        quark/services/filesystem/*.cpp
-        quark/services/logger/*.cpp)
+	windows/*.cpp)
 
 add_library(${WIN_LIB_NAME} STATIC)
 target_sources(${WIN_LIB_NAME} PUBLIC ${GLIESE_SOURCES})
 
-# 查找并引用日志库
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${WIN_LIB_NAME} PRIVATE spdlog::spdlog)
+find_package(quark CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE quark::quark)
 
 # 查找并引用日志库
 find_package(spdlog CONFIG REQUIRED)
@@ -371,10 +358,6 @@ target_link_libraries(${WIN_LIB_NAME} PRIVATE spdlog::spdlog)
 find_package(Boost COMPONENTS system thread chrono filesystem url REQUIRED)
 target_include_directories(${WIN_LIB_NAME} PRIVATE ${Boost_INCLUDE_DIRS})
 target_link_libraries(${WIN_LIB_NAME} PRIVATE ${Boost_LIBRARIES})
-
-# 查找并引用日志库
-find_package(spdlog CONFIG REQUIRED)
-target_link_libraries(${WIN_LIB_NAME} PRIVATE spdlog::spdlog)
 
 # 查找并引用Markdown解析库
 find_package(cmark CONFIG REQUIRED)

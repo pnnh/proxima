@@ -1,0 +1,35 @@
+{
+  "name": "quark",
+  "version": "0.2.2",
+  "description": "A simple C++ library.",
+  "homepage": "https://github.com/pnnh/quark",
+  "license": "AGPL-3.0-or-later",
+  "dependencies": [
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    "boost-chrono",
+    "boost-filesystem",
+    "boost-iterator",
+    "boost-property-map",
+    "boost-property-tree",
+    "boost-system",
+    "boost-thread",
+    "boost-url",
+    "boost-uuid",
+    "cmark",
+    "date",
+    "inja",
+    "libenvpp",
+    "nlohmann-json",
+    "spdlog",
+    "sqlite3",
+    "yaml-cpp",
+    "zlib"
+  ]
+}
