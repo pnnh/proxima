@@ -17,6 +17,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -60,14 +61,17 @@
         <GridView Grid.Row="2"  x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
                   ContainerContentChanging="ImageGridView_ContainerContentChanging" 
                   ItemClick="ImageGridView_ItemClick"
+                  SelectionChanged="ImageGridView_SelectionChanged"
                   IsItemClickEnabled="True"
-                  SelectionMode="None"
+                  SelectionMode="Single"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch"
                   SizeChanged="ImageGridView_SizeChanged">
             <GridView.ItemTemplate>
                 <DataTemplate x:DataType="models:GeFileView">
-                    <Border x:Name="ImageContainer" Background="LightGray">
+                    <Border x:Name="ImageContainer" 
+                            Background="LightGray" 
+                            DoubleTapped="ImageContainer_DoubleTapped">
                         <!--<Image x:Name="ItemImage" Stretch="UniformToFill" />-->
                     </Border>
                 </DataTemplate>
@@ -78,6 +82,15 @@
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
+
+        <Grid Grid.Row="3" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+              Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+              BorderThickness="0,1,0,0">
+            <TextBlock x:Name="StatusBarText" 
+                       Text="就绪" 
+                       VerticalAlignment="Center"
+                       FontSize="12"/>
+        </Grid>
     </Grid>
 
 </Page>

@@ -16,13 +16,16 @@ namespace CsWinRTApp.Models
     public class GeFileInfo2 
     { 
         public string FilePath { get; set; }
-        public GeFileInfo2( ) : this(string.Empty)
+        public bool IsDirectory { get; set; }
+
+        public GeFileInfo2( ) : this(string.Empty, false)
         {
         }
 
-        public GeFileInfo2(string filePath)
+        public GeFileInfo2(string filePath, bool isDirectory = false)
         {
             FilePath = filePath;
+            IsDirectory = isDirectory;
         }
 
     }

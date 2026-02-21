@@ -36,6 +36,7 @@ namespace CsWinRTApp
     {
         public ObservableCollection<GeFileView> Images { get; } = new();
         private FileService _fileService = new FileService();
+        private string _currentDirectory = string.Empty;
 
         public MainPage()
         {
@@ -43,14 +44,68 @@ namespace CsWinRTApp
             _ = LoadImagesAsync(null);  // Call async load
         }
 
+        private void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ImageGridView.SelectedItem is GeFileView selectedFile)
+            {
+                StatusBarText.Text = $"选中: {selectedFile.FileInfo.FilePath}";
+            }
+            else
+            {
+                UpdateStatusBar();
+            }
+        }
+
+        private void UpdateStatusBar()
+        {
+            if (!string.IsNullOrEmpty(_currentDirectory))
+            {
+                StatusBarText.Text = $"当前位置: {_currentDirectory}";
+            }
+            else
+            {
+                StatusBarText.Text = "就绪";
+            }
+        }
+
+        private void ImageContainer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (sender is Border border)
+            {
+                // 尝试从 Tag 属性获取数据
+                if (border.Tag is GeFileView fileView && fileView.FileInfo.IsDirectory)
+                {
+                    _ = NavigateToDirectoryAsync(fileView.FileInfo.FilePath);
+                }
+            }
+        }
+
+        private async Task NavigateToDirectoryAsync(string directoryPath)
+        {
+            try
+            {
+                Images.Clear();
+                _currentDirectory = directoryPath;
+                UpdateStatusBar();
+                await LoadImagesAsync(directoryPath);
+            }
+            catch (Exception ex)
+            {
+                StatusBarText.Text = $"错误: 无法打开文件夹 - {ex.Message}";
+            }
+        }
+
         private void ImageGridView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is GeFileView fileView)
             {
-                Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
+                if (!fileView.FileInfo.IsDirectory)
                 {
-                    Effect = SlideNavigationTransitionEffect.FromRight
-                });
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
+                    {
+                        Effect = SlideNavigationTransitionEffect.FromRight
+                    });
+                }
             }
         }
 
@@ -75,10 +130,13 @@ namespace CsWinRTApp
                 {
                     var fileInfo = new GeFileInfo2
                     {
-                        FilePath = file.Path, 
+                        FilePath = file.Path,
+                        IsDirectory = false
                     };
                     Images.Add(new GeFileView(fileInfo));
                 }
+
+                _currentDirectory = samplesFolder.Path;
             }
             else
             {
@@ -87,7 +145,11 @@ namespace CsWinRTApp
                 { 
                     Images.Add(new GeFileView(file));
                 }
+
+                _currentDirectory = imageDir;
             }
+
+            UpdateStatusBar();
         }
 
 
@@ -111,6 +173,7 @@ namespace CsWinRTApp
                 // Print the full path of the selected directory to the console
                 Console.WriteLine($"Selected directory: {selectedFolder.Path}");
 
+                Images.Clear();
                 // Call the function to traverse and print image files
                 await LoadImagesAsync(selectedFolder.Path);
             }
@@ -137,31 +200,61 @@ namespace CsWinRTApp
             }
 
             var item = args.Item as GeFileView;
-                if (item == null) return;
-                var ctrBorder = args.ItemContainer.ContentTemplateRoot as Border;
-                if (ctrBorder == null) return;
+            if (item == null) return;
+            var ctrBorder = args.ItemContainer.ContentTemplateRoot as Border;
+            if (ctrBorder == null) return;
 
-                if (_fileService.IsImageFile(item.FileInfo.FilePath))
-                {
+            // 设置 Border 的 Tag 为数据项，以便在 DoubleTapped 事件中访问
+            ctrBorder.Tag = item;
 
-                    var ctrImage = new Image
-                    {
-                        Source = await item.GetThumbnailAsync(),
-                        Stretch = Stretch.UniformToFill
-                    };
-                    ctrBorder.Child = ctrImage;
-                }
-                else
+            if (item.FileInfo.IsDirectory)
+            {
+                var stackPanel = new StackPanel
                 {
-                    var ctrText = new TextBlock
-                    {
-                        Text = Path.GetFileName(item.FileInfo.FilePath),
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center,
-                        TextWrapping = TextWrapping.Wrap
-                    };
-                    ctrBorder.Child = ctrText;
-                } 
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Spacing = 4
+                };
+
+                var folderIcon = new FontIcon
+                {
+                    Glyph = "\uE8B7",
+                    FontSize = 48,
+                    HorizontalAlignment = HorizontalAlignment.Center
+                };
+
+                var folderName = new TextBlock
+                {
+                    Text = Path.GetFileName(item.FileInfo.FilePath),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Center
+                };
+
+                stackPanel.Children.Add(folderIcon);
+                stackPanel.Children.Add(folderName);
+                ctrBorder.Child = stackPanel;
+            }
+            else if (_fileService.IsImageFile(item.FileInfo.FilePath))
+            {
+                var ctrImage = new Image
+                {
+                    Source = await item.GetThumbnailAsync(),
+                    Stretch = Stretch.UniformToFill
+                };
+                ctrBorder.Child = ctrImage;
+            }
+            else
+            {
+                var ctrText = new TextBlock
+                {
+                    Text = Path.GetFileName(item.FileInfo.FilePath),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap
+                };
+                ctrBorder.Child = ctrText;
+            }
         }
 
         private void ImageGridView_SizeChanged(object sender, SizeChangedEventArgs e)

@@ -30,21 +30,30 @@ namespace CsWinRTApp.Services
 
         public async Task<List<GeFileInfo2>> LoadFilesAsync(string imageDir)
         {
-            // Get all files in the directory
-            string[] files = Directory.GetFiles(imageDir);
-
             var list = new List<GeFileInfo2>();
 
-            foreach (string file in files)
-            { 
-                // todo 暂时只加载图片文件，后续可以考虑其他类型的文件
-                //if (!IsImageFile(file)) continue;
-                list.Add(new GeFileInfo2(file));
-                // Print the full path of the image file
-                Console.WriteLine($"Found file: {file}");
+            try
+            {
+                // Get all directories first
+                string[] directories = Directory.GetDirectories(imageDir);
+                foreach (string directory in directories)
+                {
+                    list.Add(new GeFileInfo2(directory, true));
+                    Console.WriteLine($"Found directory: {directory}");
+                }
 
+                // Then get all files in the directory
+                string[] files = Directory.GetFiles(imageDir);
+                foreach (string file in files)
+                {
+                    list.Add(new GeFileInfo2(file, false));
+                    Console.WriteLine($"Found file: {file}");
+                }
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading files: {ex.Message}");
+            }
 
             return list;
         }
