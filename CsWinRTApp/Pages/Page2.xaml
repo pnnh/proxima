@@ -15,16 +15,62 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Padding="16" Spacing="8">
-            <Button Content="返回" Click="BackButton_Click"/>
-            <TextBlock x:Name="FileNameText" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold"/>
-        </StackPanel>
+        <Grid Grid.Row="0" Padding="16,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-        <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                <Button Content="返回" Click="BackButton_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Back"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <TextBlock x:Name="FileNameText" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Margin="8,0,0,0"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" x:Name="ImageControlPanel" Visibility="Collapsed">
+                <AppBarButton x:Name="FitToWindowButton" 
+                              Label="适应窗口" 
+                              Click="FitToWindowButton_Click"
+                              IsCompact="True">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE740;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+                <AppBarButton x:Name="ActualSizeButton" 
+                              Label="实际大小" 
+                              Click="ActualSizeButton_Click"
+                              IsCompact="True">
+                    <AppBarButton.Icon>
+                        <FontIcon Glyph="&#xE71E;"/>
+                    </AppBarButton.Icon>
+                </AppBarButton>
+            </StackPanel>
+        </Grid>
+
+        <ScrollViewer x:Name="ContentScrollViewer" 
+                      Grid.Row="1" 
+                      HorizontalScrollBarVisibility="Auto" 
+                      VerticalScrollBarVisibility="Auto"
+                      ZoomMode="Disabled">
             <Grid x:Name="ContentGrid" Padding="16">
-                <Image x:Name="ImageViewer" Visibility="Collapsed" Stretch="Uniform"/>
-                <TextBlock x:Name="TextViewer" Visibility="Collapsed" TextWrapping="Wrap" FontFamily="Consolas"/>
-                <StackPanel x:Name="FileInfoViewer" Visibility="Collapsed" Spacing="12">
+                <Image x:Name="ImageViewer" 
+                       Visibility="Collapsed" 
+                       Stretch="Uniform"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+                <TextBlock x:Name="TextViewer" 
+                           Visibility="Collapsed" 
+                           TextWrapping="Wrap" 
+                           FontFamily="Consolas"/>
+                <StackPanel x:Name="FileInfoViewer" 
+                            Visibility="Collapsed" 
+                            Spacing="12"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
                     <TextBlock x:Name="FileInfoTitle" FontSize="20" FontWeight="Bold"/>
                     <TextBlock x:Name="FileInfoSize"/>
                     <TextBlock x:Name="FileInfoPath" TextWrapping="Wrap"/>

@@ -29,10 +29,99 @@ namespace CsWinRTApp.Pages
     public sealed partial class Page2 : Page
     {
         private GeFileInfo2 _fileInfo;
+        private bool _isImageFile = false;
+
+        private enum ImageDisplayMode
+        {
+            FitToWindow,
+            ActualSize
+        }
+
+        private ImageDisplayMode _currentImageMode = ImageDisplayMode.FitToWindow;
 
         public Page2()
         {
             this.InitializeComponent();
+        }
+
+        private void FitToWindowButton_Click(object sender, RoutedEventArgs e)
+        {
+            _currentImageMode = ImageDisplayMode.FitToWindow;
+            UpdateButtonStates();
+            ApplyImageDisplayMode();
+        }
+
+        private void ActualSizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            _currentImageMode = ImageDisplayMode.ActualSize;
+            UpdateButtonStates();
+            ApplyImageDisplayMode();
+        }
+
+        private void UpdateButtonStates()
+        {
+            if (FitToWindowButton == null || ActualSizeButton == null)
+                return;
+
+            try
+            {
+                if (_currentImageMode == ImageDisplayMode.FitToWindow)
+                {
+                    FitToWindowButton.IsEnabled = false;
+                    ActualSizeButton.IsEnabled = true;
+
+                    var selectedBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.LightBlue);
+                    FitToWindowButton.Background = selectedBrush;
+                    ActualSizeButton.Background = null;
+                }
+                else
+                {
+                    FitToWindowButton.IsEnabled = true;
+                    ActualSizeButton.IsEnabled = false;
+
+                    var selectedBrush = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.LightBlue);
+                    ActualSizeButton.Background = selectedBrush;
+                    FitToWindowButton.Background = null;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"UpdateButtonStates error: {ex.Message}");
+            }
+        }
+
+        private void ApplyImageDisplayMode()
+        {
+            if (!_isImageFile || ImageViewer?.Source == null)
+            {
+                System.Diagnostics.Debug.WriteLine($"ApplyImageDisplayMode: skipped - _isImageFile={_isImageFile}, Source={ImageViewer?.Source != null}");
+                return;
+            }
+
+            System.Diagnostics.Debug.WriteLine($"ApplyImageDisplayMode: mode={_currentImageMode}");
+
+            if (_currentImageMode == ImageDisplayMode.FitToWindow)
+            {
+                ImageViewer.Stretch = Stretch.Uniform;
+                ImageViewer.HorizontalAlignment = HorizontalAlignment.Stretch;
+                ImageViewer.VerticalAlignment = VerticalAlignment.Stretch;
+                ContentScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                ContentScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                ContentGrid.HorizontalAlignment = HorizontalAlignment.Stretch;
+                ContentGrid.VerticalAlignment = VerticalAlignment.Stretch;
+                ContentGrid.Padding = new Thickness(0);
+            }
+            else
+            {
+                ImageViewer.Stretch = Stretch.None;
+                ImageViewer.HorizontalAlignment = HorizontalAlignment.Center;
+                ImageViewer.VerticalAlignment = VerticalAlignment.Center;
+                ContentScrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                ContentScrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                ContentGrid.HorizontalAlignment = HorizontalAlignment.Left;
+                ContentGrid.VerticalAlignment = VerticalAlignment.Top;
+                ContentGrid.Padding = new Thickness(16);
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -66,7 +155,10 @@ namespace CsWinRTApp.Pages
 
                 var extension = Path.GetExtension(_fileInfo.FilePath).ToLower();
 
-                if (IsImageFile(extension))
+                _isImageFile = IsImageFile(extension);
+                ImageControlPanel.Visibility = _isImageFile ? Visibility.Visible : Visibility.Collapsed;
+
+                if (_isImageFile)
                 {
                     await ShowImagePreviewAsync();
                 }
@@ -104,6 +196,8 @@ namespace CsWinRTApp.Pages
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"ShowImagePreviewAsync: Loading image from {_fileInfo.FilePath}");
+
                 var file = await StorageFile.GetFileFromPathAsync(_fileInfo.FilePath);
                 var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
 
@@ -114,13 +208,22 @@ namespace CsWinRTApp.Pages
                 ImageViewer.Visibility = Visibility.Visible;
                 TextViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+
+                System.Diagnostics.Debug.WriteLine($"ShowImagePreviewAsync: Image loaded successfully");
+
+                _currentImageMode = ImageDisplayMode.FitToWindow;
+                UpdateButtonStates();
+                ApplyImageDisplayMode();
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"ShowImagePreviewAsync error: {ex.Message}");
                 TextViewer.Text = $"无法加载图片: {ex.Message}";
                 TextViewer.Visibility = Visibility.Visible;
                 ImageViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+                _isImageFile = false;
+                ImageControlPanel.Visibility = Visibility.Collapsed;
             }
         }
 
