@@ -35,7 +35,9 @@ namespace CsWinRTApp
     public sealed partial class MainPage : Page
     {
         public ObservableCollection<GeFileView> Images { get; } = new();
+        public ObservableCollection<FolderItem> FolderHistory { get; } = new();
         private FileService _fileService = new FileService();
+        private FolderHistoryService _folderHistoryService = new FolderHistoryService();
         private string _currentDirectory = string.Empty;
         private string _rootDirectory = string.Empty;
         private bool _isGridView = true;
@@ -46,7 +48,39 @@ namespace CsWinRTApp
         {
             this.InitializeComponent();
             UpdateViewModeButtons();
-            _ = LoadImagesAsync(null);  // Call async load
+            _ = InitializeAsync();
+        }
+
+        private async Task InitializeAsync()
+        {
+            await LoadFolderHistoryAsync();
+            await LoadImagesAsync(null);
+        }
+
+        private async Task LoadFolderHistoryAsync()
+        {
+            try
+            {
+                var folders = await _folderHistoryService.GetAllFoldersAsync();
+                FolderHistory.Clear();
+                foreach (var folder in folders)
+                {
+                    // 检查文件夹是否仍然存在
+                    if (Directory.Exists(folder))
+                    {
+                        FolderHistory.Add(new FolderItem(folder));
+                    }
+                    else
+                    {
+                        // 如果文件夹不存在，从数据库中移除
+                        await _folderHistoryService.RemoveFolderAsync(folder);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading folder history: {ex.Message}");
+            }
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
@@ -135,6 +169,29 @@ namespace CsWinRTApp
             {
                 Images.Clear();
                 await LoadImagesAsync(_currentDirectory);
+            }
+        }
+
+        private async void FolderHistoryListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (FolderHistoryListView.SelectedItem is FolderItem folderItem)
+            {
+                if (Directory.Exists(folderItem.FullPath))
+                {
+                    Images.Clear();
+                    _rootDirectory = folderItem.FullPath;
+                    await LoadImagesAsync(folderItem.FullPath);
+
+                    // 更新访问时间
+                    await _folderHistoryService.AddOrUpdateFolderAsync(folderItem.FullPath);
+                }
+                else
+                {
+                    StatusBarText.Text = $"错误: 文件夹不存在 - {folderItem.FullPath}";
+                    // 从历史记录中移除
+                    await _folderHistoryService.RemoveFolderAsync(folderItem.FullPath);
+                    await LoadFolderHistoryAsync();
+                }
             }
         }
 
@@ -396,6 +453,11 @@ namespace CsWinRTApp
                 Images.Clear();
                 // 重置根目录
                 _rootDirectory = selectedFolder.Path;
+
+                // 保存到历史记录
+                await _folderHistoryService.AddOrUpdateFolderAsync(selectedFolder.Path);
+                await LoadFolderHistoryAsync();
+
                 // Call the function to traverse and print image files
                 await LoadImagesAsync(selectedFolder.Path);
             }

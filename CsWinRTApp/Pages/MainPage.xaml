@@ -19,10 +19,56 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        
-        <Grid HorizontalAlignment="Stretch" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+
+        <!-- 左侧侧边栏 -->
+        <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" 
+              Width="200"
+              Background="{ThemeResource LayerFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
+              BorderThickness="0,0,1,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" 
+                       Text="文件夹历史" 
+                       Margin="12,8"
+                       FontSize="14"
+                       FontWeight="SemiBold"/>
+
+            <ListView Grid.Row="1" 
+                      x:Name="FolderHistoryListView"
+                      ItemsSource="{x:Bind FolderHistory, Mode=OneWay}"
+                      SelectionMode="Single"
+                      SelectionChanged="FolderHistoryListView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:FolderItem">
+                        <Grid Padding="12,8" ToolTipService.ToolTip="{x:Bind FullPath}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <FontIcon Grid.Column="0" 
+                                      Glyph="&#xE8B7;" 
+                                      FontSize="16"
+                                      Margin="0,0,8,0"/>
+
+                            <TextBlock Grid.Column="1" 
+                                       Text="{x:Bind DisplayName}" 
+                                       TextTrimming="CharacterEllipsis"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+        <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
               BorderThickness="0,0,0,1">
             <Grid.RowDefinitions>
@@ -92,7 +138,7 @@
                        FontWeight="SemiBold"/>
         </Grid>
 
-        <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <!-- GridView -->
             <GridView x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
                       ContainerContentChanging="ImageGridView_ContainerContentChanging" 
@@ -163,7 +209,7 @@
             </ListView>
         </Grid>
 
-        <Grid Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        <Grid Grid.Row="2" Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
               BorderThickness="0,1,0,0">
             <TextBlock x:Name="StatusBarText" 
