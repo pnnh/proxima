@@ -38,10 +38,14 @@ namespace CsWinRTApp
         private FileService _fileService = new FileService();
         private string _currentDirectory = string.Empty;
         private string _rootDirectory = string.Empty;
+        private bool _isGridView = true;
+        private bool _showHiddenFiles = false;
+        private bool _showExcludedFiles = true;
 
         public MainPage()
         {
             this.InitializeComponent();
+            UpdateViewModeButtons();
             _ = LoadImagesAsync(null);  // Call async load
         }
 
@@ -61,6 +65,76 @@ namespace CsWinRTApp
                 {
                     StatusBarText.Text = $"错误: 无法返回上一级 - {ex.Message}";
                 }
+            }
+        }
+
+        private void UpButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_currentDirectory))
+            {
+                try
+                {
+                    var parentDir = Directory.GetParent(_currentDirectory);
+                    if (parentDir != null && !string.IsNullOrEmpty(parentDir.FullName))
+                    {
+                        // 检查是否超出根目录
+                        if (string.IsNullOrEmpty(_rootDirectory) || 
+                            parentDir.FullName.StartsWith(_rootDirectory, StringComparison.OrdinalIgnoreCase))
+                        {
+                            _ = NavigateToDirectoryAsync(parentDir.FullName);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    StatusBarText.Text = $"错误: 无法进入上级目录 - {ex.Message}";
+                }
+            }
+        }
+
+        private void GridViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            _isGridView = true;
+            ImageGridView.Visibility = Visibility.Visible;
+            ImageListView.Visibility = Visibility.Collapsed;
+            UpdateViewModeButtons();
+        }
+
+        private void ListViewButton_Click(object sender, RoutedEventArgs e)
+        {
+            _isGridView = false;
+            ImageGridView.Visibility = Visibility.Collapsed;
+            ImageListView.Visibility = Visibility.Visible;
+            UpdateViewModeButtons();
+        }
+
+        private void UpdateViewModeButtons()
+        {
+            GridViewButton.IsEnabled = !_isGridView;
+            ListViewButton.IsEnabled = _isGridView;
+        }
+
+        private async void ShowHiddenFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            _showHiddenFiles = ShowHiddenFilesButton.IsChecked ?? false;
+
+            // 重新加载当前目录
+            if (!string.IsNullOrEmpty(_currentDirectory))
+            {
+                Images.Clear();
+                await LoadImagesAsync(_currentDirectory);
+            }
+        }
+
+        private async void ShowExcludedFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            _showExcludedFiles = ShowExcludedFilesButton.IsChecked ?? true;
+
+            // 重新加载当前目录
+            if (!string.IsNullOrEmpty(_currentDirectory))
+            {
+                Images.Clear();
+                await LoadImagesAsync(_currentDirectory);
             }
         }
 
@@ -86,11 +160,61 @@ namespace CsWinRTApp
                     BackButton.IsEnabled = false;
                 }
             }
+
+            // 更新上级按钮状态
+            UpdateUpButtonState();
+        }
+
+        private void UpdateUpButtonState()
+        {
+            // 检查当前目录是否有父目录，且父目录在根目录范围内
+            if (string.IsNullOrEmpty(_currentDirectory))
+            {
+                UpButton.IsEnabled = false;
+                return;
+            }
+
+            try
+            {
+                var parentDir = Directory.GetParent(_currentDirectory);
+                if (parentDir == null || string.IsNullOrEmpty(parentDir.FullName))
+                {
+                    UpButton.IsEnabled = false;
+                    return;
+                }
+
+                // 如果有根目录限制，检查父目录是否在根目录范围内
+                if (!string.IsNullOrEmpty(_rootDirectory))
+                {
+                    UpButton.IsEnabled = parentDir.FullName.StartsWith(_rootDirectory, StringComparison.OrdinalIgnoreCase) ||
+                                        parentDir.FullName.Equals(_rootDirectory, StringComparison.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    UpButton.IsEnabled = true;
+                }
+            }
+            catch
+            {
+                UpButton.IsEnabled = false;
+            }
         }
 
         private void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ImageGridView.SelectedItem is GeFileView selectedFile)
+            {
+                StatusBarText.Text = $"选中: {selectedFile.FileInfo.FilePath}";
+            }
+            else
+            {
+                UpdateStatusBar();
+            }
+        }
+
+        private void ImageListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ImageListView.SelectedItem is GeFileView selectedFile)
             {
                 StatusBarText.Text = $"选中: {selectedFile.FileInfo.FilePath}";
             }
@@ -126,6 +250,42 @@ namespace CsWinRTApp
             }
         }
 
+        private void ListItemContainer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (sender is Grid grid && grid.DataContext is GeFileView fileView)
+            {
+                if (fileView.FileInfo.IsDirectory)
+                {
+                    _ = NavigateToDirectoryAsync(fileView.FileInfo.FilePath);
+                }
+                else
+                {
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
+                    {
+                        Effect = SlideNavigationTransitionEffect.FromRight
+                    });
+                }
+            }
+        }
+
+        private void ImageListView_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        {
+            if (ImageListView.SelectedItem is GeFileView fileView)
+            {
+                if (fileView.FileInfo.IsDirectory)
+                {
+                    _ = NavigateToDirectoryAsync(fileView.FileInfo.FilePath);
+                }
+                else
+                {
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
+                    {
+                        Effect = SlideNavigationTransitionEffect.FromRight
+                    });
+                }
+            }
+        }
+
         private async Task NavigateToDirectoryAsync(string directoryPath)
         {
             try
@@ -142,6 +302,20 @@ namespace CsWinRTApp
         }
 
         private void ImageGridView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (e.ClickedItem is GeFileView fileView)
+            {
+                if (!fileView.FileInfo.IsDirectory)
+                {
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
+                    {
+                        Effect = SlideNavigationTransitionEffect.FromRight
+                    });
+                }
+            }
+        }
+
+        private void ImageListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is GeFileView fileView)
             {
@@ -186,7 +360,7 @@ namespace CsWinRTApp
             }
             else
             {
-                var list = await _fileService.LoadFilesAsync(imageDir);
+                var list = await _fileService.LoadFilesAsync(imageDir, _showHiddenFiles, _showExcludedFiles);
                 foreach (var file in list)
                 { 
                     Images.Add(new GeFileView(file));
@@ -236,6 +410,15 @@ namespace CsWinRTApp
             if (args.Phase == 0)
             {
                 args.RegisterUpdateCallback(LoadImage);
+                args.Handled = true;
+            }
+        }
+
+        private async void ImageListView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.Phase == 0)
+            {
+                args.RegisterUpdateCallback(LoadListViewImage);
                 args.Handled = true;
             }
         }
@@ -302,6 +485,96 @@ namespace CsWinRTApp
                     TextWrapping = TextWrapping.Wrap
                 };
                 ctrBorder.Child = ctrText;
+            }
+        }
+
+        private async void LoadListViewImage(ListViewBase sender, ContainerContentChangingEventArgs args)
+        {
+            if (args.Phase != 1)
+            {
+                return;
+            }
+
+            var item = args.Item as GeFileView;
+            if (item == null) return;
+
+            var grid = args.ItemContainer.ContentTemplateRoot as Grid;
+            if (grid == null) return;
+
+            var iconContainer = grid.FindName("ListIconContainer") as Border;
+            var fileNameText = grid.FindName("ListFileName") as TextBlock;
+            var fileTypeText = grid.FindName("ListFileType") as TextBlock;
+
+            if (fileNameText != null)
+            {
+                fileNameText.Text = Path.GetFileName(item.FileInfo.FilePath);
+            }
+
+            if (item.FileInfo.IsDirectory)
+            {
+                if (iconContainer != null)
+                {
+                    iconContainer.Child = new FontIcon
+                    {
+                        Glyph = "\uE8B7",
+                        FontSize = 20,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                }
+                if (fileTypeText != null)
+                {
+                    fileTypeText.Text = "文件夹";
+                }
+            }
+            else if (_fileService.IsImageFile(item.FileInfo.FilePath))
+            {
+                if (iconContainer != null)
+                {
+                    try
+                    {
+                        var image = new Image
+                        {
+                            Source = await item.GetThumbnailAsync(),
+                            Stretch = Stretch.UniformToFill,
+                            Width = 32,
+                            Height = 32
+                        };
+                        iconContainer.Child = image;
+                    }
+                    catch
+                    {
+                        iconContainer.Child = new FontIcon
+                        {
+                            Glyph = "\uE91B",
+                            FontSize = 20,
+                            HorizontalAlignment = HorizontalAlignment.Center,
+                            VerticalAlignment = VerticalAlignment.Center
+                        };
+                    }
+                }
+                if (fileTypeText != null)
+                {
+                    fileTypeText.Text = Path.GetExtension(item.FileInfo.FilePath).ToUpper();
+                }
+            }
+            else
+            {
+                if (iconContainer != null)
+                {
+                    iconContainer.Child = new FontIcon
+                    {
+                        Glyph = "\uE8A5",
+                        FontSize = 20,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                }
+                if (fileTypeText != null)
+                {
+                    var ext = Path.GetExtension(item.FileInfo.FilePath);
+                    fileTypeText.Text = string.IsNullOrEmpty(ext) ? "文件" : ext.ToUpper();
+                }
             }
         }
 

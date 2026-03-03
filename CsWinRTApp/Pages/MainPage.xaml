@@ -15,7 +15,6 @@
           VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -44,6 +43,45 @@
                         <TextBlock Text="返回" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
+                <Button x:Name="UpButton" 
+                        Click="UpButton_Click"
+                        IsEnabled="False"
+                        ToolTipService.ToolTip="上级目录">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <FontIcon Glyph="&#xE74A;" FontSize="16"/>
+                        <TextBlock Text="上级" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="myButton" Click="myButton_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <FontIcon Glyph="&#xE8B7;" FontSize="16"/>
+                        <TextBlock Text="选择目录" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                <AppBarSeparator/>
+                <Button x:Name="GridViewButton" 
+                        Click="GridViewButton_Click"
+                        ToolTipService.ToolTip="网格视图">
+                    <FontIcon Glyph="&#xE80A;" FontSize="16"/>
+                </Button>
+                <Button x:Name="ListViewButton" 
+                        Click="ListViewButton_Click"
+                        ToolTipService.ToolTip="列表视图">
+                    <FontIcon Glyph="&#xE8FD;" FontSize="16"/>
+                </Button>
+                <AppBarSeparator/>
+                <ToggleButton x:Name="ShowHiddenFilesButton" 
+                              Click="ShowHiddenFilesButton_Click"
+                              IsChecked="False"
+                              ToolTipService.ToolTip="显示隐藏文件">
+                    <FontIcon Glyph="&#xE7B3;" FontSize="16"/>
+                </ToggleButton>
+                <ToggleButton x:Name="ShowExcludedFilesButton" 
+                              Click="ShowExcludedFilesButton_Click"
+                              IsChecked="True"
+                              ToolTipService.ToolTip="显示排除文件">
+                    <FontIcon Glyph="&#xE74C;" FontSize="16"/>
+                </ToggleButton>
             </StackPanel>
 
             <TextBlock Grid.Column="1" 
@@ -54,51 +92,78 @@
                        FontWeight="SemiBold"/>
         </Grid>
 
-        <Grid Grid.Row="1" HorizontalAlignment="Stretch">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <!-- GridView -->
+            <GridView x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
+                      ContainerContentChanging="ImageGridView_ContainerContentChanging" 
+                      ItemClick="ImageGridView_ItemClick"
+                      SelectionChanged="ImageGridView_SelectionChanged"
+                      IsItemClickEnabled="True"
+                      SelectionMode="Single"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      SizeChanged="ImageGridView_SizeChanged">
+                <GridView.ItemTemplate>
+                    <DataTemplate x:DataType="models:GeFileView">
+                        <Border x:Name="ImageContainer" 
+                                Background="Transparent" 
+                                DoubleTapped="ImageContainer_DoubleTapped">
+                        </Border>
+                    </DataTemplate>
+                </GridView.ItemTemplate>
+                <GridView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <ItemsWrapGrid Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </GridView.ItemsPanel>
+            </GridView>
 
-            <StackPanel Name="LocationStack" Orientation="Vertical" HorizontalAlignment="Left" 
-                        VerticalAlignment="Top"
-                                Grid.Row="0"
-                                Background="Transparent">
-                <StackPanel  Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Button x:Name="myButton" Click="myButton_Click">选择目录</Button>
-                </StackPanel>
-            </StackPanel>
+            <!-- ListView -->
+            <ListView x:Name="ImageListView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
+                      ContainerContentChanging="ImageListView_ContainerContentChanging"
+                      ItemClick="ImageListView_ItemClick"
+                      SelectionChanged="ImageListView_SelectionChanged"
+                      DoubleTapped="ImageListView_DoubleTapped"
+                      IsItemClickEnabled="True"
+                      SelectionMode="Single"
+                      HorizontalAlignment="Stretch"
+                      VerticalAlignment="Stretch"
+                      Visibility="Collapsed">
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="models:GeFileView">
+                        <Grid Height="48" 
+                              Padding="8,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="40"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border x:Name="ListIconContainer" 
+                                    Grid.Column="0"
+                                    Width="32" 
+                                    Height="32"
+                                    VerticalAlignment="Center">
+                            </Border>
+
+                            <TextBlock x:Name="ListFileName" 
+                                       Grid.Column="1" 
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0"
+                                       TextTrimming="CharacterEllipsis"/>
+
+                            <TextBlock x:Name="ListFileType" 
+                                       Grid.Column="2" 
+                                       VerticalAlignment="Center"
+                                       Margin="8,0,0,0"
+                                       Foreground="{ThemeResource TextFillColorSecondaryBrush}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
 
-        <GridView Grid.Row="2"  x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
-                  ContainerContentChanging="ImageGridView_ContainerContentChanging" 
-                  ItemClick="ImageGridView_ItemClick"
-                  SelectionChanged="ImageGridView_SelectionChanged"
-                  IsItemClickEnabled="True"
-                  SelectionMode="Single"
-                  HorizontalAlignment="Stretch"
-                  VerticalAlignment="Stretch"
-                  SizeChanged="ImageGridView_SizeChanged">
-            <GridView.ItemTemplate>
-                <DataTemplate x:DataType="models:GeFileView">
-                    <Border x:Name="ImageContainer" 
-                            Background="LightGray" 
-                            DoubleTapped="ImageContainer_DoubleTapped">
-                        <!--<Image x:Name="ItemImage" Stretch="UniformToFill" />-->
-                    </Border>
-                </DataTemplate>
-            </GridView.ItemTemplate>
-            <GridView.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <ItemsWrapGrid Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </GridView.ItemsPanel>
-        </GridView>
-
-        <Grid Grid.Row="3" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+        <Grid Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
               BorderThickness="0,1,0,0">
             <TextBlock x:Name="StatusBarText" 
