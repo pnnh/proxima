@@ -51,9 +51,31 @@ namespace CsWinRTApp
 
         public MainPage()
         {
-            this.InitializeComponent();
-            UpdateViewModeButtons();
-            _ = InitializeAsync();
+            System.Diagnostics.Debug.WriteLine("=== MainPage Constructor START ===");
+
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("MainPage.InitializeComponent() starting...");
+                this.InitializeComponent();
+                System.Diagnostics.Debug.WriteLine("MainPage.InitializeComponent() completed");
+
+                System.Diagnostics.Debug.WriteLine("UpdateViewModeButtons() starting...");
+                UpdateViewModeButtons();
+                System.Diagnostics.Debug.WriteLine("UpdateViewModeButtons() completed");
+
+                System.Diagnostics.Debug.WriteLine("InitializeAsync() starting...");
+                _ = InitializeAsync();
+                System.Diagnostics.Debug.WriteLine("InitializeAsync() dispatched");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ERROR in MainPage constructor: {ex.GetType().Name}");
+                System.Diagnostics.Debug.WriteLine($"Message: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
+                throw;
+            }
+
+            System.Diagnostics.Debug.WriteLine("=== MainPage Constructor END ===");
         }
 
         private async Task InitializeAsync()
@@ -523,12 +545,47 @@ namespace CsWinRTApp
             }
             else if (_fileService.IsImageFile(item.FileInfo.FilePath))
             {
-                var ctrImage = new Image
+                var thumbnail = await item.GetThumbnailAsync();
+
+                // 如果缩略图为null（例如WebP文件），显示图片图标
+                if (thumbnail == null)
                 {
-                    Source = await item.GetThumbnailAsync(),
-                    Stretch = Stretch.UniformToFill
-                };
-                ctrBorder.Child = ctrImage;
+                    var stackPanel = new StackPanel
+                    {
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Spacing = 4
+                    };
+
+                    var imageIcon = new FontIcon
+                    {
+                        Glyph = "\uEB9F", // 图片图标
+                        FontSize = 48,
+                        HorizontalAlignment = HorizontalAlignment.Center
+                    };
+
+                    var fileName = new TextBlock
+                    {
+                        Text = Path.GetFileName(item.FileInfo.FilePath),
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        TextWrapping = TextWrapping.Wrap,
+                        TextAlignment = TextAlignment.Center,
+                        MaxWidth = 150
+                    };
+
+                    stackPanel.Children.Add(imageIcon);
+                    stackPanel.Children.Add(fileName);
+                    ctrBorder.Child = stackPanel;
+                }
+                else
+                {
+                    var ctrImage = new Image
+                    {
+                        Source = thumbnail,
+                        Stretch = Stretch.UniformToFill
+                    };
+                    ctrBorder.Child = ctrImage;
+                }
             }
             else
             {
@@ -588,20 +645,36 @@ namespace CsWinRTApp
                 {
                     try
                     {
-                        var image = new Image
+                        var thumbnail = await item.GetThumbnailAsync();
+
+                        // 如果缩略图为null（例如WebP文件），显示图标
+                        if (thumbnail == null)
                         {
-                            Source = await item.GetThumbnailAsync(),
-                            Stretch = Stretch.UniformToFill,
-                            Width = 32,
-                            Height = 32
-                        };
-                        iconContainer.Child = image;
+                            iconContainer.Child = new FontIcon
+                            {
+                                Glyph = "\uEB9F", // 图片图标
+                                FontSize = 20,
+                                HorizontalAlignment = HorizontalAlignment.Center,
+                                VerticalAlignment = VerticalAlignment.Center
+                            };
+                        }
+                        else
+                        {
+                            var image = new Image
+                            {
+                                Source = thumbnail,
+                                Stretch = Stretch.UniformToFill,
+                                Width = 32,
+                                Height = 32
+                            };
+                            iconContainer.Child = image;
+                        }
                     }
                     catch
                     {
                         iconContainer.Child = new FontIcon
                         {
-                            Glyph = "\uE91B",
+                            Glyph = "\uEB9F", // 图片图标
                             FontSize = 20,
                             HorizontalAlignment = HorizontalAlignment.Center,
                             VerticalAlignment = VerticalAlignment.Center

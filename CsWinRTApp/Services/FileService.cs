@@ -22,9 +22,22 @@ namespace CsWinRTApp.Services
 
         public bool IsImageFile(string filePath)
         {
-            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp" };
+            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp", ".awebp" };
             string extension = Path.GetExtension(filePath);
             return imageExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+        }
+
+        public bool IsSvgFile(string filePath)
+        {
+            string extension = Path.GetExtension(filePath);
+            return extension.Equals(".svg", StringComparison.OrdinalIgnoreCase);
+        }
+
+        public bool IsHtmlFile(string filePath)
+        {
+            string[] htmlExtensions = { ".html", ".htm" };
+            string extension = Path.GetExtension(filePath);
+            return htmlExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
         public bool IsHiddenFile(string filePath)

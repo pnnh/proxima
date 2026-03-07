@@ -17,6 +17,8 @@ using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 using Microsoft.UI.Xaml.Media.Imaging;
 using CsWinRTApp.Models;
+using CsWinRTApp.Services;
+using Microsoft.Web.WebView2.Core;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -30,6 +32,7 @@ namespace CsWinRTApp.Pages
     {
         private GeFileInfo2 _fileInfo;
         private bool _isImageFile = false;
+        private bool _isWebViewInitialized = false;
 
         private enum ImageDisplayMode
         {
@@ -41,7 +44,35 @@ namespace CsWinRTApp.Pages
 
         public Page2()
         {
-            this.InitializeComponent();
+            try
+            {
+                LogService.Info("Page2 constructor started");
+                this.InitializeComponent();
+                LogService.Info("InitializeComponent completed");
+                InitializeWebView();
+                LogService.Info("Page2 constructor completed");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error("Page2 constructor failed", ex);
+                throw;
+            }
+        }
+
+        private async void InitializeWebView()
+        {
+            try
+            {
+                LogService.Info("Starting WebView2 initialization");
+                await WebViewer.EnsureCoreWebView2Async();
+                _isWebViewInitialized = true;
+                LogService.Info("WebView2 initialization completed successfully");
+            }
+            catch (Exception ex)
+            {
+                LogService.Error("WebView2 initialization failed", ex);
+                System.Diagnostics.Debug.WriteLine($"WebView2 initialization error: {ex.Message}");
+            }
         }
 
         private void FitToWindowButton_Click(object sender, RoutedEventArgs e)
@@ -162,6 +193,14 @@ namespace CsWinRTApp.Pages
                 {
                     await ShowImagePreviewAsync();
                 }
+                else if (IsSvgFile(extension))
+                {
+                    await ShowSvgPreviewAsync();
+                }
+                else if (IsHtmlFile(extension))
+                {
+                    await ShowHtmlPreviewAsync();
+                }
                 else if (IsTextFile(extension))
                 {
                     await ShowTextPreviewAsync();
@@ -180,8 +219,19 @@ namespace CsWinRTApp.Pages
 
         private bool IsImageFile(string extension)
         {
-            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ".svg" };
+            string[] imageExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico", ".webp", ".awebp" };
             return imageExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private bool IsSvgFile(string extension)
+        {
+            return extension.Equals(".svg", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private bool IsHtmlFile(string extension)
+        {
+            string[] htmlExtensions = { ".html", ".htm" };
+            return htmlExtensions.Contains(extension, StringComparer.OrdinalIgnoreCase);
         }
 
         private bool IsTextFile(string extension)
@@ -198,16 +248,32 @@ namespace CsWinRTApp.Pages
             {
                 System.Diagnostics.Debug.WriteLine($"ShowImagePreviewAsync: Loading image from {_fileInfo.FilePath}");
 
-                var file = await StorageFile.GetFileFromPathAsync(_fileInfo.FilePath);
-                var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                BitmapImage bitmap;
 
-                var bitmap = new BitmapImage();
-                await bitmap.SetSourceAsync(stream);
+                // 检查是否为 WebP 文件
+                if (WebPImageService.IsWebPFile(_fileInfo.FilePath))
+                {
+                    // 使用 WebPImageService 加载 WebP 图像（不限制尺寸，加载完整图像）
+                    bitmap = await WebPImageService.LoadWebPImageAsync(_fileInfo.FilePath);
+                    if (bitmap == null)
+                    {
+                        throw new Exception("无法加载 WebP 图像");
+                    }
+                }
+                else
+                {
+                    // 对于其他格式，使用标准方法
+                    var file = await StorageFile.GetFileFromPathAsync(_fileInfo.FilePath);
+                    var stream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+                    bitmap = new BitmapImage();
+                    await bitmap.SetSourceAsync(stream);
+                }
 
                 ImageViewer.Source = bitmap;
                 ImageViewer.Visibility = Visibility.Visible;
                 TextViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
 
                 System.Diagnostics.Debug.WriteLine($"ShowImagePreviewAsync: Image loaded successfully");
 
@@ -222,8 +288,107 @@ namespace CsWinRTApp.Pages
                 TextViewer.Visibility = Visibility.Visible;
                 ImageViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
                 _isImageFile = false;
                 ImageControlPanel.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task ShowSvgPreviewAsync()
+        {
+            try
+            {
+                if (!_isWebViewInitialized)
+                {
+                    TextViewer.Text = "WebView2 未初始化，无法显示 SVG";
+                    TextViewer.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"ShowSvgPreviewAsync: Loading SVG from {_fileInfo.FilePath}");
+
+                var file = await StorageFile.GetFileFromPathAsync(_fileInfo.FilePath);
+                var svgContent = await FileIO.ReadTextAsync(file);
+
+                // 创建一个包装 SVG 的 HTML 页面，使其居中显示
+                var htmlContent = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <style>
+        body {{
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+        }}
+        svg {{
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }}
+    </style>
+</head>
+<body>
+    {svgContent}
+</body>
+</html>";
+
+                WebViewer.NavigateToString(htmlContent);
+                WebViewer.Visibility = Visibility.Visible;
+                ImageViewer.Visibility = Visibility.Collapsed;
+                TextViewer.Visibility = Visibility.Collapsed;
+                FileInfoViewer.Visibility = Visibility.Collapsed;
+
+                System.Diagnostics.Debug.WriteLine($"ShowSvgPreviewAsync: SVG loaded successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ShowSvgPreviewAsync error: {ex.Message}");
+                TextViewer.Text = $"无法加载 SVG: {ex.Message}";
+                TextViewer.Visibility = Visibility.Visible;
+                ImageViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
+                FileInfoViewer.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task ShowHtmlPreviewAsync()
+        {
+            try
+            {
+                if (!_isWebViewInitialized)
+                {
+                    TextViewer.Text = "WebView2 未初始化，无法显示 HTML";
+                    TextViewer.Visibility = Visibility.Visible;
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"ShowHtmlPreviewAsync: Loading HTML from {_fileInfo.FilePath}");
+
+                // 使用 Navigate 方法加载本地 HTML 文件
+                var fileUri = new Uri($"file:///{_fileInfo.FilePath.Replace("\\", "/")}");
+                WebViewer.Source = fileUri;
+
+                WebViewer.Visibility = Visibility.Visible;
+                ImageViewer.Visibility = Visibility.Collapsed;
+                TextViewer.Visibility = Visibility.Collapsed;
+                FileInfoViewer.Visibility = Visibility.Collapsed;
+
+                System.Diagnostics.Debug.WriteLine($"ShowHtmlPreviewAsync: HTML loaded successfully");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"ShowHtmlPreviewAsync error: {ex.Message}");
+                TextViewer.Text = $"无法加载 HTML: {ex.Message}";
+                TextViewer.Visibility = Visibility.Visible;
+                ImageViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
+                FileInfoViewer.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -244,6 +409,7 @@ namespace CsWinRTApp.Pages
                 TextViewer.Visibility = Visibility.Visible;
                 ImageViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -251,6 +417,7 @@ namespace CsWinRTApp.Pages
                 TextViewer.Visibility = Visibility.Visible;
                 ImageViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
             }
         }
 
@@ -271,6 +438,7 @@ namespace CsWinRTApp.Pages
                 FileInfoViewer.Visibility = Visibility.Visible;
                 ImageViewer.Visibility = Visibility.Collapsed;
                 TextViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
             }
             catch (Exception ex)
             {
@@ -278,6 +446,7 @@ namespace CsWinRTApp.Pages
                 TextViewer.Visibility = Visibility.Visible;
                 ImageViewer.Visibility = Visibility.Collapsed;
                 FileInfoViewer.Visibility = Visibility.Collapsed;
+                WebViewer.Visibility = Visibility.Collapsed;
             }
         }
 

@@ -68,6 +68,10 @@
                        Stretch="Uniform"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"/>
+                <WebView2 x:Name="WebViewer" 
+                          Visibility="Collapsed"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"/>
                 <TextBlock x:Name="TextViewer" 
                            Visibility="Collapsed" 
                            TextWrapping="Wrap" 
