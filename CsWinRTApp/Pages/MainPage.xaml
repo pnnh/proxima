@@ -19,56 +19,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <!-- 左侧侧边栏 -->
-        <Grid Grid.Row="0" Grid.RowSpan="3" Grid.Column="0" 
-              Width="200"
-              Background="{ThemeResource LayerFillColorDefaultBrush}"
-              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}"
-              BorderThickness="0,0,1,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Grid.Row="0" 
-                       Text="文件夹历史" 
-                       Margin="12,8"
-                       FontSize="14"
-                       FontWeight="SemiBold"/>
-
-            <ListView Grid.Row="1" 
-                      x:Name="FolderHistoryListView"
-                      ItemsSource="{x:Bind FolderHistory, Mode=OneWay}"
-                      SelectionMode="Single"
-                      SelectionChanged="FolderHistoryListView_SelectionChanged">
-                <ListView.ItemTemplate>
-                    <DataTemplate x:DataType="models:FolderItem">
-                        <Grid Padding="12,8" ToolTipService.ToolTip="{x:Bind FullPath}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <FontIcon Grid.Column="0" 
-                                      Glyph="&#xE8B7;" 
-                                      FontSize="16"
-                                      Margin="0,0,8,0"/>
-
-                            <TextBlock Grid.Column="1" 
-                                       Text="{x:Bind DisplayName}" 
-                                       TextTrimming="CharacterEllipsis"
-                                       VerticalAlignment="Center"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </Grid>
-
-        <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        <!-- 顶部工具栏 - 横跨整个宽度 -->
+        <Grid Grid.Row="0" Grid.Column="0" HorizontalAlignment="Stretch" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
               BorderThickness="0,0,0,1">
             <Grid.RowDefinitions>
@@ -138,7 +93,75 @@
                        FontWeight="SemiBold"/>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <!-- 中间内容区域 - 左侧导航栏 + 右侧文件视图 -->
+        <Grid Grid.Row="1" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="SidebarColumn" Width="200" MinWidth="200" MaxWidth="500"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧侧边栏 -->
+            <Grid Grid.Column="0" 
+                  Background="{ThemeResource LayerFillColorDefaultBrush}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" 
+                           Text="文件夹历史" 
+                           Margin="12,8"
+                           FontSize="14"
+                           FontWeight="SemiBold"/>
+
+                <ListView Grid.Row="1" 
+                          x:Name="FolderHistoryListView"
+                          ItemsSource="{x:Bind FolderHistory, Mode=OneWay}"
+                          SelectionMode="Single"
+                          SelectionChanged="FolderHistoryListView_SelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate x:DataType="models:FolderItem">
+                            <Grid Padding="12,8" ToolTipService.ToolTip="{x:Bind FullPath}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <FontIcon Grid.Column="0" 
+                                          Glyph="&#xE8B7;" 
+                                          FontSize="16"
+                                          Margin="0,0,8,0"/>
+
+                                <TextBlock Grid.Column="1" 
+                                           Text="{x:Bind DisplayName}" 
+                                           TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <!-- 可拖动的分隔符 -->
+            <Border Grid.Column="1" 
+                    x:Name="ResizeGripper"
+                    Width="8"
+                    Background="Transparent"
+                    PointerEntered="ResizeGripper_PointerEntered"
+                    PointerExited="ResizeGripper_PointerExited"
+                    PointerPressed="ResizeGripper_PointerPressed"
+                    PointerMoved="ResizeGripper_PointerMoved"
+                    PointerReleased="ResizeGripper_PointerReleased"
+                    PointerCaptureLost="ResizeGripper_PointerCaptureLost">
+                <!-- 中间的可见分隔线 -->
+                <Rectangle Width="1" 
+                           Fill="{ThemeResource DividerStrokeColorDefaultBrush}"
+                           HorizontalAlignment="Center"/>
+            </Border>
+
+            <!-- 右侧文件视图区域 -->
+            <Grid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <!-- GridView -->
             <GridView x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
                       ContainerContentChanging="ImageGridView_ContainerContentChanging" 
@@ -207,9 +230,11 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+            </Grid>
         </Grid>
 
-        <Grid Grid.Row="2" Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+        <!-- 底部状态栏 - 横跨整个宽度 -->
+        <Grid Grid.Row="2" Grid.Column="0" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
               Padding="8,4" BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
               BorderThickness="0,1,0,0">
             <TextBlock x:Name="StatusBarText" 

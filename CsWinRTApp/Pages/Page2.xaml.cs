@@ -126,10 +126,10 @@ namespace CsWinRTApp.Pages
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(MainPage), new SlideNavigationTransitionInfo
+            if (Frame.CanGoBack)
             {
-                Effect = SlideNavigationTransitionEffect.FromLeft
-            });
+                Frame.GoBack(new SuppressNavigationTransitionInfo());
+            }
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)

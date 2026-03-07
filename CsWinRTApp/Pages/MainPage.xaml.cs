@@ -43,6 +43,11 @@ namespace CsWinRTApp
         private bool _isGridView = true;
         private bool _showHiddenFiles = false;
         private bool _showExcludedFiles = true;
+        private bool _isResizing = false;
+        private double _startX = 0;
+        private double _startWidth = 0;
+        private const double MinSidebarWidth = 256;
+        private const double MaxSidebarWidth = 512;
 
         public MainPage()
         {
@@ -317,10 +322,7 @@ namespace CsWinRTApp
                 }
                 else
                 {
-                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
-                    {
-                        Effect = SlideNavigationTransitionEffect.FromRight
-                    });
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SuppressNavigationTransitionInfo());
                 }
             }
         }
@@ -335,10 +337,7 @@ namespace CsWinRTApp
                 }
                 else
                 {
-                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
-                    {
-                        Effect = SlideNavigationTransitionEffect.FromRight
-                    });
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SuppressNavigationTransitionInfo());
                 }
             }
         }
@@ -364,10 +363,7 @@ namespace CsWinRTApp
             {
                 if (!fileView.FileInfo.IsDirectory)
                 {
-                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
-                    {
-                        Effect = SlideNavigationTransitionEffect.FromRight
-                    });
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SuppressNavigationTransitionInfo());
                 }
             }
         }
@@ -378,10 +374,7 @@ namespace CsWinRTApp
             {
                 if (!fileView.FileInfo.IsDirectory)
                 {
-                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SlideNavigationTransitionInfo
-                    {
-                        Effect = SlideNavigationTransitionEffect.FromRight
-                    });
+                    Frame.Navigate(typeof(Page2), fileView.FileInfo, new SuppressNavigationTransitionInfo());
                 }
             }
         }
@@ -681,5 +674,86 @@ namespace CsWinRTApp
             //Console.WriteLine($"aaa = {aaa}");
 
         }
+
+        #region Sidebar Resize Logic
+
+        private void ResizeGripper_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is Border border)
+            {
+                // 使用更明显的视觉反馈
+                border.Background = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(128, 200, 200, 200));
+            }
+        }
+
+        private void ResizeGripper_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (!_isResizing)
+            {
+                if (sender is Border border)
+                {
+                    border.Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+                }
+            }
+        }
+
+        private void ResizeGripper_PointerPressed(object sender, PointerRoutedEventArgs e)
+        {
+            if (sender is Border border)
+            {
+                _isResizing = true;
+                _startX = e.GetCurrentPoint(this).Position.X;
+                _startWidth = SidebarColumn.ActualWidth;
+                border.CapturePointer(e.Pointer);
+                // 拖动时在Page级别设置光标
+                ProtectedCursor = Microsoft.UI.Input.InputSystemCursor.Create(Microsoft.UI.Input.InputSystemCursorShape.SizeWestEast);
+                e.Handled = true;
+            }
+        }
+
+        private void ResizeGripper_PointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            if (_isResizing)
+            {
+                var currentX = e.GetCurrentPoint(this).Position.X;
+                var delta = currentX - _startX;
+                var newWidth = _startWidth + delta;
+
+                // 限制宽度在最小和最大值之间
+                newWidth = Math.Max(MinSidebarWidth, Math.Min(MaxSidebarWidth, newWidth));
+
+                SidebarColumn.Width = new GridLength(newWidth);
+                e.Handled = true;
+            }
+        }
+
+        private void ResizeGripper_PointerReleased(object sender, PointerRoutedEventArgs e)
+        {
+            if (_isResizing && sender is Border border)
+            {
+                _isResizing = false;
+                border.ReleasePointerCapture(e.Pointer);
+                border.Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+                // 恢复默认光标
+                ProtectedCursor = Microsoft.UI.Input.InputSystemCursor.Create(Microsoft.UI.Input.InputSystemCursorShape.Arrow);
+                e.Handled = true;
+            }
+        }
+
+        private void ResizeGripper_PointerCaptureLost(object sender, PointerRoutedEventArgs e)
+        {
+            if (_isResizing)
+            {
+                _isResizing = false;
+                if (sender is Border border)
+                {
+                    border.Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent);
+                }
+                // 恢复默认光标
+                ProtectedCursor = Microsoft.UI.Input.InputSystemCursor.Create(Microsoft.UI.Input.InputSystemCursorShape.Arrow);
+            }
+        }
+
+        #endregion
     }
 }

@@ -15,39 +15,45 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0" Padding="16,8" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+        <Grid Grid.Row="0" Padding="8,4" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+              BorderBrush="{ThemeResource DividerStrokeColorDefaultBrush}" 
+              BorderThickness="0,0,0,1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
-                <Button Content="返回" Click="BackButton_Click">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="4">
+                <Button x:Name="BackButton" Click="BackButton_Click">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <FontIcon Glyph="&#xE72B;" FontSize="16"/>
+                        <TextBlock Text="返回" VerticalAlignment="Center"/>
+                    </StackPanel>
                     <Button.KeyboardAccelerators>
                         <KeyboardAccelerator Key="Back"/>
                     </Button.KeyboardAccelerators>
                 </Button>
-                <TextBlock x:Name="FileNameText" VerticalAlignment="Center" FontSize="16" FontWeight="SemiBold" Margin="8,0,0,0"/>
             </StackPanel>
 
+            <TextBlock Grid.Column="1" 
+                       x:Name="FileNameText" 
+                       VerticalAlignment="Center" 
+                       Margin="16,0,0,0"
+                       FontSize="16" 
+                       FontWeight="SemiBold"/>
+
             <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4" x:Name="ImageControlPanel" Visibility="Collapsed">
-                <AppBarButton x:Name="FitToWindowButton" 
-                              Label="适应窗口" 
-                              Click="FitToWindowButton_Click"
-                              IsCompact="True">
-                    <AppBarButton.Icon>
-                        <FontIcon Glyph="&#xE740;"/>
-                    </AppBarButton.Icon>
-                </AppBarButton>
-                <AppBarButton x:Name="ActualSizeButton" 
-                              Label="实际大小" 
-                              Click="ActualSizeButton_Click"
-                              IsCompact="True">
-                    <AppBarButton.Icon>
-                        <FontIcon Glyph="&#xE71E;"/>
-                    </AppBarButton.Icon>
-                </AppBarButton>
+                <Button x:Name="FitToWindowButton" 
+                        Click="FitToWindowButton_Click"
+                        ToolTipService.ToolTip="适应窗口">
+                    <FontIcon Glyph="&#xE740;" FontSize="16"/>
+                </Button>
+                <Button x:Name="ActualSizeButton" 
+                        Click="ActualSizeButton_Click"
+                        ToolTipService.ToolTip="实际大小">
+                    <FontIcon Glyph="&#xE71E;" FontSize="16"/>
+                </Button>
             </StackPanel>
         </Grid>
 
