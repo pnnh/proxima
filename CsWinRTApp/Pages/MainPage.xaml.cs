@@ -28,7 +28,7 @@ namespace CsWinRTApp
 {
     public sealed partial class MainPage : Page
     {
-        public ObservableCollection<GeFileView> Images { get; } = new();
+        public ObservableCollection<GeFileView> FilesCollection { get; } = new();
         public ObservableCollection<FolderItem> FolderHistory { get; } = new();
         private FileService _fileService = new FileService();
         private FolderHistoryService _folderHistoryService = new FolderHistoryService();
@@ -75,7 +75,7 @@ namespace CsWinRTApp
         private async Task InitializeAsync()
         {
             await LoadFolderHistoryAsync();
-            await LoadImagesAsync(null);
+            await LoadFilesAsync(null);
         }
 
         private async Task LoadFolderHistoryAsync()
@@ -150,16 +150,16 @@ namespace CsWinRTApp
         private void GridViewButton_Click(object sender, RoutedEventArgs e)
         {
             _isGridView = true;
-            ImageGridView.Visibility = Visibility.Visible;
-            ImageListView.Visibility = Visibility.Collapsed;
+            FileGridView.Visibility = Visibility.Visible;
+            FileListView.Visibility = Visibility.Collapsed;
             UpdateViewModeButtons();
         }
 
         private void ListViewButton_Click(object sender, RoutedEventArgs e)
         {
             _isGridView = false;
-            ImageGridView.Visibility = Visibility.Collapsed;
-            ImageListView.Visibility = Visibility.Visible;
+            FileGridView.Visibility = Visibility.Collapsed;
+            FileListView.Visibility = Visibility.Visible;
             UpdateViewModeButtons();
         }
 
@@ -176,8 +176,8 @@ namespace CsWinRTApp
             // 重新加载当前目录
             if (!string.IsNullOrEmpty(_currentDirectory))
             {
-                Images.Clear();
-                await LoadImagesAsync(_currentDirectory);
+                FilesCollection.Clear();
+                await LoadFilesAsync(_currentDirectory);
             }
         }
 
@@ -188,8 +188,8 @@ namespace CsWinRTApp
             // 重新加载当前目录
             if (!string.IsNullOrEmpty(_currentDirectory))
             {
-                Images.Clear();
-                await LoadImagesAsync(_currentDirectory);
+                FilesCollection.Clear();
+                await LoadFilesAsync(_currentDirectory);
             }
         }
 
@@ -199,9 +199,9 @@ namespace CsWinRTApp
             {
                 if (Directory.Exists(folderItem.FullPath))
                 {
-                    Images.Clear();
+                    FilesCollection.Clear();
                     _rootDirectory = folderItem.FullPath;
-                    await LoadImagesAsync(folderItem.FullPath);
+                    await LoadFilesAsync(folderItem.FullPath);
 
                     // 更新访问时间
                     await _folderHistoryService.AddOrUpdateFolderAsync(folderItem.FullPath);
@@ -278,9 +278,9 @@ namespace CsWinRTApp
             }
         }
 
-        private void ImageGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FileGridView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ImageGridView.SelectedItem is GeFileView selectedFile)
+            if (FileGridView.SelectedItem is GeFileView selectedFile)
             {
                 StatusBarText.Text = $"选中: {selectedFile.FileInfo.FilePath}";
             }
@@ -290,9 +290,9 @@ namespace CsWinRTApp
             }
         }
 
-        private void ImageListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void FileListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ImageListView.SelectedItem is GeFileView selectedFile)
+            if (FileListView.SelectedItem is GeFileView selectedFile)
             {
                 StatusBarText.Text = $"选中: {selectedFile.FileInfo.FilePath}";
             }
@@ -316,7 +316,7 @@ namespace CsWinRTApp
             UpdateBackButtonState();
         }
 
-        private void ImageContainer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void FileContainer_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             if (sender is Border border)
             {
@@ -343,9 +343,9 @@ namespace CsWinRTApp
             }
         }
 
-        private void ImageListView_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
+        private void FileListView_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
-            if (ImageListView.SelectedItem is GeFileView fileView)
+            if (FileListView.SelectedItem is GeFileView fileView)
             {
                 if (fileView.FileInfo.IsDirectory)
                 {
@@ -362,10 +362,10 @@ namespace CsWinRTApp
         {
             try
             {
-                Images.Clear();
+                FilesCollection.Clear();
                 _currentDirectory = directoryPath;
-                await LoadImagesAsync(directoryPath);
-                // LoadImagesAsync 内部会调用 UpdateStatusBar，所以这里不需要再调用
+                await LoadFilesAsync(directoryPath);
+                // LoadFilesAsync 内部会调用 UpdateStatusBar，所以这里不需要再调用
             }
             catch (Exception ex)
             {
@@ -373,7 +373,7 @@ namespace CsWinRTApp
             }
         }
 
-        private void ImageGridView_ItemClick(object sender, ItemClickEventArgs e)
+        private void FileGridView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is GeFileView fileView)
             {
@@ -384,7 +384,7 @@ namespace CsWinRTApp
             }
         }
 
-        private void ImageListView_ItemClick(object sender, ItemClickEventArgs e)
+        private void FileListView_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is GeFileView fileView)
             {
@@ -395,45 +395,45 @@ namespace CsWinRTApp
             }
         }
 
-        private async Task LoadImagesAsync(string imageDir)
+        private async Task LoadFilesAsync(string fileDir)
         {
             IReadOnlyList<StorageFile> filesList;
 
-            if (string.IsNullOrEmpty(imageDir))
+            if (string.IsNullOrEmpty(fileDir))
             {
-                imageDir = "Assets\\Images";
+                //imageDir = "Assets\\Images";
 
-                var appFolder = Package.Current.InstalledLocation;
-                var samplesFolder = await appFolder.GetFolderAsync(imageDir);  // Adjust path as needed
-                var queryOptions = new QueryOptions(CommonFileQuery.OrderByName, new[]
-                {
-                    ".jpg", ".jpeg", ".png", ".gif", ".bmp"
-                });
-                var query = samplesFolder.CreateFileQueryWithOptions(queryOptions);
-                filesList = await query.GetFilesAsync();
+                //var appFolder = Package.Current.InstalledLocation;
+                //var samplesFolder = await appFolder.GetFolderAsync(imageDir);  // Adjust path as needed
+                //var queryOptions = new QueryOptions(CommonFileQuery.OrderByName, new[]
+                //{
+                //    ".jpg", ".jpeg", ".png", ".gif", ".bmp"
+                //});
+                //var query = samplesFolder.CreateFileQueryWithOptions(queryOptions);
+                //filesList = await query.GetFilesAsync();
 
-                foreach (var file in filesList)
-                {
-                    var fileInfo = new GeFileInfo2
-                    {
-                        FilePath = file.Path,
-                        IsDirectory = false
-                    };
-                    Images.Add(new GeFileView(fileInfo));
-                }
+                //foreach (var file in filesList)
+                //{
+                //    var fileInfo = new GeFileInfo
+                //    {
+                //        FilePath = file.Path,
+                //        IsDirectory = false
+                //    };
+                //    FilesCollection.Add(new GeFileView(fileInfo));
+                //}
 
-                _currentDirectory = samplesFolder.Path;
+                //_currentDirectory = samplesFolder.Path;
+                throw new InvalidOperationException("初始目录未指定");
             }
-            else
-            {
-                var list = await _fileService.LoadFilesAsync(imageDir, DispatcherQueue, _showHiddenFiles, _showExcludedFiles);
-                foreach (var file in list)
-                { 
-                    Images.Add(new GeFileView(file));
-                }
-
-                _currentDirectory = imageDir;
+            
+            var list = await _fileService.LoadFilesAsync(fileDir, DispatcherQueue, _showHiddenFiles, _showExcludedFiles);
+            foreach (var file in list)
+            { 
+                FilesCollection.Add(new GeFileView(file));
             }
+
+            _currentDirectory = fileDir;
+            
 
             UpdateStatusBar();
         }
@@ -459,7 +459,7 @@ namespace CsWinRTApp
                 // Print the full path of the selected directory to the console
                 Console.WriteLine($"Selected directory: {selectedFolder.Path}");
 
-                Images.Clear();
+                FilesCollection.Clear();
                 // 重置根目录
                 _rootDirectory = selectedFolder.Path;
 
@@ -467,8 +467,8 @@ namespace CsWinRTApp
                 await _folderHistoryService.AddOrUpdateFolderAsync(selectedFolder.Path);
                 await LoadFolderHistoryAsync();
 
-                // Call the function to traverse and print image files
-                await LoadImagesAsync(selectedFolder.Path);
+                // Call the function to traverse and print files
+                await LoadFilesAsync(selectedFolder.Path);
             }
             else
             {
@@ -476,25 +476,25 @@ namespace CsWinRTApp
             }
         }
 
-        private async void ImageGridView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        private async void FileGridView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Phase == 0)
             {
-                args.RegisterUpdateCallback(LoadImage);
+                args.RegisterUpdateCallback(LoadFile);
                 args.Handled = true;
             }
         }
 
-        private async void ImageListView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
+        private async void FileListView_ContainerContentChanging(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Phase == 0)
             {
-                args.RegisterUpdateCallback(LoadListViewImage);
+                args.RegisterUpdateCallback(LoadListViewFile);
                 args.Handled = true;
             }
         }
 
-        private async void LoadImage(ListViewBase sender, ContainerContentChangingEventArgs args)
+        private async void LoadFile(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Phase != 1)
             {
@@ -573,12 +573,12 @@ namespace CsWinRTApp
                 }
                 else
                 {
-                    var ctrImage = new Image
+                    var ctrFile = new Image
                     {
                         Source = thumbnail,
                         Stretch = Stretch.UniformToFill
                     };
-                    ctrBorder.Child = ctrImage;
+                    ctrBorder.Child = ctrFile;
                 }
             }
             else
@@ -594,7 +594,7 @@ namespace CsWinRTApp
             }
         }
 
-        private async void LoadListViewImage(ListViewBase sender, ContainerContentChangingEventArgs args)
+        private async void LoadListViewFile(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Phase != 1)
             {
@@ -700,14 +700,14 @@ namespace CsWinRTApp
             }
         }
 
-        private void ImageGridView_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void FileGridView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             // Calculate item width based on GridView width and column count
             // Assuming 4 columns by default, adjust as needed
             const int columnCount = 8;
-            double itemWidth = (ImageGridView.ActualWidth - 4) / columnCount; // 4px for margins
+            double itemWidth = (FileGridView.ActualWidth - 4) / columnCount; // 4px for margins
 
-            if (ImageGridView.ItemsPanelRoot is ItemsWrapGrid wrapGrid)
+            if (FileGridView.ItemsPanelRoot is ItemsWrapGrid wrapGrid)
             {
                 wrapGrid.ItemWidth = itemWidth;
                 wrapGrid.ItemHeight = itemWidth; // Keep 1:1 aspect ratio

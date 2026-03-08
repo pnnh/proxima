@@ -13,7 +13,7 @@ using Windows.Storage.FileProperties;
 
 namespace CsWinRTApp.Models
 {
-    public class GeFileInfo2 : INotifyPropertyChanged
+    public class GeFileInfo : INotifyPropertyChanged
     { 
         private string _filePath;
         private bool _isDirectory;
@@ -60,11 +60,11 @@ namespace CsWinRTApp.Models
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public GeFileInfo2( ) : this(string.Empty, false)
+        public GeFileInfo( ) : this(string.Empty, false)
         {
         }
 
-        public GeFileInfo2(string filePath, bool isDirectory = false, bool isWebpPending = false)
+        public GeFileInfo(string filePath, bool isDirectory = false, bool isWebpPending = false)
         {
             _filePath = filePath;
             _isDirectory = isDirectory;

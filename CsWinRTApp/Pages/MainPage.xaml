@@ -163,20 +163,20 @@
             <!-- 右侧文件视图区域 -->
             <Grid Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <!-- GridView -->
-            <GridView x:Name="ImageGridView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
-                      ContainerContentChanging="ImageGridView_ContainerContentChanging" 
-                      ItemClick="ImageGridView_ItemClick"
-                      SelectionChanged="ImageGridView_SelectionChanged"
+            <GridView x:Name="FileGridView" ItemsSource="{x:Bind FilesCollection, Mode=OneWay}" 
+                      ContainerContentChanging="FileGridView_ContainerContentChanging" 
+                      ItemClick="FileGridView_ItemClick"
+                      SelectionChanged="FileGridView_SelectionChanged"
                       IsItemClickEnabled="True"
                       SelectionMode="Single"
                       HorizontalAlignment="Stretch"
                       VerticalAlignment="Stretch"
-                      SizeChanged="ImageGridView_SizeChanged">
+                      SizeChanged="FileGridView_SizeChanged">
                 <GridView.ItemTemplate>
                     <DataTemplate x:DataType="models:GeFileView">
-                        <Border x:Name="ImageContainer" 
+                        <Border x:Name="FileContainer" 
                                 Background="Transparent" 
-                                DoubleTapped="ImageContainer_DoubleTapped">
+                                DoubleTapped="FileContainer_DoubleTapped">
                         </Border>
                     </DataTemplate>
                 </GridView.ItemTemplate>
@@ -188,11 +188,11 @@
             </GridView>
 
             <!-- ListView -->
-            <ListView x:Name="ImageListView" ItemsSource="{x:Bind Images, Mode=OneWay}" 
-                      ContainerContentChanging="ImageListView_ContainerContentChanging"
-                      ItemClick="ImageListView_ItemClick"
-                      SelectionChanged="ImageListView_SelectionChanged"
-                      DoubleTapped="ImageListView_DoubleTapped"
+            <ListView x:Name="FileListView" ItemsSource="{x:Bind FilesCollection, Mode=OneWay}" 
+                      ContainerContentChanging="FileListView_ContainerContentChanging"
+                      ItemClick="FileListView_ItemClick"
+                      SelectionChanged="FileListView_SelectionChanged"
+                      DoubleTapped="FileListView_DoubleTapped"
                       IsItemClickEnabled="True"
                       SelectionMode="Single"
                       HorizontalAlignment="Stretch"

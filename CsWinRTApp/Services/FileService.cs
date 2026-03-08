@@ -147,12 +147,12 @@ namespace CsWinRTApp.Services
         }
 
 
-        public async Task<List<GeFileInfo2>> LoadFilesAsync(string imageDir, DispatcherQueue dispatcherQueue, bool showHiddenFiles = false, bool showExcludedFiles = true)
+        public async Task<List<GeFileInfo>> LoadFilesAsync(string imageDir, DispatcherQueue dispatcherQueue, bool showHiddenFiles = false, bool showExcludedFiles = true)
         {
-            var list = new List<GeFileInfo2>();
+            var list = new List<GeFileInfo>();
             string tempPngDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "WebpToPng");
             Directory.CreateDirectory(tempPngDir);
-            var webpConvertTasks = new List<(GeFileInfo2, string, string)>();
+            var webpConvertTasks = new List<(GeFileInfo, string, string)>();
 
             try
             {
@@ -164,7 +164,7 @@ namespace CsWinRTApp.Services
                         continue;
                     if (!showExcludedFiles && IsExcludedFile(directory))
                         continue;
-                    list.Add(new GeFileInfo2(directory, true));
+                    list.Add(new GeFileInfo(directory, true));
                 }
 
                 // Then get all files in the directory
@@ -184,19 +184,19 @@ namespace CsWinRTApp.Services
                         string pngPath = Path.Combine(tempPngDir, pngName);
                         if (!File.Exists(pngPath))
                         {
-                            var info = new GeFileInfo2(file, false, true); // pending
+                            var info = new GeFileInfo(file, false, true); // pending
                             list.Add(info);
                             webpConvertTasks.Add((info, file, pngPath));
                         }
                         else
                         {
                             // PNG已存在，直接使用
-                            list.Add(new GeFileInfo2(pngPath, false));
+                            list.Add(new GeFileInfo(pngPath, false));
                         }
                     }
-                    else if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif")
+                    else //if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif")
                     {
-                        list.Add(new GeFileInfo2(file, false));
+                        list.Add(new GeFileInfo(file, false));
                     }
                 }
             }

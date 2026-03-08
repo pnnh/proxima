@@ -30,7 +30,7 @@ namespace CsWinRTApp.Pages
     /// </summary>
     public sealed partial class Page2 : Page
     {
-        private GeFileInfo2 _fileInfo;
+        private GeFileInfo _fileInfo;
         private bool _isImageFile = false;
         private bool _isWebViewInitialized = false;
 
@@ -167,7 +167,7 @@ namespace CsWinRTApp.Pages
         {
             base.OnNavigatedTo(e);
 
-            if (e.Parameter is GeFileInfo2 fileInfo)
+            if (e.Parameter is GeFileInfo fileInfo)
             {
                 _fileInfo = fileInfo;
                 await LoadFilePreviewAsync();

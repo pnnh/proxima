@@ -20,7 +20,7 @@ namespace CsWinRTApp.Models
         public StorageFile? ImageFile { get; set; }
         public BitmapImage? BitmapImage { get; set; }
 
-        public GeFileInfo2 FileInfo { get; set; }
+        public GeFileInfo FileInfo { get; set; }
 
         public bool IsWebpPending
         {
@@ -37,14 +37,14 @@ namespace CsWinRTApp.Models
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public GeFileView(GeFileInfo2 fileInfo)
+        public GeFileView(GeFileInfo fileInfo)
         {
             FileInfo = fileInfo;
             // 订阅FileInfo的PropertyChanged事件，转发给UI
             FileInfo.PropertyChanged += (s, e) =>
             {
                 // 当FileInfo的任何属性改变时，通知UI相关属性也改变了
-                if (e.PropertyName == nameof(GeFileInfo2.IsWebpPending))
+                if (e.PropertyName == nameof(GeFileInfo.IsWebpPending))
                 {
                     OnPropertyChanged(nameof(IsWebpPending));
                     // WebP转换完成，清除缓存的BitmapImage以便重新加载
@@ -54,7 +54,7 @@ namespace CsWinRTApp.Models
                         OnPropertyChanged(nameof(BitmapImage));
                     }
                 }
-                else if (e.PropertyName == nameof(GeFileInfo2.FilePath))
+                else if (e.PropertyName == nameof(GeFileInfo.FilePath))
                 {
                     OnPropertyChanged(nameof(FileInfo));
                     BitmapImage = null;
