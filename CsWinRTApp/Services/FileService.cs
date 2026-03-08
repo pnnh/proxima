@@ -3,12 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using CsWinRTApp.Models;
+using SixLabors.ImageSharp;
 
 
 namespace CsWinRTApp.Services
@@ -18,6 +20,22 @@ namespace CsWinRTApp.Services
         public FileService()
         {
 
+        }
+
+        // 生成基于文件路径的唯一PNG文件名
+        private string GetUniquePngFileName(string originalWebpPath)
+        {
+            // 使用SHA256哈希确保文件名唯一
+            using var sha256 = SHA256.Create();
+            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(originalWebpPath));
+            var hashString = BitConverter.ToString(hashBytes).Replace("-", "").Substring(0, 16);
+
+            // 保留原始文件名前缀以便识别
+            var originalName = Path.GetFileNameWithoutExtension(originalWebpPath);
+            if (originalName.Length > 20)
+                originalName = originalName.Substring(0, 20);
+
+            return $"{originalName}_{hashString}.png";
         }
 
         public bool IsImageFile(string filePath)
@@ -131,6 +149,9 @@ namespace CsWinRTApp.Services
         public async Task<List<GeFileInfo2>> LoadFilesAsync(string imageDir, bool showHiddenFiles = false, bool showExcludedFiles = true)
         {
             var list = new List<GeFileInfo2>();
+            string tempPngDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "WebpToPng");
+            Directory.CreateDirectory(tempPngDir);
+            var webpConvertTasks = new List<(GeFileInfo2, string, string)>();
 
             try
             {
@@ -138,46 +159,75 @@ namespace CsWinRTApp.Services
                 string[] directories = Directory.GetDirectories(imageDir);
                 foreach (string directory in directories)
                 {
-                    // 如果不显示隐藏文件，且当前是隐藏文件，则跳过
                     if (!showHiddenFiles && IsHiddenFile(directory))
-                    {
                         continue;
-                    }
-
-                    // 如果不显示排除文件，且当前是排除文件，则跳过
                     if (!showExcludedFiles && IsExcludedFile(directory))
-                    {
                         continue;
-                    }
-
                     list.Add(new GeFileInfo2(directory, true));
-                    Console.WriteLine($"Found directory: {directory}");
                 }
 
                 // Then get all files in the directory
                 string[] files = Directory.GetFiles(imageDir);
                 foreach (string file in files)
                 {
-                    // 如果不显示隐藏文件，且当前是隐藏文件，则跳过
                     if (!showHiddenFiles && IsHiddenFile(file))
-                    {
                         continue;
-                    }
-
-                    // 如果不显示排除文件，且当前是排除文件，则跳过
                     if (!showExcludedFiles && IsExcludedFile(file))
-                    {
                         continue;
-                    }
 
-                    list.Add(new GeFileInfo2(file, false));
-                    Console.WriteLine($"Found file: {file}");
+                    string ext = Path.GetExtension(file).ToLowerInvariant();
+                    if (ext == ".webp" || ext == ".awebp")
+                    {
+                        // 使用哈希生成唯一的PNG文件名，避免同名冲突
+                        string pngName = GetUniquePngFileName(file);
+                        string pngPath = Path.Combine(tempPngDir, pngName);
+                        if (!File.Exists(pngPath))
+                        {
+                            var info = new GeFileInfo2(file, false, true); // pending
+                            list.Add(info);
+                            webpConvertTasks.Add((info, file, pngPath));
+                        }
+                        else
+                        {
+                            // PNG已存在，直接使用
+                            list.Add(new GeFileInfo2(pngPath, false));
+                        }
+                    }
+                    else if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif")
+                    {
+                        list.Add(new GeFileInfo2(file, false));
+                    }
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error loading files: {ex.Message}");
             }
+
+            // 异步后台批量转换webp
+            _ = Task.Run(async () =>
+            {
+                foreach (var (info, webp, png) in webpConvertTasks)
+                {
+                    try
+                    {
+                        using var image = await SixLabors.ImageSharp.Image.LoadAsync<SixLabors.ImageSharp.PixelFormats.Rgba32>(webp);
+                        await image.SaveAsPngAsync(png);
+
+                        // 直接在后台线程修改属性
+                        // INotifyPropertyChanged会触发事件，WinUI绑定系统会自动处理UI线程调度
+                        info.FilePath = png;
+                        info.IsWebpPending = false;
+
+                        System.Diagnostics.Debug.WriteLine($"[FileService] WebP converted: {Path.GetFileName(webp)} => {Path.GetFileName(png)}");
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[FileService] Failed to convert webp: {webp} => {ex.Message}");
+                        LogService.Error($"WebP conversion failed: {webp}", ex);
+                    }
+                }
+            });
 
             return list;
         }

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using System.Security.Cryptography;
 
 namespace CsWinRTApp.Services
 {
@@ -202,6 +203,73 @@ namespace CsWinRTApp.Services
                 System.Diagnostics.Debug.WriteLine($"Failed to load WebP as SoftwareBitmap: {ex.Message}");
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 获取或生成WebP缩略图的磁盘缓存路径
+        /// </summary>
+        private static string GetThumbnailCachePath(string filePath, int size)
+        {
+            string tempDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "Thumbnails");
+            Directory.CreateDirectory(tempDir);
+            // 用文件绝对路径+修改时间+尺寸做hash，防止重名和缓存失效
+            string hashInput = filePath + File.GetLastWriteTimeUtc(filePath).Ticks + size;
+            using var sha1 = SHA1.Create();
+            var hash = BitConverter.ToString(sha1.ComputeHash(System.Text.Encoding.UTF8.GetBytes(hashInput))).Replace("-", "");
+            return Path.Combine(tempDir, $"{hash}_{size}.png");
+        }
+
+        /// <summary>
+        /// 获取或生成WebP缩略图的BitmapImage（带磁盘缓存）
+        /// </summary>
+        public static async Task<BitmapImage> GetOrCreateCachedThumbnailAsync(string filePath, int size = 128)
+        {
+            string cachePath = GetThumbnailCachePath(filePath, size);
+            if (File.Exists(cachePath))
+            {
+                try
+                {
+                    // 直接从缓存PNG加载
+                    using var stream = File.OpenRead(cachePath);
+                    var memStream = new InMemoryRandomAccessStream();
+                    await stream.CopyToAsync(memStream.AsStreamForWrite());
+                    memStream.Seek(0);
+                    var bitmap = new BitmapImage();
+                    await bitmap.SetSourceAsync(memStream);
+                    System.Diagnostics.Debug.WriteLine($"[WebPImageService] Loaded thumbnail from cache: {cachePath}");
+                    return bitmap;
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[WebPImageService] Failed to load cache, will regenerate: {ex.Message}");
+                }
+            }
+
+            // 缓存不存在或损坏，重新生成
+            var thumb = await LoadWebPImageAsync(filePath, size, size);
+            if (thumb != null)
+            {
+                try
+                {
+                    // 重新解码后保存为PNG
+                    using var image = await Image.LoadAsync<Rgba32>(filePath);
+                    image.Mutate(x => x.Resize(new SixLabors.ImageSharp.Processing.ResizeOptions
+                    {
+                        Size = new SixLabors.ImageSharp.Size(size, size),
+                        Mode = SixLabors.ImageSharp.Processing.ResizeMode.Max
+                    }));
+                    using var ms = new MemoryStream();
+                    await image.SaveAsPngAsync(ms);
+                    ms.Position = 0;
+                    File.WriteAllBytes(cachePath, ms.ToArray());
+                    System.Diagnostics.Debug.WriteLine($"[WebPImageService] Saved thumbnail to cache: {cachePath}");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[WebPImageService] Failed to save thumbnail cache: {ex.Message}");
+                }
+            }
+            return thumb;
         }
     }
 }
