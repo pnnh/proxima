@@ -423,7 +423,8 @@ namespace CsWinRTApp
                 //}
 
                 //_currentDirectory = samplesFolder.Path;
-                throw new InvalidOperationException("初始目录未指定");
+                //throw new InvalidOperationException("初始目录未指定");
+                return;
             }
             
             var list = await _fileService.LoadFilesAsync(fileDir, DispatcherQueue, _showHiddenFiles, _showExcludedFiles);
@@ -537,6 +538,37 @@ namespace CsWinRTApp
                 stackPanel.Children.Add(folderName);
                 ctrBorder.Child = stackPanel;
             }
+            else if (_fileService.IsSvgFile(item.FileInfo.FilePath))
+            {
+                // SVG文件显示专用图标
+                var stackPanel = new StackPanel
+                {
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Spacing = 4
+                };
+
+                var svgIcon = new FontIcon
+                {
+                    Glyph = "\uE91B", // SVG/矢量图图标
+                    FontSize = 48,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Foreground = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 255, 140, 0)) // 橙色
+                };
+
+                var fileName = new TextBlock
+                {
+                    Text = Path.GetFileName(item.FileInfo.FilePath),
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Center,
+                    MaxWidth = 150
+                };
+
+                stackPanel.Children.Add(svgIcon);
+                stackPanel.Children.Add(fileName);
+                ctrBorder.Child = stackPanel;
+            }
             else if (_fileService.IsImageFile(item.FileInfo.FilePath))
             {
                 var thumbnail = await item.GetThumbnailAsync();
@@ -631,6 +663,24 @@ namespace CsWinRTApp
                 if (fileTypeText != null)
                 {
                     fileTypeText.Text = "文件夹";
+                }
+            }
+            else if (_fileService.IsSvgFile(item.FileInfo.FilePath))
+            {
+                if (iconContainer != null)
+                {
+                    iconContainer.Child = new FontIcon
+                    {
+                        Glyph = "\uE91B", // SVG图标
+                        FontSize = 20,
+                        HorizontalAlignment = HorizontalAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Foreground = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 255, 140, 0)) // 橙色
+                    };
+                }
+                if (fileTypeText != null)
+                {
+                    fileTypeText.Text = ".SVG";
                 }
             }
             else if (_fileService.IsImageFile(item.FileInfo.FilePath))

@@ -33,6 +33,7 @@ namespace CsWinRTApp.Pages
         private GeFileInfo _fileInfo;
         private bool _isImageFile = false;
         private bool _isWebViewInitialized = false;
+        private TaskCompletionSource<bool> _webViewInitializationTcs = new TaskCompletionSource<bool>();
 
         private enum ImageDisplayMode
         {
@@ -66,12 +67,14 @@ namespace CsWinRTApp.Pages
                 LogService.Info("Starting WebView2 initialization");
                 await WebViewer.EnsureCoreWebView2Async();
                 _isWebViewInitialized = true;
+                _webViewInitializationTcs.TrySetResult(true);
                 LogService.Info("WebView2 initialization completed successfully");
             }
             catch (Exception ex)
             {
                 LogService.Error("WebView2 initialization failed", ex);
                 System.Diagnostics.Debug.WriteLine($"WebView2 initialization error: {ex.Message}");
+                _webViewInitializationTcs.TrySetResult(false);
             }
         }
 
@@ -298,10 +301,16 @@ namespace CsWinRTApp.Pages
         {
             try
             {
+                // 等待WebView2初始化完成
+                await _webViewInitializationTcs.Task;
+
                 if (!_isWebViewInitialized)
                 {
                     TextViewer.Text = "WebView2 未初始化，无法显示 SVG";
                     TextViewer.Visibility = Visibility.Visible;
+                    ImageViewer.Visibility = Visibility.Collapsed;
+                    WebViewer.Visibility = Visibility.Collapsed;
+                    FileInfoViewer.Visibility = Visibility.Collapsed;
                     return;
                 }
 
@@ -361,10 +370,16 @@ namespace CsWinRTApp.Pages
         {
             try
             {
+                // 等待WebView2初始化完成
+                await _webViewInitializationTcs.Task;
+
                 if (!_isWebViewInitialized)
                 {
                     TextViewer.Text = "WebView2 未初始化，无法显示 HTML";
                     TextViewer.Visibility = Visibility.Visible;
+                    ImageViewer.Visibility = Visibility.Collapsed;
+                    WebViewer.Visibility = Visibility.Collapsed;
+                    FileInfoViewer.Visibility = Visibility.Collapsed;
                     return;
                 }
 

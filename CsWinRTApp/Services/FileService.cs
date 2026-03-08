@@ -150,9 +150,9 @@ namespace CsWinRTApp.Services
         public async Task<List<GeFileInfo>> LoadFilesAsync(string imageDir, DispatcherQueue dispatcherQueue, bool showHiddenFiles = false, bool showExcludedFiles = true)
         {
             var list = new List<GeFileInfo>();
-            string tempPngDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "WebpToPng");
+            string tempPngDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "ConvertedToPng");
             Directory.CreateDirectory(tempPngDir);
-            var webpConvertTasks = new List<(GeFileInfo, string, string)>();
+            var convertTasks = new List<(GeFileInfo, string, string)>();
 
             try
             {
@@ -186,7 +186,7 @@ namespace CsWinRTApp.Services
                         {
                             var info = new GeFileInfo(file, false, true); // pending
                             list.Add(info);
-                            webpConvertTasks.Add((info, file, pngPath));
+                            convertTasks.Add((info, file, pngPath));
                         }
                         else
                         {
@@ -194,8 +194,9 @@ namespace CsWinRTApp.Services
                             list.Add(new GeFileInfo(pngPath, false));
                         }
                     }
-                    else //if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif")
+                    else //if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".svg")
                     {
+                        // SVG和其他文件直接添加，不转换
                         list.Add(new GeFileInfo(file, false));
                     }
                 }
@@ -206,18 +207,19 @@ namespace CsWinRTApp.Services
             }
 
             // 异步后台批量转换webp - 每张图片转换完成后立即更新UI
-            if (webpConvertTasks.Count > 0 && dispatcherQueue != null)
+            if (convertTasks.Count > 0 && dispatcherQueue != null)
             {
                 _ = Task.Run(async () =>
                 {
-                    int total = webpConvertTasks.Count;
+                    int total = convertTasks.Count;
                     int completed = 0;
 
-                    foreach (var (info, webp, png) in webpConvertTasks)
+                    foreach (var (info, sourceFile, png) in convertTasks)
                     {
                         try
                         {
-                            using var image = await SixLabors.ImageSharp.Image.LoadAsync<SixLabors.ImageSharp.PixelFormats.Rgba32>(webp);
+                            // 只处理WebP文件
+                            using var image = await SixLabors.ImageSharp.Image.LoadAsync<SixLabors.ImageSharp.PixelFormats.Rgba32>(sourceFile);
                             await image.SaveAsPngAsync(png);
 
                             completed++;
@@ -227,12 +229,12 @@ namespace CsWinRTApp.Services
                             {
                                 info.FilePath = png;
                                 info.IsWebpPending = false;
-                                System.Diagnostics.Debug.WriteLine($"[FileService] WebP converted ({completed}/{total}): {Path.GetFileName(webp)} => {Path.GetFileName(png)}");
+                                System.Diagnostics.Debug.WriteLine($"[FileService] WebP converted ({completed}/{total}): {Path.GetFileName(sourceFile)} => {Path.GetFileName(png)}");
                             });
 
                             if (!dispatched)
                             {
-                                System.Diagnostics.Debug.WriteLine($"[FileService] Failed to dispatch UI update for: {Path.GetFileName(webp)}");
+                                System.Diagnostics.Debug.WriteLine($"[FileService] Failed to dispatch UI update for: {Path.GetFileName(sourceFile)}");
                             }
 
                             // 短暂延迟以确保UI有时间刷新
@@ -240,8 +242,8 @@ namespace CsWinRTApp.Services
                         }
                         catch (Exception ex)
                         {
-                            System.Diagnostics.Debug.WriteLine($"[FileService] Failed to convert webp: {webp} => {ex.Message}");
-                            LogService.Error($"WebP conversion failed: {webp}", ex);
+                            System.Diagnostics.Debug.WriteLine($"[FileService] Failed to convert WebP: {sourceFile} => {ex.Message}");
+                            LogService.Error($"WebP conversion failed: {sourceFile}", ex);
                         }
                     }
 
