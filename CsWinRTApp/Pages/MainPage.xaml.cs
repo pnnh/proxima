@@ -540,7 +540,9 @@ namespace CsWinRTApp
             }
             else if (_fileService.IsSvgFile(item.FileInfo.FilePath))
             {
-                // SVG文件显示专用图标
+                // SVG 文件尚未完成后台转换，显示占位图标。
+                // 转换完成后 FileInfo.FilePath 会更新为 PNG 路径，
+                // 届时 IsImageFile 分支将处理实际缩略图的加载。
                 var stackPanel = new StackPanel
                 {
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -550,10 +552,10 @@ namespace CsWinRTApp
 
                 var svgIcon = new FontIcon
                 {
-                    Glyph = "\uE91B", // SVG/矢量图图标
+                    Glyph = "\uE91B",
                     FontSize = 48,
                     HorizontalAlignment = HorizontalAlignment.Center,
-                    Foreground = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 255, 140, 0)) // 橙色
+                    Foreground = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 255, 140, 0))
                 };
 
                 var fileName = new TextBlock
@@ -671,11 +673,11 @@ namespace CsWinRTApp
                 {
                     iconContainer.Child = new FontIcon
                     {
-                        Glyph = "\uE91B", // SVG图标
+                        Glyph = "\uE91B",
                         FontSize = 20,
                         HorizontalAlignment = HorizontalAlignment.Center,
                         VerticalAlignment = VerticalAlignment.Center,
-                        Foreground = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 255, 140, 0)) // 橙色
+                        Foreground = new SolidColorBrush(Microsoft.UI.ColorHelper.FromArgb(255, 255, 140, 0))
                     };
                 }
                 if (fileTypeText != null)

@@ -12,6 +12,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using CsWinRTApp.Models;
 using SixLabors.ImageSharp;
+using CppWinRTComponent;
 
 
 namespace CsWinRTApp.Services
@@ -153,6 +154,7 @@ namespace CsWinRTApp.Services
             string tempPngDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "ConvertedToPng");
             Directory.CreateDirectory(tempPngDir);
             var convertTasks = new List<(GeFileInfo, string, string)>();
+            var svgConvertTasks = new List<(GeFileInfo, string)>();
 
             try
             {
@@ -184,7 +186,7 @@ namespace CsWinRTApp.Services
                         string pngPath = Path.Combine(tempPngDir, pngName);
                         if (!File.Exists(pngPath))
                         {
-                            var info = new GeFileInfo(file, false, true); // pending
+                            var info = new GeFileInfo(file, false, isWebpPending: true);
                             list.Add(info);
                             convertTasks.Add((info, file, pngPath));
                         }
@@ -194,9 +196,14 @@ namespace CsWinRTApp.Services
                             list.Add(new GeFileInfo(pngPath, false));
                         }
                     }
-                    else //if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp" || ext == ".gif" || ext == ".svg")
+                    else if (ext == ".svg")
                     {
-                        // SVG和其他文件直接添加，不转换
+                        var info = new GeFileInfo(file, false, isSvgPending: true);
+                        list.Add(info);
+                        svgConvertTasks.Add((info, file));
+                    }
+                    else
+                    {
                         list.Add(new GeFileInfo(file, false));
                     }
                 }
@@ -248,6 +255,52 @@ namespace CsWinRTApp.Services
                     }
 
                     System.Diagnostics.Debug.WriteLine($"[FileService] All WebP conversions completed: {completed}/{total}");
+                });
+            }
+
+            // 异步后台批量渲染SVG为PNG - 通过C++ lunasvg组件处理
+            if (svgConvertTasks.Count > 0 && dispatcherQueue != null)
+            {
+                _ = Task.Run(async () =>
+                {
+                    int total = svgConvertTasks.Count;
+                    int completed = 0;
+
+                    foreach (var (info, sourceFile) in svgConvertTasks)
+                    {
+                        try
+                        {
+                            // 调用C++ WinRT组件渲染SVG → PNG（内部已处理磁盘缓存）
+                            var pngPath = await SvgConverter.RenderSvgToPngAsync(sourceFile, 256, 256);
+
+                            completed++;
+
+                            bool dispatched = dispatcherQueue.TryEnqueue(() =>
+                            {
+                                if (!string.IsNullOrEmpty(pngPath))
+                                {
+                                    info.FilePath = pngPath;
+                                }
+                                info.IsSvgPending = false;
+                                System.Diagnostics.Debug.WriteLine($"[FileService] SVG rendered ({completed}/{total}): {Path.GetFileName(sourceFile)}");
+                            });
+
+                            if (!dispatched)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[FileService] Failed to dispatch SVG update for: {Path.GetFileName(sourceFile)}");
+                            }
+
+                            await Task.Delay(10);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[FileService] Failed to render SVG: {sourceFile} => {ex.Message}");
+                            LogService.Error($"SVG rendering failed: {sourceFile}", ex);
+                            dispatcherQueue.TryEnqueue(() => { info.IsSvgPending = false; });
+                        }
+                    }
+
+                    System.Diagnostics.Debug.WriteLine($"[FileService] All SVG rendering completed: {completed}/{total}");
                 });
             }
 

@@ -1,0 +1,12 @@
+namespace CppWinRTComponent
+{
+    [default_interface]
+    runtimeclass SvgConverter
+    {
+        SvgConverter();
+
+        // Renders an SVG file to a PNG cached in the temp directory.
+        // Returns the absolute path of the generated PNG, or an empty string on failure.
+        static Windows.Foundation.IAsyncOperation<String> RenderSvgToPngAsync(String svgFilePath, UInt32 width, UInt32 height);
+    }
+}

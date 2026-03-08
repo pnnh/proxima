@@ -45,6 +45,8 @@ if (POLICY CMP0167)
     cmake_policy(SET CMP0167 NEW)
 endif ()
 
+# 引用头文件导出助手函数
+include(GenerateExportHeader)
 
 #=====================PROXIMA APP CONFIG=========================#
 
@@ -341,11 +343,27 @@ target_link_libraries(${MAC_LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)
 #======================windows config=============================#
 
 set(WIN_LIB_NAME "MTGliese")
-file(GLOB_RECURSE GLIESE_SOURCES 
-	windows/*.cpp)
+file(GLOB_RECURSE GLIESE_SOURCES
+        common/*.cpp
+        windows/*.cpp
+)
 
 add_library(${WIN_LIB_NAME} STATIC)
 target_sources(${WIN_LIB_NAME} PUBLIC ${GLIESE_SOURCES})
+
+generate_export_header(${WIN_LIB_NAME}
+        BASE_NAME MTGliese           # 决定生成的宏前缀
+        EXPORT_FILE_NAME          # 指定输出路径
+        "${CMAKE_CURRENT_BINARY_DIR}/gliese/gliese.h"
+        EXPORT_MACRO_NAME GEAPI
+)
+
+# 让使用方能找到生成的头文件
+target_include_directories(${WIN_LIB_NAME}
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>"
+        "$<INSTALL_INTERFACE:include>"
+)
 
 find_package(quark CONFIG REQUIRED)
 target_link_libraries(${WIN_LIB_NAME} PRIVATE quark::quark)

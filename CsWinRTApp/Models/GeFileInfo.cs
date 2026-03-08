@@ -18,6 +18,7 @@ namespace CsWinRTApp.Models
         private string _filePath;
         private bool _isDirectory;
         private bool _isWebpPending;
+        private bool _isSvgPending;
 
         public string FilePath 
         { 
@@ -58,17 +59,31 @@ namespace CsWinRTApp.Models
             }
         }
 
+        public bool IsSvgPending
+        {
+            get => _isSvgPending;
+            set
+            {
+                if (_isSvgPending != value)
+                {
+                    _isSvgPending = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public GeFileInfo( ) : this(string.Empty, false)
         {
         }
 
-        public GeFileInfo(string filePath, bool isDirectory = false, bool isWebpPending = false)
+        public GeFileInfo(string filePath, bool isDirectory = false, bool isWebpPending = false, bool isSvgPending = false)
         {
             _filePath = filePath;
             _isDirectory = isDirectory;
             _isWebpPending = isWebpPending;
+            _isSvgPending = isSvgPending;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)

@@ -107,7 +107,11 @@
     },
     {
       "name": "quark"
-    }
+    },
+    {
+      "name": "lunasvg"
+    },
+    "lunasvg"
   ],
   "overrides": []
 }

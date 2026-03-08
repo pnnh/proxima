@@ -35,6 +35,19 @@ namespace CsWinRTApp.Models
             }
         }
 
+        public bool IsSvgPending
+        {
+            get => FileInfo.IsSvgPending;
+            set
+            {
+                if (FileInfo.IsSvgPending != value)
+                {
+                    FileInfo.IsSvgPending = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public GeFileView(GeFileInfo fileInfo)
@@ -49,6 +62,16 @@ namespace CsWinRTApp.Models
                     OnPropertyChanged(nameof(IsWebpPending));
                     // WebP转换完成，清除缓存的BitmapImage以便重新加载
                     if (!FileInfo.IsWebpPending)
+                    {
+                        BitmapImage = null;
+                        OnPropertyChanged(nameof(BitmapImage));
+                    }
+                }
+                else if (e.PropertyName == nameof(GeFileInfo.IsSvgPending))
+                {
+                    OnPropertyChanged(nameof(IsSvgPending));
+                    // SVG转换完成，清除缓存的BitmapImage以便重新加载
+                    if (!FileInfo.IsSvgPending)
                     {
                         BitmapImage = null;
                         OnPropertyChanged(nameof(BitmapImage));

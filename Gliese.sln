@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppWinRTComponent", "CppWin
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Venus", "Venus\Venus.vcxproj", "{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MTGliese", "build\windows\MTGliese.vcxproj", "{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -64,6 +66,14 @@ Global
 		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.RelWithDebInfo|x64.ActiveCfg = Debug|x64
 		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.RelWithDebInfo|x64.Build.0 = Debug|x64
 		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.RelWithDebInfo|x64.Deploy.0 = Debug|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.Debug|x64.ActiveCfg = Debug|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.Debug|x64.Build.0 = Debug|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.MinSizeRel|x64.ActiveCfg = MinSizeRel|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.MinSizeRel|x64.Build.0 = MinSizeRel|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.Release|x64.ActiveCfg = Release|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.Release|x64.Build.0 = Release|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.RelWithDebInfo|x64.ActiveCfg = RelWithDebInfo|x64
+		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.RelWithDebInfo|x64.Build.0 = RelWithDebInfo|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
