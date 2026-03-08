@@ -14,8 +14,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppWinRTProjection", "CppWi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppWinRTComponent", "CppWinRTComponent\CppWinRTComponent.vcxproj", "{C7553FB9-0DF2-4EDB-9316-5B1852A444BF}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Venus", "Venus\Venus.vcxproj", "{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MTGliese", "build\windows\MTGliese.vcxproj", "{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}"
 EndProject
 Global
@@ -54,18 +52,6 @@ Global
 		{C7553FB9-0DF2-4EDB-9316-5B1852A444BF}.Release|x64.Build.0 = Release|x64
 		{C7553FB9-0DF2-4EDB-9316-5B1852A444BF}.RelWithDebInfo|x64.ActiveCfg = Release|x64
 		{C7553FB9-0DF2-4EDB-9316-5B1852A444BF}.RelWithDebInfo|x64.Build.0 = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.Debug|x64.ActiveCfg = Debug|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.Debug|x64.Build.0 = Debug|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.Debug|x64.Deploy.0 = Debug|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.MinSizeRel|x64.ActiveCfg = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.MinSizeRel|x64.Build.0 = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.MinSizeRel|x64.Deploy.0 = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.Release|x64.ActiveCfg = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.Release|x64.Build.0 = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.Release|x64.Deploy.0 = Release|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.RelWithDebInfo|x64.ActiveCfg = Debug|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.RelWithDebInfo|x64.Build.0 = Debug|x64
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B}.RelWithDebInfo|x64.Deploy.0 = Debug|x64
 		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.Debug|x64.ActiveCfg = Debug|x64
 		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.Debug|x64.Build.0 = Debug|x64
 		{CF478D08-F4AC-313D-90AC-C1E85C9B6A81}.MinSizeRel|x64.ActiveCfg = MinSizeRel|x64
@@ -77,9 +63,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{6FB0F17D-96BB-4FFA-985E-08D6D690A16B} = {655C43AB-529E-46A7-A621-DCB6149A020D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {747BDEE0-D615-4E47-8910-D37B32C83703}
