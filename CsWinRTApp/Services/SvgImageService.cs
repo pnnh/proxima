@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml.Media.Imaging;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -48,8 +48,8 @@ namespace CsWinRTApp.Services
             {
                 System.Diagnostics.Debug.WriteLine($"[SvgImageService] Failed to render SVG '{filePath}': {ex.Message}");
                 LogService.Error($"SVG render failed: {filePath}", ex);
-                return null;
-            }
+            return null;
         }
     }
+}
 }

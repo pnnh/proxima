@@ -348,7 +348,7 @@ file(GLOB_RECURSE GLIESE_SOURCES
         windows/*.cpp
 )
 
-add_library(${WIN_LIB_NAME} STATIC)
+add_library(${WIN_LIB_NAME} SHARED)
 target_sources(${WIN_LIB_NAME} PUBLIC ${GLIESE_SOURCES})
 
 generate_export_header(${WIN_LIB_NAME}
@@ -389,6 +389,7 @@ target_link_libraries(${WIN_LIB_NAME} PRIVATE unofficial::sqlite3::sqlite3)
 find_package(yaml-cpp CONFIG REQUIRED)
 target_link_libraries(${WIN_LIB_NAME} PRIVATE yaml-cpp::yaml-cpp)
 
-
+find_package(lunasvg CONFIG REQUIRED)
+target_link_libraries(${WIN_LIB_NAME} PRIVATE lunasvg::lunasvg)
 
 
