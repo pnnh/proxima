@@ -24,14 +24,8 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Search;
 using CsWinRTApp.Services;
 
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
-
 namespace CsWinRTApp
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainPage : Page
     {
         public ObservableCollection<GeFileView> Images { get; } = new();
@@ -432,7 +426,7 @@ namespace CsWinRTApp
             }
             else
             {
-                var list = await _fileService.LoadFilesAsync(imageDir, _showHiddenFiles, _showExcludedFiles);
+                var list = await _fileService.LoadFilesAsync(imageDir, DispatcherQueue, _showHiddenFiles, _showExcludedFiles);
                 foreach (var file in list)
                 { 
                     Images.Add(new GeFileView(file));

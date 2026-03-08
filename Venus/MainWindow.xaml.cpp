@@ -8,8 +8,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include "gliese/logger/logger.h"
-#include "quark/services/logger/logger.hpp"
+#include "windows/logger/logger.h"
+//#include "quark/quark/services/logger/logger.h"
 
 namespace winrt
 {
@@ -35,7 +35,7 @@ namespace winrt::Venus::implementation
 
 
         gliese::Logger::LogInfo( "helloGliese");
-        quark::Logger::LogInfo("helloQuark");
+        //quark::Logger::LogInfo("helloQuark");
     }
 
     IAsyncAction MainWindow::GetItemsAsync()

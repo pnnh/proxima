@@ -1,4 +1,5 @@
-﻿using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -146,7 +147,7 @@ namespace CsWinRTApp.Services
         }
 
 
-        public async Task<List<GeFileInfo2>> LoadFilesAsync(string imageDir, bool showHiddenFiles = false, bool showExcludedFiles = true)
+        public async Task<List<GeFileInfo2>> LoadFilesAsync(string imageDir, DispatcherQueue dispatcherQueue, bool showHiddenFiles = false, bool showExcludedFiles = true)
         {
             var list = new List<GeFileInfo2>();
             string tempPngDir = Path.Combine(Path.GetTempPath(), "CsWinRTApp", "WebpToPng");
@@ -204,30 +205,49 @@ namespace CsWinRTApp.Services
                 Console.WriteLine($"Error loading files: {ex.Message}");
             }
 
-            // 异步后台批量转换webp
-            _ = Task.Run(async () =>
+            // 异步后台批量转换webp - 每张图片转换完成后立即更新UI
+            if (webpConvertTasks.Count > 0 && dispatcherQueue != null)
             {
-                foreach (var (info, webp, png) in webpConvertTasks)
+                _ = Task.Run(async () =>
                 {
-                    try
-                    {
-                        using var image = await SixLabors.ImageSharp.Image.LoadAsync<SixLabors.ImageSharp.PixelFormats.Rgba32>(webp);
-                        await image.SaveAsPngAsync(png);
+                    int total = webpConvertTasks.Count;
+                    int completed = 0;
 
-                        // 直接在后台线程修改属性
-                        // INotifyPropertyChanged会触发事件，WinUI绑定系统会自动处理UI线程调度
-                        info.FilePath = png;
-                        info.IsWebpPending = false;
-
-                        System.Diagnostics.Debug.WriteLine($"[FileService] WebP converted: {Path.GetFileName(webp)} => {Path.GetFileName(png)}");
-                    }
-                    catch (Exception ex)
+                    foreach (var (info, webp, png) in webpConvertTasks)
                     {
-                        System.Diagnostics.Debug.WriteLine($"[FileService] Failed to convert webp: {webp} => {ex.Message}");
-                        LogService.Error($"WebP conversion failed: {webp}", ex);
+                        try
+                        {
+                            using var image = await SixLabors.ImageSharp.Image.LoadAsync<SixLabors.ImageSharp.PixelFormats.Rgba32>(webp);
+                            await image.SaveAsPngAsync(png);
+
+                            completed++;
+
+                            // 显式调度到UI线程，确保每张图片转换完成后立即更新
+                            bool dispatched = dispatcherQueue.TryEnqueue(() =>
+                            {
+                                info.FilePath = png;
+                                info.IsWebpPending = false;
+                                System.Diagnostics.Debug.WriteLine($"[FileService] WebP converted ({completed}/{total}): {Path.GetFileName(webp)} => {Path.GetFileName(png)}");
+                            });
+
+                            if (!dispatched)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"[FileService] Failed to dispatch UI update for: {Path.GetFileName(webp)}");
+                            }
+
+                            // 短暂延迟以确保UI有时间刷新
+                            await Task.Delay(10);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[FileService] Failed to convert webp: {webp} => {ex.Message}");
+                            LogService.Error($"WebP conversion failed: {webp}", ex);
+                        }
                     }
-                }
-            });
+
+                    System.Diagnostics.Debug.WriteLine($"[FileService] All WebP conversions completed: {completed}/{total}");
+                });
+            }
 
             return list;
         }
