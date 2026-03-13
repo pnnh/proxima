@@ -9,9 +9,13 @@ import SwiftUI
 
 struct TextPreviewView: View {
 
-    let text: String
+    let url: URL
     let fileName: String
 
+    @EnvironmentObject private var fsManager: FileSystemManager
+
+    @State private var text: String = ""
+    @State private var loadError: String? = nil
     @State private var fontSize: CGFloat = 15
     @State private var showCopiedToast = false
 
@@ -19,20 +23,33 @@ struct TextPreviewView: View {
     private let maxFontSize: CGFloat = 28
 
     var body: some View {
-        ScrollView {
-            Text(text)
-                .font(.system(size: fontSize, design: .monospaced))
-                .foregroundStyle(.primary)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        Group {
+            if let err = loadError {
+                VStack(spacing: 12) {
+                    Image(systemName: "doc.badge.exclamationmark")
+                        .font(.system(size: 48)).foregroundStyle(.secondary)
+                    Text("无法读取文件")
+                        .font(.headline)
+                    Text(err).font(.caption).foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
                 .padding()
-                .textSelection(.enabled)
+            } else {
+                ScrollView {
+                    Text(text)
+                        .font(.system(size: fontSize, design: .monospaced))
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .textSelection(.enabled)
+                }
+                .background(Color(.systemGroupedBackground))
+            }
         }
-        .background(Color(.systemGroupedBackground))
         .navigationTitle(fileName)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                // 字体缩小
                 Button {
                     withAnimation { fontSize = max(fontSize - 2, minFontSize) }
                 } label: {
@@ -40,7 +57,6 @@ struct TextPreviewView: View {
                 }
                 .disabled(fontSize <= minFontSize)
 
-                // 字体放大
                 Button {
                     withAnimation { fontSize = min(fontSize + 2, maxFontSize) }
                 } label: {
@@ -48,7 +64,6 @@ struct TextPreviewView: View {
                 }
                 .disabled(fontSize >= maxFontSize)
 
-                // 复制全文
                 Button {
                     UIPasteboard.general.string = text
                     withAnimation { showCopiedToast = true }
@@ -62,22 +77,27 @@ struct TextPreviewView: View {
         }
         .overlay(alignment: .bottom) {
             if showCopiedToast {
-                toastView
+                Label("已复制到剪贴板", systemImage: "checkmark.circle.fill")
+                    .font(.subheadline.bold())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 16).padding(.vertical, 10)
+                    .background(Capsule().fill(Color.black.opacity(0.75)))
                     .padding(.bottom, 30)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .onAppear { loadText() }
     }
 
-    private var toastView: some View {
-        Label("已复制到剪贴板", systemImage: "checkmark.circle.fill")
-            .font(.subheadline.bold())
-            .foregroundStyle(.white)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
-            .background(
-                Capsule().fill(Color.black.opacity(0.75))
-            )
+    private func loadText() {
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let content = try fsManager.readText(at: url)
+                DispatchQueue.main.async { self.text = content }
+            } catch {
+                DispatchQueue.main.async { self.loadError = error.localizedDescription }
+            }
+        }
     }
 }
 
@@ -86,8 +106,9 @@ struct TextPreviewView: View {
 #Preview {
     NavigationStack {
         TextPreviewView(
-            text: "# Hello\n\n这是一段示例文本内容。\n\n- 支持字体大小调节\n- 支持全文复制\n- 支持文本选择",
+            url: FileSystemManager.rootURL.appendingPathComponent("文档/README.md"),
             fileName: "README.md"
         )
+        .environmentObject(FileSystemManager())
     }
 }

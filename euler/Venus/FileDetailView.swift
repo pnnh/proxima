@@ -11,6 +11,10 @@ import SwiftUI
 struct FileDetailView: View {
 
     let item: FileItem
+    @EnvironmentObject private var fsManager: FileSystemManager
+
+    // 分享
+    @State private var showShareSheet = false
 
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter()
@@ -21,20 +25,29 @@ struct FileDetailView: View {
     }()
 
     var body: some View {
-        switch item.content {
-
-        case .image(let symbolName):
-            ImagePreviewView(symbolName: symbolName, fileName: item.name)
-
-        case .text(let content):
-            TextPreviewView(text: content, fileName: item.name)
-
-        case .folder:
-            // 不应走到这里，FileListView 已处理文件夹导航
-            EmptyView()
-
-        case .unsupported:
-            unsupportedView
+        Group {
+            switch item.fileType {
+            case .image:
+                ImagePreviewView(url: item.url, fileName: item.name)
+            case .text:
+                TextPreviewView(url: item.url, fileName: item.name)
+            case .folder:
+                EmptyView()
+            default:
+                unsupportedView
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button {
+                    showShareSheet = true
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+            }
+        }
+        .sheet(isPresented: $showShareSheet) {
+            ShareSheetView(url: item.url)
         }
     }
 
@@ -42,7 +55,6 @@ struct FileDetailView: View {
 
     private var unsupportedView: some View {
         VStack(spacing: 24) {
-            // 大图标
             ZStack {
                 RoundedRectangle(cornerRadius: 24)
                     .fill(item.fileType.iconColor.opacity(0.12))
@@ -56,7 +68,6 @@ struct FileDetailView: View {
                 .font(.title2.bold())
                 .multilineTextAlignment(.center)
 
-            // 文件信息卡片
             VStack(spacing: 0) {
                 infoRow(label: "类型", value: fileTypeLabel)
                 Divider().padding(.leading, 16)
@@ -65,6 +76,8 @@ struct FileDetailView: View {
                     Divider().padding(.leading, 16)
                 }
                 infoRow(label: "修改日期", value: Self.dateFormatter.string(from: item.modifiedDate))
+                Divider().padding(.leading, 16)
+                infoRow(label: "路径", value: item.url.path)
             }
             .background(Color(.secondarySystemGroupedBackground))
             .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -82,11 +95,11 @@ struct FileDetailView: View {
     }
 
     private func infoRow(label: String, value: String) -> some View {
-        HStack {
+        HStack(alignment: .top) {
             Text(label)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .frame(width: 80, alignment: .leading)
+                .frame(width: 70, alignment: .leading)
             Spacer()
             Text(value)
                 .font(.subheadline)
@@ -115,23 +128,25 @@ struct FileDetailView: View {
 #Preview("文本文件") {
     NavigationStack {
         FileDetailView(item: FileItem(
+            url: FileSystemManager.rootURL.appendingPathComponent("文档/README.md"),
             name: "README.md",
             fileType: .text,
-            content: .text("# 标题\n\n这是一段预览文本。"),
             size: "1.2 KB",
             modifiedDate: Date()
         ))
     }
+    .environmentObject(FileSystemManager())
 }
 
 #Preview("不支持预览") {
     NavigationStack {
         FileDetailView(item: FileItem(
+            url: FileSystemManager.rootURL.appendingPathComponent("报告.pdf"),
             name: "报告.pdf",
             fileType: .pdf,
-            content: .unsupported,
             size: "4.5 MB",
             modifiedDate: Date()
         ))
     }
+    .environmentObject(FileSystemManager())
 }
