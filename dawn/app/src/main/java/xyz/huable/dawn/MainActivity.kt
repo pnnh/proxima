@@ -1,4 +1,4 @@
-package xyz.weable.venus
+package xyz.huable.dawn
 
 import android.os.Bundle
 import android.view.Menu
@@ -12,7 +12,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
-import xyz.weable.venus.databinding.ActivityMainBinding
+import xyz.huable.dawn.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 

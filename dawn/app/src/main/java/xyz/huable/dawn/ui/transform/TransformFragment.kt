@@ -1,4 +1,4 @@
-package xyz.weable.venus.ui.transform
+package xyz.huable.dawn.ui.transform
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,9 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import xyz.weable.venus.R
-import xyz.weable.venus.databinding.FragmentTransformBinding
-import xyz.weable.venus.databinding.ItemTransformBinding
+import xyz.huable.dawn.R
+import xyz.huable.dawn.databinding.FragmentTransformBinding
+import xyz.huable.dawn.databinding.ItemTransformBinding
 
 /**
  * Fragment that demonstrates a responsive layout pattern where the format of the content

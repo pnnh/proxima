@@ -1,4 +1,4 @@
-package xyz.weable.venus.ui.settings
+package xyz.huable.dawn.ui.settings
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

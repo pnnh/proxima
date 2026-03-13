@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/nav_transform"
-        android:name="xyz.weable.venus.ui.transform.TransformFragment"
+        android:name="xyz.huable.dawn.ui.transform.TransformFragment"
         android:label="@string/menu_transform"
         tools:layout="@layout/fragment_transform" />
 
     <fragment
         android:id="@+id/nav_reflow"
-        android:name="xyz.weable.venus.ui.reflow.ReflowFragment"
+        android:name="xyz.huable.dawn.ui.reflow.ReflowFragment"
         android:label="@string/menu_reflow"
         tools:layout="@layout/fragment_reflow" />
 
     <fragment
         android:id="@+id/nav_slideshow"
-        android:name="xyz.weable.venus.ui.slideshow.SlideshowFragment"
+        android:name="xyz.huable.dawn.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
 
     <fragment
         android:id="@+id/nav_settings"
-        android:name="xyz.weable.venus.ui.settings.SettingsFragment"
+        android:name="xyz.huable.dawn.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
 </navigation>

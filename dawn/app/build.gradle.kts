@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "xyz.weable.venus"
+    namespace = "xyz.huable.dawn"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "xyz.weable.venus"
+        applicationId = "xyz.huable.dawn"
         minSdk = 31
         targetSdk = 34
         versionCode = 1

@@ -1,4 +1,4 @@
-package xyz.weable.venus.ui.reflow
+package xyz.huable.dawn.ui.reflow
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import xyz.weable.venus.databinding.FragmentReflowBinding
+import xyz.huable.dawn.databinding.FragmentReflowBinding
 
 class ReflowFragment : Fragment() {
 
