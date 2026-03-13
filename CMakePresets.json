@@ -1,8 +1,8 @@
 {
   "version": 3,
   "cmakeMinimumRequired": {
-    "major": 3,
-    "minor": 28,
+    "major": 4,
+    "minor": 2,
     "patch": 0
   },
   "configurePresets": [
@@ -59,6 +59,67 @@
         "CMAKE_PREFIX_PATH": "C:\\Qt\\6.10.1\\msvc2022_64\\lib\\cmake"
       },
       "environment": {}
+    },
+    {
+      "name": "ios",
+      "displayName": "iOS Config",
+      "generator": "Xcode",
+      "binaryDir": "${sourceDir}/build/ios",
+      "installDir": "${sourceDir}/install/ios",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "VCPKG_HOST_TRIPLET": "arm64-osx",
+        "VCPKG_TARGET_TRIPLET": "arm64-ios",
+        "CMAKE_SYSTEM_NAME": "iOS",
+        "CMAKE_IOS_INSTALL_COMBINED": "YES",
+        "CMAKE_OSX_ARCHITECTURES": "arm64",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "14.0",
+        "CMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH": "NO",
+        "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED": "NO",
+        "CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED": "NO"
+      }
+    },
+    {
+      "name": "android",
+      "displayName": "Android Config",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/android",
+      "installDir": "${sourceDir}/install/android",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ANDROID_PLATFORM": "33",
+        "ANDROID_ABI": "arm64-v8a",
+        "ANDROID_STL": "c++_shared",
+        "ANDROID_NDK": "$env{ANDROID_NDK_HOME}",
+        "CMAKE_SYSTEM_NAME": "Android",
+        "VCPKG_HOST_TRIPLET": "arm64-osx",
+        "VCPKG_TARGET_TRIPLET": "arm64-android",
+        "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/vcpkg/triplets",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake"
+      }
+    },
+    {
+      "name": "webassembly",
+      "displayName": "WebAssembly Config",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/webassembly",
+      "installDir": "${sourceDir}/install/webassembly",
+      "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "YES",
+        "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
+        "VCPKG_HOST_TRIPLET": "arm64-osx",
+        "VCPKG_TARGET_TRIPLET": "wasm32-emscripten",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_C_COMPILER": "emcc",
+        "CMAKE_CXX_COMPILER": "em++",
+        "VCPKG_CHAINLOAD_TOOLCHAIN_FILE": "$env{EMSDK}/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake"
+      },
+      "environment": {}
     }
   ],
   "buildPresets": [
@@ -73,6 +134,18 @@
     {
       "name": "windows",
       "configurePreset": "windows"
+    },
+    {
+      "name": "webassembly",
+      "configurePreset": "webassembly"
+    },
+    {
+      "name": "ios",
+      "configurePreset": "ios"
+    },
+    {
+      "name": "android",
+      "configurePreset": "android"
     }
   ]
 }

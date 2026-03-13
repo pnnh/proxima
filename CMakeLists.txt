@@ -50,7 +50,6 @@ include(GenerateExportHeader)
 
 #=====================PROXIMA APP CONFIG=========================#
 
-
 set(PROXIMA_APP_NAME MTProxima)
 
 # 查找并引用Qt库
