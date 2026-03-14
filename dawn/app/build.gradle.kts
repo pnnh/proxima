@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "xyz.huable.dawn"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "xyz.huable.dawn"
-        minSdk = 31
-        targetSdk = 34
+        minSdk = 36
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -27,14 +27,24 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         viewBinding = true
+    }
+
+    dependenciesInfo {
+        includeInApk = true
+        includeInBundle = true
+    }
+    ndkVersion = "28.0.12674087 rc2"
+    buildToolsVersion = "36.0.0"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 

@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Venus"
+rootProject.name = "Dawn"
 include(":app")
