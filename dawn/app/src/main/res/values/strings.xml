@@ -8,9 +8,22 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_transform">Transform</string>
+    <string name="menu_files">文件</string>
     <string name="menu_reflow">Reflow</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_settings">Settings</string>
+
+    <string name="action_new_folder">新建文件夹</string>
+    <string name="action_new_text_file">新建文本文件</string>
+    <string name="action_create">创建</string>
+    <string name="action_cancel">取消</string>
+    <string name="dialog_new_folder">新建文件夹</string>
+    <string name="dialog_new_text_file">新建文本文件</string>
+    <string name="hint_folder_name">文件夹名称</string>
+    <string name="hint_file_name">文件名（.txt）</string>
+    <string name="empty_folder">空文件夹</string>
+    <string name="error_create_folder">创建文件夹失败</string>
+    <string name="error_create_file">创建文件失败</string>
 
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and

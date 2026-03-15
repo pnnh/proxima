@@ -13,6 +13,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
 import xyz.huable.dawn.databinding.ActivityMainBinding
+import xyz.huable.dawn.util.SampleFilesInitializer
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,6 +22,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialise sample files on first launch (runs on main thread but is fast)
+        SampleFilesInitializer.initIfNeeded(this)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.appBarMain.toolbar)

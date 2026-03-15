@@ -1,1 +1,1 @@
-资源管理器Android项目目录
+资源管理器Android项目目录，类似Android自带的Files应用。
