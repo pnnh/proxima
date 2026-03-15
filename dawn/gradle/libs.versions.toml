@@ -10,8 +10,9 @@ material = "1.13.0"
 lifecycleLivedataKtx = "2.10.0"
 lifecycleViewmodelKtx = "2.10.0"
 lifecycleRuntimeKtx = "2.10.0"
-composeBom = "2025.01.01"
-activityCompose = "1.10.1"
+# Check https://developer.android.com/jetpack/compose/bom/bom-mapping for the latest stable
+composeBom = "2026.03.00"
+activityCompose = "1.13.0"
 navigationCompose = "2.9.7"
 
 [libraries]
@@ -27,12 +28,13 @@ androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecyc
 # Jetpack Compose
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite" }
-androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version = "1.10.5" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelKtx" }
