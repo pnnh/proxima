@@ -28,6 +28,13 @@
     <string name="error_directory_not_found">目录不存在或无法访问</string>
     <string name="error_no_permission">无权访问该目录，仅允许访问应用主目录</string>
     <string name="error_page_load_failed">页面加载失败，请检查网络或 URL 是否正确</string>
+    <string name="action_close_webview">关闭网页</string>
+    <string name="dialog_image_options">图片操作</string>
+    <string name="action_save_image">保存图片</string>
+    <string name="dialog_save_directory">选择保存目录</string>
+    <string name="label_internal_storage">内部存储（根目录）</string>
+    <string name="error_save_image_failed">图片保存失败，请重试</string>
+    <string name="success_save_image">图片已保存</string>
 
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and
