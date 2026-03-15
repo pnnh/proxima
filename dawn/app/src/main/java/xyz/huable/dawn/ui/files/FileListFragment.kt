@@ -1,6 +1,9 @@
 package xyz.huable.dawn.ui.files
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -8,15 +11,15 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -64,6 +67,10 @@ class FileListFragment : Fragment() {
         adapter = FileItemAdapter { item ->
             if (item.isDirectory) {
                 viewModel.navigateTo(File(item.path))
+            } else {
+                // Navigate to file preview
+                val bundle = Bundle().apply { putString("filePath", item.path) }
+                findNavController().navigate(R.id.action_file_list_to_preview, bundle)
             }
         }
         binding.recyclerviewFileList.layoutManager = LinearLayoutManager(requireContext())
@@ -78,8 +85,8 @@ class FileListFragment : Fragment() {
             backCallback.isEnabled = !viewModel.isAtRoot()
         }
 
-        viewModel.title.observe(viewLifecycleOwner) { t ->
-            (activity as? AppCompatActivity)?.supportActionBar?.title = t
+        viewModel.breadcrumbs.observe(viewLifecycleOwner) { crumbs ->
+            renderBreadcrumb(crumbs)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backCallback)
@@ -89,20 +96,83 @@ class FileListFragment : Fragment() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_file_actions, menu)
             }
-
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
-                    R.id.action_create_folder -> {
-                        showCreateFolderDialog(); true
-                    }
-                    R.id.action_create_text_file -> {
-                        showCreateTextFileDialog(); true
-                    }
+                    R.id.action_create_folder -> { showCreateFolderDialog(); true }
+                    R.id.action_create_text_file -> { showCreateTextFileDialog(); true }
                     else -> false
                 }
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
+
+    // ---- Breadcrumb ----
+
+    private fun renderBreadcrumb(crumbs: List<FileListViewModel.BreadcrumbItem>) {
+        val container = binding.breadcrumbContainer
+        container.removeAllViews()
+
+        val ctx = requireContext()
+        val dp = resources.displayMetrics.density
+        val padH = (10 * dp).toInt()
+        val padV = (4 * dp).toInt()
+
+        // Resolve the selectable ripple background attr
+        val rippleAttr = TypedValue()
+        ctx.theme.resolveAttribute(android.R.attr.selectableItemBackground, rippleAttr, true)
+
+        crumbs.forEachIndexed { i, crumb ->
+            if (i > 0) {
+                // Separator "›"
+                TextView(ctx).apply {
+                    text = "›"
+                    textSize = 16f
+                    setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant))
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    ).also { it.gravity = Gravity.CENTER_VERTICAL }
+                }.also { container.addView(it) }
+            }
+
+            val isLast = i == crumbs.lastIndex
+            TextView(ctx).apply {
+                text = crumb.name
+                textSize = 14f
+                setPadding(padH, padV, padH, padV)
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).also { it.gravity = Gravity.CENTER_VERTICAL }
+
+                if (isLast) {
+                    setTypeface(null, Typeface.BOLD)
+                    setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurface))
+                } else {
+                    setTextColor(resolveColorAttr(com.google.android.material.R.attr.colorOnSurfaceVariant))
+                    setBackgroundResource(rippleAttr.resourceId)
+                    setOnClickListener { viewModel.navigateTo(crumb.dir) }
+                }
+            }.also { container.addView(it) }
+        }
+
+        // Auto-scroll to show the current (rightmost) segment
+        binding.breadcrumbScroll.post {
+            binding.breadcrumbScroll.fullScroll(View.FOCUS_RIGHT)
+        }
+    }
+
+    private fun resolveColorAttr(attr: Int): Int {
+        val tv = TypedValue()
+        requireContext().theme.resolveAttribute(attr, tv, true)
+        return if (tv.type >= TypedValue.TYPE_FIRST_COLOR_INT && tv.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+            tv.data
+        } else {
+            requireContext().getColor(tv.resourceId)
+        }
+    }
+
+    // ---- Dialogs ----
 
     private fun showCreateFolderDialog() {
         val input = EditText(requireContext()).apply {
@@ -114,10 +184,8 @@ class FileListFragment : Fragment() {
             .setView(input)
             .setPositiveButton(R.string.action_create) { _, _ ->
                 val name = input.text.toString().trim()
-                if (name.isNotEmpty()) {
-                    if (!viewModel.createDirectory(name)) {
-                        Toast.makeText(context, R.string.error_create_folder, Toast.LENGTH_SHORT).show()
-                    }
+                if (name.isNotEmpty() && !viewModel.createDirectory(name)) {
+                    Toast.makeText(context, R.string.error_create_folder, Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton(R.string.action_cancel, null)
@@ -134,10 +202,8 @@ class FileListFragment : Fragment() {
             .setView(input)
             .setPositiveButton(R.string.action_create) { _, _ ->
                 val name = input.text.toString().trim()
-                if (name.isNotEmpty()) {
-                    if (!viewModel.createTextFile(name)) {
-                        Toast.makeText(context, R.string.error_create_file, Toast.LENGTH_SHORT).show()
-                    }
+                if (name.isNotEmpty() && !viewModel.createTextFile(name)) {
+                    Toast.makeText(context, R.string.error_create_file, Toast.LENGTH_SHORT).show()
                 }
             }
             .setNegativeButton(R.string.action_cancel, null)
@@ -172,28 +238,22 @@ class FileListFragment : Fragment() {
             fun bind(item: FileItem, onClick: (FileItem) -> Unit) {
                 binding.fileName.text = item.name
 
-                // Icon
                 val iconRes = when {
                     item.isDirectory -> R.drawable.ic_folder
                     item.extension in listOf("jpg", "jpeg", "png", "gif", "bmp", "webp") ->
                         R.drawable.ic_file_image
-                    item.extension == "txt" || item.extension == "md" || item.extension == "log" ->
+                    item.extension in listOf("txt", "md", "log", "csv", "xml", "json") ->
                         R.drawable.ic_file_text
                     else -> R.drawable.ic_file_binary
                 }
                 binding.fileIcon.setImageResource(iconRes)
 
-                // Secondary info
                 binding.fileInfo.text = if (item.isDirectory) {
-                    val cnt = item.size
-                    if (cnt == 0L) "空文件夹" else "$cnt 项"
+                    if (item.size == 0L) "空文件夹" else "${item.size} 项"
                 } else {
-                    val sizeStr = formatSize(item.size)
-                    val dateStr = dateFmt.format(Date(item.lastModified))
-                    "$sizeStr  ·  $dateStr"
+                    "${formatSize(item.size)}  ·  ${dateFmt.format(Date(item.lastModified))}"
                 }
 
-                // Chevron only for directories
                 binding.fileChevron.visibility =
                     if (item.isDirectory) View.VISIBLE else View.INVISIBLE
 
@@ -216,4 +276,3 @@ class FileListFragment : Fragment() {
         }
     }
 }
-

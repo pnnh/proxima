@@ -9,6 +9,8 @@ import java.io.File
 
 class FileListViewModel(application: Application) : AndroidViewModel(application) {
 
+    data class BreadcrumbItem(val name: String, val dir: File)
+
     private val rootDir: File = application.filesDir
 
     private val _currentDir = MutableLiveData<File>(rootDir)
@@ -17,8 +19,8 @@ class FileListViewModel(application: Application) : AndroidViewModel(application
     private val _files = MutableLiveData<List<FileItem>>()
     val files: LiveData<List<FileItem>> = _files
 
-    private val _title = MutableLiveData<String>("文件")
-    val title: LiveData<String> = _title
+    private val _breadcrumbs = MutableLiveData<List<BreadcrumbItem>>()
+    val breadcrumbs: LiveData<List<BreadcrumbItem>> = _breadcrumbs
 
     init {
         loadFiles(rootDir)
@@ -62,7 +64,7 @@ class FileListViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun loadFiles(dir: File) {
-        _title.value = if (dir.canonicalPath == rootDir.canonicalPath) "文件" else dir.name
+        updateBreadcrumbs(dir)
         val items = dir.listFiles()
             ?.sortedWith(compareBy({ !it.isDirectory }, { it.name.lowercase() }))
             ?.map { file ->
@@ -78,5 +80,16 @@ class FileListViewModel(application: Application) : AndroidViewModel(application
             } ?: emptyList()
         _files.value = items
     }
-}
 
+    private fun updateBreadcrumbs(dir: File) {
+        val crumbs = mutableListOf<BreadcrumbItem>()
+        var current: File? = dir
+        while (current != null) {
+            val label = if (current.canonicalPath == rootDir.canonicalPath) "内部存储" else current.name
+            crumbs.add(0, BreadcrumbItem(label, current))
+            if (current.canonicalPath == rootDir.canonicalPath) break
+            current = current.parentFile
+        }
+        _breadcrumbs.value = crumbs
+    }
+}

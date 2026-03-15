@@ -8,8 +8,12 @@
     <fragment
         android:id="@+id/nav_transform"
         android:name="xyz.huable.dawn.ui.files.FileListFragment"
-        android:label="@string/menu_files"
-        tools:layout="@layout/fragment_file_list" />
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_file_list">
+        <action
+            android:id="@+id/action_file_list_to_preview"
+            app:destination="@id/nav_file_preview" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_reflow"
@@ -28,4 +32,15 @@
         android:name="xyz.huable.dawn.ui.settings.SettingsFragment"
         android:label="@string/menu_settings"
         tools:layout="@layout/fragment_settings" />
+
+    <fragment
+        android:id="@+id/nav_file_preview"
+        android:name="xyz.huable.dawn.ui.files.FilePreviewFragment"
+        android:label=" "
+        tools:layout="@layout/fragment_file_preview">
+        <argument
+            android:name="filePath"
+            app:argType="string" />
+    </fragment>
+
 </navigation>
