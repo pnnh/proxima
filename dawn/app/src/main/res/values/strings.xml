@@ -24,6 +24,10 @@
     <string name="empty_folder">空文件夹</string>
     <string name="error_create_folder">创建文件夹失败</string>
     <string name="error_create_file">创建文件失败</string>
+    <string name="action_navigate_go">进入</string>
+    <string name="error_directory_not_found">目录不存在或无法访问</string>
+    <string name="error_no_permission">无权访问该目录，仅允许访问应用主目录</string>
+    <string name="error_page_load_failed">页面加载失败，请检查网络或 URL 是否正确</string>
 
     <string name="lorem_ipsum_title">Lorem Ipsum"</string>
     <string name="lorem_ipsum">Lorem Ipsum is simply placeholder text of the printing and

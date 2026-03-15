@@ -18,8 +18,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import xyz.huable.dawn.R
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import xyz.huable.dawn.ui.compose.screens.FileListScreen
 import xyz.huable.dawn.ui.compose.screens.FilePreviewScreen
+import xyz.huable.dawn.ui.compose.screens.WebViewScreen
 import xyz.huable.dawn.ui.compose.screens.ReflowScreen
 import xyz.huable.dawn.ui.compose.screens.SettingsScreen
 import xyz.huable.dawn.ui.compose.screens.SlideshowScreen
@@ -37,6 +40,7 @@ private enum class TopLevelDestination(
 }
 
 private const val FILE_PREVIEW_ROUTE = "files/preview/{path}"
+private const val WEB_VIEW_ROUTE = "files/webview/{url}"
 
 @Composable
 fun DawnApp() {
@@ -85,6 +89,9 @@ fun DawnApp() {
                     FileListScreen(
                         onNavigateToPreview = { path ->
                             navController.navigate("files/preview/${Uri.encode(path)}")
+                        },
+                        onNavigateToUrl = { url ->
+                            navController.navigate("files/webview/${Uri.encode(url)}")
                         }
                     )
                 }
@@ -103,6 +110,21 @@ fun DawnApp() {
                 composable(TopLevelDestination.Reflow.route) { ReflowScreen() }
                 composable(TopLevelDestination.Slideshow.route) { SlideshowScreen() }
                 composable(TopLevelDestination.Settings.route) { SettingsScreen() }
+
+                composable(
+                    route = WEB_VIEW_ROUTE,
+                    arguments = listOf(navArgument("url") { type = NavType.StringType }),
+                    enterTransition = { EnterTransition.None },
+                    exitTransition = { ExitTransition.None },
+                    popEnterTransition = { EnterTransition.None },
+                    popExitTransition = { ExitTransition.None },
+                ) { backStackEntry ->
+                    val encodedUrl = backStackEntry.arguments?.getString("url").orEmpty()
+                    WebViewScreen(
+                        url = Uri.decode(encodedUrl),
+                        onNavigateUp = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }

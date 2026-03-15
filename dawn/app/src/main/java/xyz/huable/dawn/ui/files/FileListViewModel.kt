@@ -11,6 +11,18 @@ class FileListViewModel(application: Application) : AndroidViewModel(application
 
     data class BreadcrumbItem(val name: String, val dir: File)
 
+    sealed class NavigateResult {
+        object Success : NavigateResult()
+        object NotFound : NavigateResult()
+        /** Input was an absolute path outside the app's home directory. */
+        object NoPermission : NavigateResult()
+    }
+
+    companion object {
+        /** Virtual URI prefix shown to the user in the address bar. Represents [rootDir]. */
+        const val HOME_SCHEME = "file://home"
+    }
+
     private val rootDir: File = application.filesDir
 
     private val _currentDir = MutableLiveData<File>(rootDir)
@@ -61,6 +73,41 @@ class FileListViewModel(application: Application) : AndroidViewModel(application
 
     fun refresh() {
         _currentDir.value?.let { loadFiles(it) }
+    }
+
+    /**
+     * Convert a real [File] under [rootDir] to a user-facing virtual path string.
+     * e.g. rootDir itself → "file://home", rootDir/foo/bar → "file://home/foo/bar"
+     */
+    fun toVirtualPath(dir: File): String {
+        val rel = dir.canonicalPath.removePrefix(rootDir.canonicalPath)
+        return if (rel.isEmpty()) HOME_SCHEME else "$HOME_SCHEME$rel"
+    }
+
+    /**
+     * Navigate to a path entered by the user. Accepts three formats:
+     *  - `file://home[/sub/path]` — virtual path rooted at the app home directory
+     *  - `relative/path`          — resolved relative to app home directory
+     *  - `/absolute/path`         — REJECTED with [NavigateResult.NoPermission]
+     */
+    fun navigateToVirtualPath(input: String): NavigateResult {
+        val trimmed = input.trim()
+        val target: File = when {
+            trimmed == HOME_SCHEME || trimmed == "$HOME_SCHEME/" ->
+                rootDir
+            trimmed.startsWith("$HOME_SCHEME/") ->
+                File(rootDir, trimmed.removePrefix("$HOME_SCHEME/"))
+            trimmed.startsWith("/") ->
+                return NavigateResult.NoPermission
+            else ->
+                File(rootDir, trimmed)   // relative → resolved under home
+        }
+        return if (target.exists() && target.isDirectory && target.canRead()) {
+            navigateTo(target)
+            NavigateResult.Success
+        } else {
+            NavigateResult.NotFound
+        }
     }
 
     private fun loadFiles(dir: File) {

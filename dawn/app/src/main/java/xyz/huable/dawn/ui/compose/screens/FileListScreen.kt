@@ -1,6 +1,7 @@
 package xyz.huable.dawn.ui.compose.screens
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -28,22 +32,35 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import xyz.huable.dawn.R
 import xyz.huable.dawn.model.FileItem
 import xyz.huable.dawn.ui.files.FileListViewModel
@@ -58,59 +75,140 @@ private val DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault
 @Composable
 fun FileListScreen(
     onNavigateToPreview: (String) -> Unit,
+    onNavigateToUrl: (String) -> Unit,
     viewModel: FileListViewModel = viewModel()
 ) {
     val files by viewModel.files.observeAsState(emptyList())
     val breadcrumbs by viewModel.breadcrumbs.observeAsState(emptyList())
     val currentDir by viewModel.currentDir.observeAsState()
 
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
     var showCreateFolderDialog by remember { mutableStateOf(false) }
     var showCreateFileDialog by remember { mutableStateOf(false) }
     var showOverflowMenu by remember { mutableStateOf(false) }
+    var isEditingPath by remember { mutableStateOf(false) }
+    var editPathText by remember { mutableStateOf("") }
+    val focusRequester = remember { FocusRequester() }
 
+    fun doNavigate() {
+        val trimmed = editPathText.trim()
+        // Intercept web URLs — navigate to WebViewScreen instead of the filesystem.
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+            isEditingPath = false
+            onNavigateToUrl(trimmed)
+            return
+        }
+        when (viewModel.navigateToVirtualPath(editPathText)) {
+            FileListViewModel.NavigateResult.Success -> isEditingPath = false
+            FileListViewModel.NavigateResult.NotFound -> scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.error_directory_not_found))
+            }
+            FileListViewModel.NavigateResult.NoPermission -> scope.launch {
+                snackbarHostState.showSnackbar(context.getString(R.string.error_no_permission))
+            }
+        }
+    }
+
+    LaunchedEffect(isEditingPath) {
+        if (isEditingPath) focusRequester.requestFocus()
+    }
+
+    // navigateUp has lower priority; isEditingPath handler is registered after so it wins.
     BackHandler(enabled = currentDir != null && !viewModel.isAtRoot()) {
         viewModel.navigateUp()
     }
+    BackHandler(enabled = isEditingPath) {
+        isEditingPath = false
+    }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
-                actions = {
-                    Box {
-                        IconButton(onClick = { showOverflowMenu = true }) {
-                            Icon(Icons.Default.MoreVert, contentDescription = null)
+                navigationIcon = {
+                    if (isEditingPath) {
+                        IconButton(onClick = { isEditingPath = false }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.action_cancel)
+                            )
                         }
-                        DropdownMenu(
-                            expanded = showOverflowMenu,
-                            onDismissRequest = { showOverflowMenu = false }
-                        ) {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.action_new_folder)) },
-                                leadingIcon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_create_folder),
-                                        contentDescription = null
-                                    )
-                                },
-                                onClick = {
-                                    showOverflowMenu = false
-                                    showCreateFolderDialog = true
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.action_new_text_file)) },
-                                leadingIcon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.ic_file_text),
-                                        contentDescription = null
-                                    )
-                                },
-                                onClick = {
-                                    showOverflowMenu = false
-                                    showCreateFileDialog = true
-                                }
-                            )
+                    }
+                },
+                title = {
+                    if (isEditingPath) {
+                        TextField(
+                            value = editPathText,
+                            onValueChange = { editPathText = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .focusRequester(focusRequester),
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),
+                            keyboardActions = KeyboardActions(onGo = { doNavigate() }),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                            ),
+                        )
+                    } else {
+                        BrowseAddressBar(
+                            breadcrumbs = breadcrumbs ?: emptyList(),
+                            onCrumbClick = { dir -> viewModel.navigateTo(dir) },
+                            onBarClick = {
+                                editPathText = currentDir
+                                    ?.let { viewModel.toVirtualPath(it) }
+                                    ?: FileListViewModel.HOME_SCHEME
+                                isEditingPath = true
+                            }
+                        )
+                    }
+                },
+                actions = {
+                    if (isEditingPath) {
+                        TextButton(onClick = { doNavigate() }) {
+                            Text(stringResource(R.string.action_navigate_go))
+                        }
+                    } else {
+                        Box {
+                            IconButton(onClick = { showOverflowMenu = true }) {
+                                Icon(Icons.Default.MoreVert, contentDescription = null)
+                            }
+                            DropdownMenu(
+                                expanded = showOverflowMenu,
+                                onDismissRequest = { showOverflowMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.action_new_folder)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_create_folder),
+                                            contentDescription = null
+                                        )
+                                    },
+                                    onClick = {
+                                        showOverflowMenu = false
+                                        showCreateFolderDialog = true
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(R.string.action_new_text_file)) },
+                                    leadingIcon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.ic_file_text),
+                                            contentDescription = null
+                                        )
+                                    },
+                                    onClick = {
+                                        showOverflowMenu = false
+                                        showCreateFileDialog = true
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -122,45 +220,6 @@ fun FileListScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Breadcrumb row
-            if (!breadcrumbs.isNullOrEmpty()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState(Int.MAX_VALUE))
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    breadcrumbs!!.forEachIndexed { index, crumb ->
-                        val isLast = index == breadcrumbs!!.lastIndex
-                        Text(
-                            text = crumb.name,
-                            style = MaterialTheme.typography.labelMedium,
-                            fontWeight = if (isLast) FontWeight.Bold else FontWeight.Normal,
-                            color = if (isLast)
-                                MaterialTheme.colorScheme.onSurface
-                            else
-                                MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
-                                .padding(horizontal = 4.dp, vertical = 2.dp)
-                                .then(
-                                    if (!isLast) Modifier.clickable { viewModel.navigateTo(crumb.dir) }
-                                    else Modifier
-                                )
-                        )
-                        if (!isLast) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_chevron_right),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-                    }
-                }
-                HorizontalDivider()
-            }
-
             // File list or empty state
             if (files.isEmpty()) {
                 Box(
@@ -212,6 +271,58 @@ fun FileListScreen(
             },
             onDismiss = { showCreateFileDialog = false }
         )
+    }
+}
+
+@Composable
+private fun BrowseAddressBar(
+    breadcrumbs: List<FileListViewModel.BreadcrumbItem>,
+    onCrumbClick: (File) -> Unit,
+    onBarClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(MaterialTheme.shapes.extraSmall)
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.38f))
+            .clickable(onClick = onBarClick)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState(Int.MAX_VALUE))
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            breadcrumbs.forEachIndexed { index, crumb ->
+                val isLast = index == breadcrumbs.lastIndex
+                Text(
+                    text = crumb.name,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = if (isLast) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isLast)
+                        MaterialTheme.colorScheme.onSurface
+                    else
+                        MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .then(
+                            // Non-last segments consume the click here; it does NOT
+                            // propagate up to the Box (which would trigger onBarClick).
+                            if (!isLast) Modifier.clickable { onCrumbClick(crumb.dir) }
+                            else Modifier
+                        )
+                )
+                if (!isLast) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_chevron_right),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
